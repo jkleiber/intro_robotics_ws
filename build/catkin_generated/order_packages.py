@@ -2,4 +2,4 @@
 source_root_dir = "/home/jkleiber/intro_robotics_ws/src"
 whitelisted_packages = "".split(';') if "" != "" else []
 blacklisted_packages = "".split(';') if "" != "" else []
-underlay_workspaces = "/home/jkleiber/ardrone_simulator/devel;/home/jkleiber/drone_ws/devel;/opt/ros/kinetic".split(';') if "/home/jkleiber/ardrone_simulator/devel;/home/jkleiber/drone_ws/devel;/opt/ros/kinetic" != "" else []
+underlay_workspaces = "/home/jkleiber/intro_robotics_ws/devel;/home/jkleiber/drone_ws/devel;/opt/ros/kinetic".split(';') if "/home/jkleiber/intro_robotics_ws/devel;/home/jkleiber/drone_ws/devel;/opt/ros/kinetic" != "" else []
