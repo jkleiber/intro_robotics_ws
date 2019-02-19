@@ -1,19 +1,17 @@
 #include <ros/ros.h>
 
-//ROS libs and msgs
-#include <ros/ros.h>
+//ROS/System libs and msgs
+#include <cstdlib>
 #include <geometry_msgs/Twist.h>
+#include <ros/ros.h>
 #include <nav_msgs/Odometry.h>
 
 //User libs and msgs
-#include <reactive_robot/autodrive.h>
+#include "reactive_robot/constants.h"
+#include "reactive_robot/drivetrain.h"
 
-#include <cstdlib>
 
-
-//Publishers
-ros::Publisher autodrive_pub;
-
+/* Typedefs*/
 typedef struct position_state_t
 {
     double x;
@@ -21,8 +19,16 @@ typedef struct position_state_t
     double z;
 } position_state;
 
+
+
+//Publishers
+ros::Publisher autodrive_pub;
+
+
 //
 position_state old_pos;
+
+
 
 /**
  * autodriveCallback - when collisions are detected by the bumpers, track the state of the bumpers
@@ -68,6 +74,9 @@ int main(int argc, char **argv)
     //Set up the node handle for auto driving
     ros::NodeHandle autodrive_node;
 
+    //Instantiate a drivetrain object for handling driving
+    Drivetrain drivetrain;
+
     //Subscribe to odometry data
     ros::Subscriber odom_sub = autodrive_node.subscribe(autodrive_node.resolveName("/odom"), 10, &odometryCallback);
     
@@ -82,7 +91,34 @@ int main(int argc, char **argv)
         //Handle the callbacks
         ros::spinOnce();
 
-        //
+        //If the robot is turning to a target, turn
+        if(turning)
+        {
+            //TODO: use a PID instead
+            //If the current angle is close enough to the target angle, then stop turning
+            if(abs(current_angle - target_angle) < TURN_ERROR_TOLERANCE)
+            {
+                turning = false;
+                drivetrain.set_output(1, 0);
+            }
+            else if(current_angle - target_angle < 180)
+            {
+                drivetrain
+            }
+            else
+            {
+                
+            }
+            
+        }
+        //Otherwise drive straight
+        else
+        {
+            drivetrain.set_output(1, 0);
+        }
+
+        //Publish the drivetrain output
+        autodrive_pub.publish(drivetrain.get_output());        
     }
 }
 
