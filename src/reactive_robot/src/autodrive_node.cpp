@@ -9,6 +9,7 @@
 //User libs and msgs
 #include "reactive_robot/constants.h"
 #include "reactive_robot/drivetrain.h"
+#include <tf/transform_datatypes.h>
 
 
 /* Typedefs*/
@@ -25,10 +26,11 @@ typedef struct position_state_t
 ros::Publisher autodrive_pub;
 
 
-//
 position_state old_pos;
+bool turning = false;
 
-
+double current_angle;
+double target_angle = 0;
 
 /**
  * autodriveCallback - when collisions are detected by the bumpers, track the state of the bumpers
@@ -39,27 +41,39 @@ position_state old_pos;
 void odometryCallback(const nav_msgs::Odometry::ConstPtr& odometer)
 {
     //Declare local variables
-    double distance_to_feet_factor;
-    double distance_traveled;
-    position_state new_pos;
+    double temp1, temp2;                //Unused other than function parameters (replace with NULL?)
+    double distance_to_feet_factor;     //Factor used to convert ROS units into meters (unknown)
+    double distance_traveled;           //Distance from the last turn
+    
+    position_state new_pos;             //The current position of the robot
     
     //Get the current position
     new_pos.x = odometer->pose.pose.position.x;
     new_pos.y = odometer->pose.pose.position.y;
     new_pos.z = odometer->pose.pose.position.z;
 
+    //Get the current orientation
+    tf::Quaternion q(odometer->pose.pose.orientation.x, odometer->pose.pose.orientation.y, odometer->pose.pose.orientation.z);
+    tf::Matrix3x3 m(q);
+
+    //TODO: Figure out if this is degrees or not
+    m.getRPY(temp1, temp2, current_angle);
+    
     //Calculate the distance traveled from the fixed position
     distance_traveled = sqrt(((new_pos.x - old_pos.x)*(new_pos.x - old_pos.x)) + (((new_pos.y - old_pos.y)*(new_pos.y - old_pos.y)))) * distance_to_feet_factor;
 
     //If the distance traveled is more than a foot, turn +/- 15 degrees
     if(distance_traveled >= 1)
     {
-        //
+        //Set the global varaible
+        turning = true;
+        
+        //Generate a new turn angle
+        target_angle = current_angle + ((rand() % 30) - 15);
 
-        //
+        //Update the old position for calculating distance
         old_pos = new_pos;
     }
-
 }
 
 
