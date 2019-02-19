@@ -1,6 +1,6 @@
 # generated from genmsg/cmake/pkg-genmsg.cmake.em
 
-message(STATUS "reactive_robot: 1 messages, 0 services")
+message(STATUS "reactive_robot: 2 messages, 0 services")
 
 set(MSG_I_FLAGS "-Ireactive_robot:/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg;-Istd_msgs:/opt/ros/kinetic/share/std_msgs/cmake/../msg")
 
@@ -22,6 +22,11 @@ add_custom_target(_reactive_robot_generate_messages_check_deps_${_filename}
   COMMAND ${CATKIN_ENV} ${PYTHON_EXECUTABLE} ${GENMSG_CHECK_DEPS_SCRIPT} "reactive_robot" "/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/collision.msg" ""
 )
 
+get_filename_component(_filename "/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/autodrive.msg" NAME_WE)
+add_custom_target(_reactive_robot_generate_messages_check_deps_${_filename}
+  COMMAND ${CATKIN_ENV} ${PYTHON_EXECUTABLE} ${GENMSG_CHECK_DEPS_SCRIPT} "reactive_robot" "/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/autodrive.msg" ""
+)
+
 #
 #  langs = gencpp;geneus;genlisp;gennodejs;genpy
 #
@@ -30,6 +35,12 @@ add_custom_target(_reactive_robot_generate_messages_check_deps_${_filename}
 ### Generating Messages
 _generate_msg_cpp(reactive_robot
   "/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/collision.msg"
+  "${MSG_I_FLAGS}"
+  ""
+  ${CATKIN_DEVEL_PREFIX}/${gencpp_INSTALL_DIR}/reactive_robot
+)
+_generate_msg_cpp(reactive_robot
+  "/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/autodrive.msg"
   "${MSG_I_FLAGS}"
   ""
   ${CATKIN_DEVEL_PREFIX}/${gencpp_INSTALL_DIR}/reactive_robot
@@ -51,6 +62,8 @@ add_dependencies(reactive_robot_generate_messages reactive_robot_generate_messag
 # add dependencies to all check dependencies targets
 get_filename_component(_filename "/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/collision.msg" NAME_WE)
 add_dependencies(reactive_robot_generate_messages_cpp _reactive_robot_generate_messages_check_deps_${_filename})
+get_filename_component(_filename "/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/autodrive.msg" NAME_WE)
+add_dependencies(reactive_robot_generate_messages_cpp _reactive_robot_generate_messages_check_deps_${_filename})
 
 # target for backward compatibility
 add_custom_target(reactive_robot_gencpp)
@@ -63,6 +76,12 @@ list(APPEND ${PROJECT_NAME}_EXPORTED_TARGETS reactive_robot_generate_messages_cp
 ### Generating Messages
 _generate_msg_eus(reactive_robot
   "/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/collision.msg"
+  "${MSG_I_FLAGS}"
+  ""
+  ${CATKIN_DEVEL_PREFIX}/${geneus_INSTALL_DIR}/reactive_robot
+)
+_generate_msg_eus(reactive_robot
+  "/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/autodrive.msg"
   "${MSG_I_FLAGS}"
   ""
   ${CATKIN_DEVEL_PREFIX}/${geneus_INSTALL_DIR}/reactive_robot
@@ -84,6 +103,8 @@ add_dependencies(reactive_robot_generate_messages reactive_robot_generate_messag
 # add dependencies to all check dependencies targets
 get_filename_component(_filename "/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/collision.msg" NAME_WE)
 add_dependencies(reactive_robot_generate_messages_eus _reactive_robot_generate_messages_check_deps_${_filename})
+get_filename_component(_filename "/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/autodrive.msg" NAME_WE)
+add_dependencies(reactive_robot_generate_messages_eus _reactive_robot_generate_messages_check_deps_${_filename})
 
 # target for backward compatibility
 add_custom_target(reactive_robot_geneus)
@@ -96,6 +117,12 @@ list(APPEND ${PROJECT_NAME}_EXPORTED_TARGETS reactive_robot_generate_messages_eu
 ### Generating Messages
 _generate_msg_lisp(reactive_robot
   "/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/collision.msg"
+  "${MSG_I_FLAGS}"
+  ""
+  ${CATKIN_DEVEL_PREFIX}/${genlisp_INSTALL_DIR}/reactive_robot
+)
+_generate_msg_lisp(reactive_robot
+  "/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/autodrive.msg"
   "${MSG_I_FLAGS}"
   ""
   ${CATKIN_DEVEL_PREFIX}/${genlisp_INSTALL_DIR}/reactive_robot
@@ -117,6 +144,8 @@ add_dependencies(reactive_robot_generate_messages reactive_robot_generate_messag
 # add dependencies to all check dependencies targets
 get_filename_component(_filename "/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/collision.msg" NAME_WE)
 add_dependencies(reactive_robot_generate_messages_lisp _reactive_robot_generate_messages_check_deps_${_filename})
+get_filename_component(_filename "/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/autodrive.msg" NAME_WE)
+add_dependencies(reactive_robot_generate_messages_lisp _reactive_robot_generate_messages_check_deps_${_filename})
 
 # target for backward compatibility
 add_custom_target(reactive_robot_genlisp)
@@ -129,6 +158,12 @@ list(APPEND ${PROJECT_NAME}_EXPORTED_TARGETS reactive_robot_generate_messages_li
 ### Generating Messages
 _generate_msg_nodejs(reactive_robot
   "/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/collision.msg"
+  "${MSG_I_FLAGS}"
+  ""
+  ${CATKIN_DEVEL_PREFIX}/${gennodejs_INSTALL_DIR}/reactive_robot
+)
+_generate_msg_nodejs(reactive_robot
+  "/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/autodrive.msg"
   "${MSG_I_FLAGS}"
   ""
   ${CATKIN_DEVEL_PREFIX}/${gennodejs_INSTALL_DIR}/reactive_robot
@@ -150,6 +185,8 @@ add_dependencies(reactive_robot_generate_messages reactive_robot_generate_messag
 # add dependencies to all check dependencies targets
 get_filename_component(_filename "/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/collision.msg" NAME_WE)
 add_dependencies(reactive_robot_generate_messages_nodejs _reactive_robot_generate_messages_check_deps_${_filename})
+get_filename_component(_filename "/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/autodrive.msg" NAME_WE)
+add_dependencies(reactive_robot_generate_messages_nodejs _reactive_robot_generate_messages_check_deps_${_filename})
 
 # target for backward compatibility
 add_custom_target(reactive_robot_gennodejs)
@@ -162,6 +199,12 @@ list(APPEND ${PROJECT_NAME}_EXPORTED_TARGETS reactive_robot_generate_messages_no
 ### Generating Messages
 _generate_msg_py(reactive_robot
   "/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/collision.msg"
+  "${MSG_I_FLAGS}"
+  ""
+  ${CATKIN_DEVEL_PREFIX}/${genpy_INSTALL_DIR}/reactive_robot
+)
+_generate_msg_py(reactive_robot
+  "/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/autodrive.msg"
   "${MSG_I_FLAGS}"
   ""
   ${CATKIN_DEVEL_PREFIX}/${genpy_INSTALL_DIR}/reactive_robot
@@ -182,6 +225,8 @@ add_dependencies(reactive_robot_generate_messages reactive_robot_generate_messag
 
 # add dependencies to all check dependencies targets
 get_filename_component(_filename "/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/collision.msg" NAME_WE)
+add_dependencies(reactive_robot_generate_messages_py _reactive_robot_generate_messages_check_deps_${_filename})
+get_filename_component(_filename "/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/autodrive.msg" NAME_WE)
 add_dependencies(reactive_robot_generate_messages_py _reactive_robot_generate_messages_check_deps_${_filename})
 
 # target for backward compatibility

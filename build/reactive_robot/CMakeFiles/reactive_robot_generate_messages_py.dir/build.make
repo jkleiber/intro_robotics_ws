@@ -54,6 +54,7 @@ CMAKE_BINARY_DIR = /home/jkleiber/intro_robotics_ws/build
 include reactive_robot/CMakeFiles/reactive_robot_generate_messages_py.dir/progress.make
 
 reactive_robot/CMakeFiles/reactive_robot_generate_messages_py: /home/jkleiber/intro_robotics_ws/devel/lib/python2.7/dist-packages/reactive_robot/msg/_collision.py
+reactive_robot/CMakeFiles/reactive_robot_generate_messages_py: /home/jkleiber/intro_robotics_ws/devel/lib/python2.7/dist-packages/reactive_robot/msg/_autodrive.py
 reactive_robot/CMakeFiles/reactive_robot_generate_messages_py: /home/jkleiber/intro_robotics_ws/devel/lib/python2.7/dist-packages/reactive_robot/msg/__init__.py
 
 
@@ -62,13 +63,20 @@ reactive_robot/CMakeFiles/reactive_robot_generate_messages_py: /home/jkleiber/in
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/jkleiber/intro_robotics_ws/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Generating Python from MSG reactive_robot/collision"
 	cd /home/jkleiber/intro_robotics_ws/build/reactive_robot && ../catkin_generated/env_cached.sh /usr/bin/python /opt/ros/kinetic/share/genpy/cmake/../../../lib/genpy/genmsg_py.py /home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/collision.msg -Ireactive_robot:/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg -Istd_msgs:/opt/ros/kinetic/share/std_msgs/cmake/../msg -p reactive_robot -o /home/jkleiber/intro_robotics_ws/devel/lib/python2.7/dist-packages/reactive_robot/msg
 
+/home/jkleiber/intro_robotics_ws/devel/lib/python2.7/dist-packages/reactive_robot/msg/_autodrive.py: /opt/ros/kinetic/lib/genpy/genmsg_py.py
+/home/jkleiber/intro_robotics_ws/devel/lib/python2.7/dist-packages/reactive_robot/msg/_autodrive.py: /home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/autodrive.msg
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/jkleiber/intro_robotics_ws/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Generating Python from MSG reactive_robot/autodrive"
+	cd /home/jkleiber/intro_robotics_ws/build/reactive_robot && ../catkin_generated/env_cached.sh /usr/bin/python /opt/ros/kinetic/share/genpy/cmake/../../../lib/genpy/genmsg_py.py /home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/autodrive.msg -Ireactive_robot:/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg -Istd_msgs:/opt/ros/kinetic/share/std_msgs/cmake/../msg -p reactive_robot -o /home/jkleiber/intro_robotics_ws/devel/lib/python2.7/dist-packages/reactive_robot/msg
+
 /home/jkleiber/intro_robotics_ws/devel/lib/python2.7/dist-packages/reactive_robot/msg/__init__.py: /opt/ros/kinetic/lib/genpy/genmsg_py.py
 /home/jkleiber/intro_robotics_ws/devel/lib/python2.7/dist-packages/reactive_robot/msg/__init__.py: /home/jkleiber/intro_robotics_ws/devel/lib/python2.7/dist-packages/reactive_robot/msg/_collision.py
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/jkleiber/intro_robotics_ws/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Generating Python msg __init__.py for reactive_robot"
+/home/jkleiber/intro_robotics_ws/devel/lib/python2.7/dist-packages/reactive_robot/msg/__init__.py: /home/jkleiber/intro_robotics_ws/devel/lib/python2.7/dist-packages/reactive_robot/msg/_autodrive.py
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/jkleiber/intro_robotics_ws/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Generating Python msg __init__.py for reactive_robot"
 	cd /home/jkleiber/intro_robotics_ws/build/reactive_robot && ../catkin_generated/env_cached.sh /usr/bin/python /opt/ros/kinetic/share/genpy/cmake/../../../lib/genpy/genmsg_py.py -o /home/jkleiber/intro_robotics_ws/devel/lib/python2.7/dist-packages/reactive_robot/msg --initpy
 
 reactive_robot_generate_messages_py: reactive_robot/CMakeFiles/reactive_robot_generate_messages_py
 reactive_robot_generate_messages_py: /home/jkleiber/intro_robotics_ws/devel/lib/python2.7/dist-packages/reactive_robot/msg/_collision.py
+reactive_robot_generate_messages_py: /home/jkleiber/intro_robotics_ws/devel/lib/python2.7/dist-packages/reactive_robot/msg/_autodrive.py
 reactive_robot_generate_messages_py: /home/jkleiber/intro_robotics_ws/devel/lib/python2.7/dist-packages/reactive_robot/msg/__init__.py
 reactive_robot_generate_messages_py: reactive_robot/CMakeFiles/reactive_robot_generate_messages_py.dir/build.make
 

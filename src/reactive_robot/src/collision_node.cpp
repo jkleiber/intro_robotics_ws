@@ -7,9 +7,8 @@
 //User libs and msgs
 #include <reactive_robot/collision.h>
 
-//Publishers
-ros::Publisher collision_pub;
 
+/* Typedefs */
 //Bumper state struct
 typedef struct bumper_state_t
 {
@@ -18,7 +17,14 @@ typedef struct bumper_state_t
     bool right_bumper;
 } bumper_state;
 
+
+//Publishers
+ros::Publisher collision_pub;
+
+//Keep track of the bumper states
 bumper_state bump_states;
+
+
 
 /**
  * collision_callback - when collisions are detected by the bumpers, track the state of the bumpers
@@ -61,6 +67,8 @@ void collision_callback(const kobuki_msgs::BumperEvent::ConstPtr& bump_event)
     //Publish the state of the collision detection module
     collision_pub.publish(collide_msg);
 }
+
+
 
 /**
  * Runs the loop needed to handle collision detection

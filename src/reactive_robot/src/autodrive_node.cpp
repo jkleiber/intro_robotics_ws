@@ -15,9 +15,9 @@ ros::Publisher autodrive_pub;
 
 typedef struct position_state_t
 {
-    float64 x;
-    float64 y;
-    float64 z;
+    double x;
+    double y;
+    double z;
 } position_state;
 
 
@@ -42,16 +42,16 @@ void odometryCallback(const nav_msgs::Odometry::ConstPtr& odometer)
 
     int distance_to_feet_factor;
 
-    int distance_traveled = sqrt(((new_pos.x - old_pos.x)*(new_pos.x - old_pos.x)) + (((new_pos.y - old_pos.y)*(new_pos.y - old_pos.y))) * distance_to_feet_factor
+    int distance_traveled = sqrt(((new_pos.x - old_pos.x)*(new_pos.x - old_pos.x)) + (((new_pos.y - old_pos.y)*(new_pos.y - old_pos.y))) * distance_to_feet_factor;
 
     if(distance_traveled >= 1)
     {
-        autodr_msg.drive = FALSE;
+        autodr_msg.drive = false;
         autodr_msg.turn_angle = (rand() % 30) - 15;
     }
     else
     {
-        autodr_msg.drive = TRUE;
+        autodr_msg.drive = true;
         autodr_msg.turn_angle = 0;
     }
     
@@ -74,7 +74,7 @@ int main(int argc, char **argv)
     ros::NodeHandle autodrive_node;
 
     //TODO: Subscribe to odometry
-    ros::Subscriber odom_sub = autodrive_node.subscribe(autodrive_node.resolveName("/odom"), 10, &autodriveCallback);
+    ros::Subscriber odom_sub = autodrive_node.subscribe(autodrive_node.resolveName("/odom"), 10, &odometryCallback);
     
     //Publish state to the autodrive topic
     autodrive_pub = autodrive_node.advertise<reactive_robot::autodrive>(autodrive_node.resolveName("/reactive_robot/autodrive"), 10);

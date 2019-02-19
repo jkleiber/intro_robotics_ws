@@ -54,6 +54,7 @@ CMAKE_BINARY_DIR = /home/jkleiber/intro_robotics_ws/build
 include reactive_robot/CMakeFiles/reactive_robot_generate_messages_nodejs.dir/progress.make
 
 reactive_robot/CMakeFiles/reactive_robot_generate_messages_nodejs: /home/jkleiber/intro_robotics_ws/devel/share/gennodejs/ros/reactive_robot/msg/collision.js
+reactive_robot/CMakeFiles/reactive_robot_generate_messages_nodejs: /home/jkleiber/intro_robotics_ws/devel/share/gennodejs/ros/reactive_robot/msg/autodrive.js
 
 
 /home/jkleiber/intro_robotics_ws/devel/share/gennodejs/ros/reactive_robot/msg/collision.js: /opt/ros/kinetic/lib/gennodejs/gen_nodejs.py
@@ -61,8 +62,14 @@ reactive_robot/CMakeFiles/reactive_robot_generate_messages_nodejs: /home/jkleibe
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/jkleiber/intro_robotics_ws/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Generating Javascript code from reactive_robot/collision.msg"
 	cd /home/jkleiber/intro_robotics_ws/build/reactive_robot && ../catkin_generated/env_cached.sh /usr/bin/python /opt/ros/kinetic/share/gennodejs/cmake/../../../lib/gennodejs/gen_nodejs.py /home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/collision.msg -Ireactive_robot:/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg -Istd_msgs:/opt/ros/kinetic/share/std_msgs/cmake/../msg -p reactive_robot -o /home/jkleiber/intro_robotics_ws/devel/share/gennodejs/ros/reactive_robot/msg
 
+/home/jkleiber/intro_robotics_ws/devel/share/gennodejs/ros/reactive_robot/msg/autodrive.js: /opt/ros/kinetic/lib/gennodejs/gen_nodejs.py
+/home/jkleiber/intro_robotics_ws/devel/share/gennodejs/ros/reactive_robot/msg/autodrive.js: /home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/autodrive.msg
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/jkleiber/intro_robotics_ws/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Generating Javascript code from reactive_robot/autodrive.msg"
+	cd /home/jkleiber/intro_robotics_ws/build/reactive_robot && ../catkin_generated/env_cached.sh /usr/bin/python /opt/ros/kinetic/share/gennodejs/cmake/../../../lib/gennodejs/gen_nodejs.py /home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/autodrive.msg -Ireactive_robot:/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg -Istd_msgs:/opt/ros/kinetic/share/std_msgs/cmake/../msg -p reactive_robot -o /home/jkleiber/intro_robotics_ws/devel/share/gennodejs/ros/reactive_robot/msg
+
 reactive_robot_generate_messages_nodejs: reactive_robot/CMakeFiles/reactive_robot_generate_messages_nodejs
 reactive_robot_generate_messages_nodejs: /home/jkleiber/intro_robotics_ws/devel/share/gennodejs/ros/reactive_robot/msg/collision.js
+reactive_robot_generate_messages_nodejs: /home/jkleiber/intro_robotics_ws/devel/share/gennodejs/ros/reactive_robot/msg/autodrive.js
 reactive_robot_generate_messages_nodejs: reactive_robot/CMakeFiles/reactive_robot_generate_messages_nodejs.dir/build.make
 
 .PHONY : reactive_robot_generate_messages_nodejs
