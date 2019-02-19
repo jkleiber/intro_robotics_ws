@@ -52,6 +52,7 @@ add_message_files(
   FILES
   autodrive.msg
   collision.msg
+  obstacle.msg
 )
 
 ## Generate services in the 'srv' folder
