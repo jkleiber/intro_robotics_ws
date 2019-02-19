@@ -1,1 +1,2 @@
-bool collision
+bool drive
+int turn_angle
