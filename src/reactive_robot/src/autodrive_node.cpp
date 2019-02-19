@@ -24,13 +24,10 @@ typedef struct position_state_t
 
 //Publishers
 ros::Publisher autodrive_pub;
-
-
 position_state old_pos;
-bool turning = false;
-
+bool turning;
 double current_angle;
-double target_angle = 0;
+double target_angle;
 
 /**
  * autodriveCallback - when collisions are detected by the bumpers, track the state of the bumpers
@@ -91,6 +88,11 @@ int main(int argc, char **argv)
     //Instantiate a drivetrain object for handling driving
     Drivetrain drivetrain;
 
+    //Initialize globals
+    current_angle = 0;
+    turning = false;
+    target_angle = 0;
+
     //Subscribe to odometry data
     ros::Subscriber odom_sub = autodrive_node.subscribe(autodrive_node.resolveName("/odom"), 10, &odometryCallback);
     
@@ -108,22 +110,7 @@ int main(int argc, char **argv)
         //If the robot is turning to a target, turn
         if(turning)
         {
-            //TODO: use a PID instead
-            //If the current angle is close enough to the target angle, then stop turning
-            if(abs(current_angle - target_angle) < TURN_ERROR_TOLERANCE)
-            {
-                turning = false;
-                drivetrain.set_output(1, 0);
-            }
-            else if(current_angle - target_angle < 180)
-            {
-                drivetrain
-            }
-            else
-            {
-                
-            }
-            
+            turning = !drivetrain.turnToAngle(current_angle, target_angle);
         }
         //Otherwise drive straight
         else

@@ -35,6 +35,15 @@ geometry_msgs::Twist Drivetrain::getOutput()
 /**
  * 
  */
+void Drivetrain::setOutput(geometry_msgs::Twist output_data)
+{
+    this->output = output_data;
+}
+
+
+/**
+ * 
+ */
 void Drivetrain::setOutput(double linear_x, double linear_y, double linear_z, double angular_x, double angular_y, double angular_z)
 {
     this->output.linear.x = linear_x;
@@ -87,9 +96,46 @@ bool Drivetrain::turnDirection(double start_angle, double end_angle)
         //Turn right
         return false;
     }
+
+    //Turn left
+    return true;
+}
+
+
+/**
+ * setTurn - turns the robot in place at a certain power
+ */ 
+void Drivetrain::setTurn(double turn)
+{
+    this->set_output(0, 0, 0, 0, 0, turn);
+}
+
+
+//TODO: use PID instead
+/**
+ * 
+ */
+bool Drivetrain::turnToAngle(double current_angle, double target_angle)
+{
+    //Declare local variables
+    double error;
+
+    //Calculate error
+    error = current_angle - target_angle;
+
+    //If the current angle is close enough to the target angle, then stop turning
+    if(abs(error) < TURN_ERROR_TOLERANCE)
+    {
+        this->setTurn(0);
+    }
+    //If the robot is erring to the left, turn right to get to the target
+    else if(current_angle - target_angle < 180)
+    {
+        this->setTurn(0.5);
+    }
+    //If the robot is erring to the right, turn left to get to the target
     else
     {
-        //Turn left
-        return true;
+        this->setTurn(-0.5);   
     }
 }
