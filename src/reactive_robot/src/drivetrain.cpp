@@ -5,14 +5,14 @@
  */
 Drivetrain::Drivetrain()
 {
-    this->reset_output();
+    this->resetOutput();
 }
 
 
 /**
  * 
  */
-void Drivetrain::reset_output()
+void Drivetrain::resetOutput()
 {
     this->output.angular.x = 0;
     this->output.angular.y = 0;
@@ -26,7 +26,7 @@ void Drivetrain::reset_output()
 /**
  * 
  */
-geometry_msgs::Twist Drivetrain::get_output()
+geometry_msgs::Twist Drivetrain::getOutput()
 {
     return this->output;
 }
@@ -35,7 +35,7 @@ geometry_msgs::Twist Drivetrain::get_output()
 /**
  * 
  */
-void Drivetrain::set_output(double linear_x, double linear_y, double linear_z, double angular_x, double angular_y, double angular_z)
+void Drivetrain::setOutput(double linear_x, double linear_y, double linear_z, double angular_x, double angular_y, double angular_z)
 {
     this->output.linear.x = linear_x;
     this->output.linear.y = linear_y;
@@ -49,7 +49,47 @@ void Drivetrain::set_output(double linear_x, double linear_y, double linear_z, d
 /**
  * 
  */
-void Drivetrain::set_output(double power, double turn)
+void Drivetrain::setOutput(double power, double turn)
 {
-    this->set_output(power, 0, 0, 0, 0, turn);
+    this->setOutput(power, 0, 0, 0, 0, turn);
+}
+
+/**
+ * 
+ */
+double Drivetrain::angleWrap(double angle)
+{
+    if(angle < 0)
+    {
+        return fmod(angle, 360) + 360;
+    }
+    else
+    {
+        return fmod(angle, 360);
+    }
+}
+
+/**
+ * 
+ * 
+ * @return  True if the robot should turn right
+ *          False if the robot should turn left
+ */
+bool Drivetrain::turnDirection(double start_angle, double end_angle)
+{
+    //TODO: Decide if we use angleWrap() here or outsude. 
+    double start_wrapped = angleWrap(start_angle);
+    double end_wrapped= angleWrap(end_angle);
+
+    //Determine which direciton will be faster to turn
+    if((start_wrapped + 360 - end_wrapped) < 180)
+    {
+        //Turn right
+        return false;
+    }
+    else
+    {
+        //Turn left
+        return true;
+    }
 }
