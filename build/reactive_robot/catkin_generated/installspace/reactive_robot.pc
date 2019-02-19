@@ -3,6 +3,6 @@ prefix=/home/jkleiber/intro_robotics_ws/install
 Name: reactive_robot
 Description: Description of reactive_robot
 Version: 0.0.0
-Cflags: 
+Cflags: -I/home/jkleiber/intro_robotics_ws/install/include
 Libs: -L/home/jkleiber/intro_robotics_ws/install/lib 
 Requires: roscpp std_msgs message_runtime

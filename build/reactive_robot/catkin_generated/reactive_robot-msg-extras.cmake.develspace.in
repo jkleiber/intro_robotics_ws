@@ -1,2 +1,2 @@
-set(reactive_robot_MESSAGE_FILES "")
+set(reactive_robot_MESSAGE_FILES "/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/collision.msg")
 set(reactive_robot_SERVICE_FILES "")

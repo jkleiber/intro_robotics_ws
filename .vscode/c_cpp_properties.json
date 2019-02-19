@@ -6,7 +6,8 @@
                 "limitSymbolsToIncludedHeaders": true
             },
             "includePath": [
-                "/home/jkleiber/drone_ws/devel/include",
+                "${workspaceFolder}/devel/include",
+                "${workspaceFolder}/src/include",
                 "/opt/ros/kinetic/include",
                 "/usr/include"
             ],

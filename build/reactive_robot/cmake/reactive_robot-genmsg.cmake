@@ -1,8 +1,6 @@
 # generated from genmsg/cmake/pkg-genmsg.cmake.em
 
-message(WARNING "Invoking generate_messages() without having added any message or service file before.
-You should either add add_message_files() and/or add_service_files() calls or remove the invocation of generate_messages().")
-message(STATUS "reactive_robot: 0 messages, 0 services")
+message(STATUS "reactive_robot: 1 messages, 0 services")
 
 set(MSG_I_FLAGS "-Ireactive_robot:/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg;-Istd_msgs:/opt/ros/kinetic/share/std_msgs/cmake/../msg")
 
@@ -19,12 +17,23 @@ add_custom_target(reactive_robot_generate_messages ALL)
 
 
 
+get_filename_component(_filename "/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/collision.msg" NAME_WE)
+add_custom_target(_reactive_robot_generate_messages_check_deps_${_filename}
+  COMMAND ${CATKIN_ENV} ${PYTHON_EXECUTABLE} ${GENMSG_CHECK_DEPS_SCRIPT} "reactive_robot" "/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/collision.msg" ""
+)
+
 #
 #  langs = gencpp;geneus;genlisp;gennodejs;genpy
 #
 
 ### Section generating for lang: gencpp
 ### Generating Messages
+_generate_msg_cpp(reactive_robot
+  "/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/collision.msg"
+  "${MSG_I_FLAGS}"
+  ""
+  ${CATKIN_DEVEL_PREFIX}/${gencpp_INSTALL_DIR}/reactive_robot
+)
 
 ### Generating Services
 
@@ -40,6 +49,8 @@ add_custom_target(reactive_robot_generate_messages_cpp
 add_dependencies(reactive_robot_generate_messages reactive_robot_generate_messages_cpp)
 
 # add dependencies to all check dependencies targets
+get_filename_component(_filename "/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/collision.msg" NAME_WE)
+add_dependencies(reactive_robot_generate_messages_cpp _reactive_robot_generate_messages_check_deps_${_filename})
 
 # target for backward compatibility
 add_custom_target(reactive_robot_gencpp)
@@ -50,6 +61,12 @@ list(APPEND ${PROJECT_NAME}_EXPORTED_TARGETS reactive_robot_generate_messages_cp
 
 ### Section generating for lang: geneus
 ### Generating Messages
+_generate_msg_eus(reactive_robot
+  "/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/collision.msg"
+  "${MSG_I_FLAGS}"
+  ""
+  ${CATKIN_DEVEL_PREFIX}/${geneus_INSTALL_DIR}/reactive_robot
+)
 
 ### Generating Services
 
@@ -65,6 +82,8 @@ add_custom_target(reactive_robot_generate_messages_eus
 add_dependencies(reactive_robot_generate_messages reactive_robot_generate_messages_eus)
 
 # add dependencies to all check dependencies targets
+get_filename_component(_filename "/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/collision.msg" NAME_WE)
+add_dependencies(reactive_robot_generate_messages_eus _reactive_robot_generate_messages_check_deps_${_filename})
 
 # target for backward compatibility
 add_custom_target(reactive_robot_geneus)
@@ -75,6 +94,12 @@ list(APPEND ${PROJECT_NAME}_EXPORTED_TARGETS reactive_robot_generate_messages_eu
 
 ### Section generating for lang: genlisp
 ### Generating Messages
+_generate_msg_lisp(reactive_robot
+  "/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/collision.msg"
+  "${MSG_I_FLAGS}"
+  ""
+  ${CATKIN_DEVEL_PREFIX}/${genlisp_INSTALL_DIR}/reactive_robot
+)
 
 ### Generating Services
 
@@ -90,6 +115,8 @@ add_custom_target(reactive_robot_generate_messages_lisp
 add_dependencies(reactive_robot_generate_messages reactive_robot_generate_messages_lisp)
 
 # add dependencies to all check dependencies targets
+get_filename_component(_filename "/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/collision.msg" NAME_WE)
+add_dependencies(reactive_robot_generate_messages_lisp _reactive_robot_generate_messages_check_deps_${_filename})
 
 # target for backward compatibility
 add_custom_target(reactive_robot_genlisp)
@@ -100,6 +127,12 @@ list(APPEND ${PROJECT_NAME}_EXPORTED_TARGETS reactive_robot_generate_messages_li
 
 ### Section generating for lang: gennodejs
 ### Generating Messages
+_generate_msg_nodejs(reactive_robot
+  "/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/collision.msg"
+  "${MSG_I_FLAGS}"
+  ""
+  ${CATKIN_DEVEL_PREFIX}/${gennodejs_INSTALL_DIR}/reactive_robot
+)
 
 ### Generating Services
 
@@ -115,6 +148,8 @@ add_custom_target(reactive_robot_generate_messages_nodejs
 add_dependencies(reactive_robot_generate_messages reactive_robot_generate_messages_nodejs)
 
 # add dependencies to all check dependencies targets
+get_filename_component(_filename "/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/collision.msg" NAME_WE)
+add_dependencies(reactive_robot_generate_messages_nodejs _reactive_robot_generate_messages_check_deps_${_filename})
 
 # target for backward compatibility
 add_custom_target(reactive_robot_gennodejs)
@@ -125,6 +160,12 @@ list(APPEND ${PROJECT_NAME}_EXPORTED_TARGETS reactive_robot_generate_messages_no
 
 ### Section generating for lang: genpy
 ### Generating Messages
+_generate_msg_py(reactive_robot
+  "/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/collision.msg"
+  "${MSG_I_FLAGS}"
+  ""
+  ${CATKIN_DEVEL_PREFIX}/${genpy_INSTALL_DIR}/reactive_robot
+)
 
 ### Generating Services
 
@@ -140,6 +181,8 @@ add_custom_target(reactive_robot_generate_messages_py
 add_dependencies(reactive_robot_generate_messages reactive_robot_generate_messages_py)
 
 # add dependencies to all check dependencies targets
+get_filename_component(_filename "/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/collision.msg" NAME_WE)
+add_dependencies(reactive_robot_generate_messages_py _reactive_robot_generate_messages_check_deps_${_filename})
 
 # target for backward compatibility
 add_custom_target(reactive_robot_genpy)
