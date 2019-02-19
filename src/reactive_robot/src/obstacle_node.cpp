@@ -22,7 +22,7 @@ int main(int argc, char **argv)
     ros::init(argc, argv, "obstacle_avoid_node");
 
     //Set up the node handle for auto driving
-    ros::NodeHandle obstacle_avoid_node;
+    ros::NodeHandle obstacle_node;
 
     //Subscribe to the scanner
     ros::Subscriber obstacle_sub = obstacle_node.subscribe(obstacle_node.resolveName("/scan"), 10, &scanCallback);

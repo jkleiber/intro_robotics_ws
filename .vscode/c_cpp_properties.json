@@ -7,7 +7,7 @@
             },
             "includePath": [
                 "${workspaceFolder}/devel/include",
-                "${workspaceFolder}/src/include",
+                "${workspaceFolder}/src/reactive_robot/include",
                 "/opt/ros/kinetic/include",
                 "/usr/include"
             ],
