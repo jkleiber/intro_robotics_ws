@@ -24,17 +24,22 @@ struct autodrive_
   typedef autodrive_<ContainerAllocator> Type;
 
   autodrive_()
-    : collision(false)  {
+    : drive(false)
+    , turn_angle(0)  {
     }
   autodrive_(const ContainerAllocator& _alloc)
-    : collision(false)  {
+    : drive(false)
+    , turn_angle(0)  {
   (void)_alloc;
     }
 
 
 
-   typedef uint8_t _collision_type;
-  _collision_type collision;
+   typedef uint8_t _drive_type;
+  _drive_type drive;
+
+   typedef int8_t _turn_angle_type;
+  _turn_angle_type turn_angle;
 
 
 
@@ -114,12 +119,12 @@ struct MD5Sum< ::reactive_robot::autodrive_<ContainerAllocator> >
 {
   static const char* value()
   {
-    return "ec9653804a13642f770edbe4a85843b2";
+    return "ad06341ef70ac04503af948ffea2ec63";
   }
 
   static const char* value(const ::reactive_robot::autodrive_<ContainerAllocator>&) { return value(); }
-  static const uint64_t static_value1 = 0xec9653804a13642fULL;
-  static const uint64_t static_value2 = 0x770edbe4a85843b2ULL;
+  static const uint64_t static_value1 = 0xad06341ef70ac045ULL;
+  static const uint64_t static_value2 = 0x03af948ffea2ec63ULL;
 };
 
 template<class ContainerAllocator>
@@ -138,7 +143,8 @@ struct Definition< ::reactive_robot::autodrive_<ContainerAllocator> >
 {
   static const char* value()
   {
-    return "bool collision\n\
+    return "bool drive\n\
+int8 turn_angle\n\
 ";
   }
 
@@ -157,7 +163,8 @@ namespace serialization
   {
     template<typename Stream, typename T> inline static void allInOne(Stream& stream, T m)
     {
-      stream.next(m.collision);
+      stream.next(m.drive);
+      stream.next(m.turn_angle);
     }
 
     ROS_DECLARE_ALLINONE_SERIALIZER
@@ -176,8 +183,10 @@ struct Printer< ::reactive_robot::autodrive_<ContainerAllocator> >
 {
   template<typename Stream> static void stream(Stream& s, const std::string& indent, const ::reactive_robot::autodrive_<ContainerAllocator>& v)
   {
-    s << indent << "collision: ";
-    Printer<uint8_t>::stream(s, indent + "  ", v.collision);
+    s << indent << "drive: ";
+    Printer<uint8_t>::stream(s, indent + "  ", v.drive);
+    s << indent << "turn_angle: ";
+    Printer<int8_t>::stream(s, indent + "  ", v.turn_angle);
   }
 };
 

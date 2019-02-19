@@ -1,2 +1,2 @@
 bool drive
-int turn_angle
+int8 turn_angle

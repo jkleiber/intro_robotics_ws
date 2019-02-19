@@ -36,6 +36,7 @@ if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspeci
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/reactive_robot/msg" TYPE FILE FILES
     "/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/autodrive.msg"
     "/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/collision.msg"
+    "/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/obstacle.msg"
     )
 endif()
 

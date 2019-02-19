@@ -1,6 +1,6 @@
 # generated from genmsg/cmake/pkg-genmsg.context.in
 
-messages_str = "/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/autodrive.msg;/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/collision.msg"
+messages_str = "/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/autodrive.msg;/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/collision.msg;/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/obstacle.msg"
 services_str = ""
 pkg_name = "reactive_robot"
 dependencies_str = "std_msgs"

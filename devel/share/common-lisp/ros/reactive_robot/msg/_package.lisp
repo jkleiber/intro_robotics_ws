@@ -5,5 +5,7 @@
    "AUTODRIVE"
    "<COLLISION>"
    "COLLISION"
+   "<OBSTACLE>"
+   "OBSTACLE"
   ))
 

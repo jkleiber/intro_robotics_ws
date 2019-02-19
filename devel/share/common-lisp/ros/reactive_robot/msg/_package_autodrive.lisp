@@ -1,4 +1,6 @@
 (cl:in-package reactive_robot-msg)
-(cl:export '(COLLISION-VAL
-          COLLISION
+(cl:export '(DRIVE-VAL
+          DRIVE
+          TURN_ANGLE-VAL
+          TURN_ANGLE
 ))
