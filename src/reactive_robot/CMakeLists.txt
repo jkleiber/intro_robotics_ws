@@ -10,6 +10,7 @@ project(reactive_robot)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
+  geometry_msgs
   message_generation
 )
 
@@ -72,6 +73,7 @@ add_message_files(
 generate_messages(
   DEPENDENCIES
   std_msgs  # Or other packages containing msgs
+  geometry_msgs
 )
 
 ################################################
@@ -117,7 +119,7 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-# include
+  include
   ${catkin_INCLUDE_DIRS}
 )
 
@@ -150,6 +152,22 @@ include_directories(
 # target_link_libraries(${PROJECT_NAME}_node
 #   ${catkin_LIBRARIES}
 # )
+
+# Add reactive robot executables
+# Auto-Drive
+add_executable(autodrive_node src/autodrive_node.cpp src/drivetrain.cpp)
+target_link_libraries(autodrive_node ${catkin_LIBRARIES})
+add_dependencies(autodrive_node reactive_robot_generate_messages_cpp)
+
+# Collision
+add_executable(collision_node src/collision_node.cpp)
+target_link_libraries(collision_node ${catkin_LIBRARIES})
+add_dependencies(collision_node reactive_robot_generate_messages_cpp)
+
+# Decision Node
+add_executable(decision_node src/decision_node.cpp src/drivetrain.cpp)
+target_link_libraries(decision_node ${catkin_LIBRARIES})
+add_dependencies(decision_node reactive_robot_generate_messages_cpp)
 
 #############
 ## Install ##
@@ -198,3 +216,4 @@ include_directories(
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
+

@@ -3,7 +3,6 @@
 #include <geometry_msgs/Twist.h>
 
 //User msgs and libs
-#include <reactive_robot/constants.h>
 #include <reactive_robot/collision.h>
 #include <reactive_robot/drivetrain.h>
 #include <reactive_robot/obstacle.h>
@@ -74,7 +73,7 @@ int main(int argc, char **argv)
     Drivetrain drivetrain;
 
     //Subscribe to each of the topics published by the child nodes
-    ros::Subscriber collision_sub = main_decision_node.subscribe(main_decision_node.resolveName("/reactive_robot/collision"), 10, &collisionCallback);
+    ros::Subscriber collision_sub = main_decision_node.subscribe("/reactive_robot/collision", 10, &collisionCallback);
     ros::Subscriber obstacle_sub = main_decision_node.subscribe(main_decision_node.resolveName("/reactive_robot/obstacle"), 10, &obstacleCallback);
     ros::Subscriber autodrive_sub = main_decision_node.subscribe(main_decision_node.resolveName("/reactive_robot/autodrive"), 10, &autodriveCallback);
 
@@ -93,16 +92,16 @@ int main(int argc, char **argv)
         //Halting after a collision is our first priority
         if(collide_detected)
         {
-            drivetrain.reset_output();
+            drivetrain.resetOutput();
         }
         //The lowest priority is to drive around randomly, so do that if all other priorities are being fulfilled
         else
         {
-            drivetrain.set_output(autodrive_output);
+            drivetrain.setOutput(autodrive_output);
         }
 
         //Publish the desired drivetrain output to the command velocity multiplexer
-        teleop_pub.publish(drivetrain.get_output());
+        teleop_pub.publish(drivetrain.getOutput());
         
         //Make sure to limit ourselves to the loop rate
         loop_rate.sleep();

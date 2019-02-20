@@ -1,8 +1,8 @@
 # generated from genmsg/cmake/pkg-genmsg.cmake.em
 
-message(STATUS "reactive_robot: 3 messages, 0 services")
+message(STATUS "reactive_robot: 2 messages, 0 services")
 
-set(MSG_I_FLAGS "-Ireactive_robot:/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg;-Istd_msgs:/opt/ros/kinetic/share/std_msgs/cmake/../msg")
+set(MSG_I_FLAGS "-Ireactive_robot:/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg;-Istd_msgs:/opt/ros/kinetic/share/std_msgs/cmake/../msg;-Igeometry_msgs:/opt/ros/kinetic/share/geometry_msgs/cmake/../msg")
 
 # Find all generators
 find_package(gencpp REQUIRED)
@@ -27,11 +27,6 @@ add_custom_target(_reactive_robot_generate_messages_check_deps_${_filename}
   COMMAND ${CATKIN_ENV} ${PYTHON_EXECUTABLE} ${GENMSG_CHECK_DEPS_SCRIPT} "reactive_robot" "/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/obstacle.msg" ""
 )
 
-get_filename_component(_filename "/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/autodrive.msg" NAME_WE)
-add_custom_target(_reactive_robot_generate_messages_check_deps_${_filename}
-  COMMAND ${CATKIN_ENV} ${PYTHON_EXECUTABLE} ${GENMSG_CHECK_DEPS_SCRIPT} "reactive_robot" "/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/autodrive.msg" ""
-)
-
 #
 #  langs = gencpp;geneus;genlisp;gennodejs;genpy
 #
@@ -46,12 +41,6 @@ _generate_msg_cpp(reactive_robot
 )
 _generate_msg_cpp(reactive_robot
   "/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/obstacle.msg"
-  "${MSG_I_FLAGS}"
-  ""
-  ${CATKIN_DEVEL_PREFIX}/${gencpp_INSTALL_DIR}/reactive_robot
-)
-_generate_msg_cpp(reactive_robot
-  "/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/autodrive.msg"
   "${MSG_I_FLAGS}"
   ""
   ${CATKIN_DEVEL_PREFIX}/${gencpp_INSTALL_DIR}/reactive_robot
@@ -75,8 +64,6 @@ get_filename_component(_filename "/home/jkleiber/intro_robotics_ws/src/reactive_
 add_dependencies(reactive_robot_generate_messages_cpp _reactive_robot_generate_messages_check_deps_${_filename})
 get_filename_component(_filename "/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/obstacle.msg" NAME_WE)
 add_dependencies(reactive_robot_generate_messages_cpp _reactive_robot_generate_messages_check_deps_${_filename})
-get_filename_component(_filename "/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/autodrive.msg" NAME_WE)
-add_dependencies(reactive_robot_generate_messages_cpp _reactive_robot_generate_messages_check_deps_${_filename})
 
 # target for backward compatibility
 add_custom_target(reactive_robot_gencpp)
@@ -95,12 +82,6 @@ _generate_msg_eus(reactive_robot
 )
 _generate_msg_eus(reactive_robot
   "/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/obstacle.msg"
-  "${MSG_I_FLAGS}"
-  ""
-  ${CATKIN_DEVEL_PREFIX}/${geneus_INSTALL_DIR}/reactive_robot
-)
-_generate_msg_eus(reactive_robot
-  "/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/autodrive.msg"
   "${MSG_I_FLAGS}"
   ""
   ${CATKIN_DEVEL_PREFIX}/${geneus_INSTALL_DIR}/reactive_robot
@@ -124,8 +105,6 @@ get_filename_component(_filename "/home/jkleiber/intro_robotics_ws/src/reactive_
 add_dependencies(reactive_robot_generate_messages_eus _reactive_robot_generate_messages_check_deps_${_filename})
 get_filename_component(_filename "/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/obstacle.msg" NAME_WE)
 add_dependencies(reactive_robot_generate_messages_eus _reactive_robot_generate_messages_check_deps_${_filename})
-get_filename_component(_filename "/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/autodrive.msg" NAME_WE)
-add_dependencies(reactive_robot_generate_messages_eus _reactive_robot_generate_messages_check_deps_${_filename})
 
 # target for backward compatibility
 add_custom_target(reactive_robot_geneus)
@@ -144,12 +123,6 @@ _generate_msg_lisp(reactive_robot
 )
 _generate_msg_lisp(reactive_robot
   "/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/obstacle.msg"
-  "${MSG_I_FLAGS}"
-  ""
-  ${CATKIN_DEVEL_PREFIX}/${genlisp_INSTALL_DIR}/reactive_robot
-)
-_generate_msg_lisp(reactive_robot
-  "/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/autodrive.msg"
   "${MSG_I_FLAGS}"
   ""
   ${CATKIN_DEVEL_PREFIX}/${genlisp_INSTALL_DIR}/reactive_robot
@@ -173,8 +146,6 @@ get_filename_component(_filename "/home/jkleiber/intro_robotics_ws/src/reactive_
 add_dependencies(reactive_robot_generate_messages_lisp _reactive_robot_generate_messages_check_deps_${_filename})
 get_filename_component(_filename "/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/obstacle.msg" NAME_WE)
 add_dependencies(reactive_robot_generate_messages_lisp _reactive_robot_generate_messages_check_deps_${_filename})
-get_filename_component(_filename "/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/autodrive.msg" NAME_WE)
-add_dependencies(reactive_robot_generate_messages_lisp _reactive_robot_generate_messages_check_deps_${_filename})
 
 # target for backward compatibility
 add_custom_target(reactive_robot_genlisp)
@@ -193,12 +164,6 @@ _generate_msg_nodejs(reactive_robot
 )
 _generate_msg_nodejs(reactive_robot
   "/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/obstacle.msg"
-  "${MSG_I_FLAGS}"
-  ""
-  ${CATKIN_DEVEL_PREFIX}/${gennodejs_INSTALL_DIR}/reactive_robot
-)
-_generate_msg_nodejs(reactive_robot
-  "/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/autodrive.msg"
   "${MSG_I_FLAGS}"
   ""
   ${CATKIN_DEVEL_PREFIX}/${gennodejs_INSTALL_DIR}/reactive_robot
@@ -222,8 +187,6 @@ get_filename_component(_filename "/home/jkleiber/intro_robotics_ws/src/reactive_
 add_dependencies(reactive_robot_generate_messages_nodejs _reactive_robot_generate_messages_check_deps_${_filename})
 get_filename_component(_filename "/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/obstacle.msg" NAME_WE)
 add_dependencies(reactive_robot_generate_messages_nodejs _reactive_robot_generate_messages_check_deps_${_filename})
-get_filename_component(_filename "/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/autodrive.msg" NAME_WE)
-add_dependencies(reactive_robot_generate_messages_nodejs _reactive_robot_generate_messages_check_deps_${_filename})
 
 # target for backward compatibility
 add_custom_target(reactive_robot_gennodejs)
@@ -242,12 +205,6 @@ _generate_msg_py(reactive_robot
 )
 _generate_msg_py(reactive_robot
   "/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/obstacle.msg"
-  "${MSG_I_FLAGS}"
-  ""
-  ${CATKIN_DEVEL_PREFIX}/${genpy_INSTALL_DIR}/reactive_robot
-)
-_generate_msg_py(reactive_robot
-  "/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/autodrive.msg"
   "${MSG_I_FLAGS}"
   ""
   ${CATKIN_DEVEL_PREFIX}/${genpy_INSTALL_DIR}/reactive_robot
@@ -271,8 +228,6 @@ get_filename_component(_filename "/home/jkleiber/intro_robotics_ws/src/reactive_
 add_dependencies(reactive_robot_generate_messages_py _reactive_robot_generate_messages_check_deps_${_filename})
 get_filename_component(_filename "/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/obstacle.msg" NAME_WE)
 add_dependencies(reactive_robot_generate_messages_py _reactive_robot_generate_messages_check_deps_${_filename})
-get_filename_component(_filename "/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg/autodrive.msg" NAME_WE)
-add_dependencies(reactive_robot_generate_messages_py _reactive_robot_generate_messages_check_deps_${_filename})
 
 # target for backward compatibility
 add_custom_target(reactive_robot_genpy)
@@ -293,6 +248,9 @@ endif()
 if(TARGET std_msgs_generate_messages_cpp)
   add_dependencies(reactive_robot_generate_messages_cpp std_msgs_generate_messages_cpp)
 endif()
+if(TARGET geometry_msgs_generate_messages_cpp)
+  add_dependencies(reactive_robot_generate_messages_cpp geometry_msgs_generate_messages_cpp)
+endif()
 
 if(geneus_INSTALL_DIR AND EXISTS ${CATKIN_DEVEL_PREFIX}/${geneus_INSTALL_DIR}/reactive_robot)
   # install generated code
@@ -303,6 +261,9 @@ if(geneus_INSTALL_DIR AND EXISTS ${CATKIN_DEVEL_PREFIX}/${geneus_INSTALL_DIR}/re
 endif()
 if(TARGET std_msgs_generate_messages_eus)
   add_dependencies(reactive_robot_generate_messages_eus std_msgs_generate_messages_eus)
+endif()
+if(TARGET geometry_msgs_generate_messages_eus)
+  add_dependencies(reactive_robot_generate_messages_eus geometry_msgs_generate_messages_eus)
 endif()
 
 if(genlisp_INSTALL_DIR AND EXISTS ${CATKIN_DEVEL_PREFIX}/${genlisp_INSTALL_DIR}/reactive_robot)
@@ -315,6 +276,9 @@ endif()
 if(TARGET std_msgs_generate_messages_lisp)
   add_dependencies(reactive_robot_generate_messages_lisp std_msgs_generate_messages_lisp)
 endif()
+if(TARGET geometry_msgs_generate_messages_lisp)
+  add_dependencies(reactive_robot_generate_messages_lisp geometry_msgs_generate_messages_lisp)
+endif()
 
 if(gennodejs_INSTALL_DIR AND EXISTS ${CATKIN_DEVEL_PREFIX}/${gennodejs_INSTALL_DIR}/reactive_robot)
   # install generated code
@@ -325,6 +289,9 @@ if(gennodejs_INSTALL_DIR AND EXISTS ${CATKIN_DEVEL_PREFIX}/${gennodejs_INSTALL_D
 endif()
 if(TARGET std_msgs_generate_messages_nodejs)
   add_dependencies(reactive_robot_generate_messages_nodejs std_msgs_generate_messages_nodejs)
+endif()
+if(TARGET geometry_msgs_generate_messages_nodejs)
+  add_dependencies(reactive_robot_generate_messages_nodejs geometry_msgs_generate_messages_nodejs)
 endif()
 
 if(genpy_INSTALL_DIR AND EXISTS ${CATKIN_DEVEL_PREFIX}/${genpy_INSTALL_DIR}/reactive_robot)
@@ -337,4 +304,7 @@ if(genpy_INSTALL_DIR AND EXISTS ${CATKIN_DEVEL_PREFIX}/${genpy_INSTALL_DIR}/reac
 endif()
 if(TARGET std_msgs_generate_messages_py)
   add_dependencies(reactive_robot_generate_messages_py std_msgs_generate_messages_py)
+endif()
+if(TARGET geometry_msgs_generate_messages_py)
+  add_dependencies(reactive_robot_generate_messages_py geometry_msgs_generate_messages_py)
 endif()

@@ -1,0 +1,9 @@
+Launch Files: https://answers.ros.org/question/62743/how-to-create-a-launch-file/
+
+I used the turtle bot launch file to make our launch file
+
+
+Quaternions: finding orientation -> https://answers.ros.org/question/50113/transform-quaternion/
+
+
+turn direction: https://math.stackexchange.com/questions/1366869/calculating-rotation-direction-between-two-angles

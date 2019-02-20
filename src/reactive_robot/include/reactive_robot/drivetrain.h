@@ -3,16 +3,18 @@
 
 //ROS and system libs
 #include <ros/ros.h>
+#include <ros/console.h>
 #include <geometry_msgs/Twist.h>
-
-//User includes
-#include "reactive_robot/constants.h"
 
 //Motion error tolerances
 #define TURN_ERROR_TOLERANCE (double)(1.0)
 
+//Output constants
+#define MAX_OUTPUT 0.5
+#define MIN_OUTPUT -0.5
+
 //PID constants
-#define Kp (double) 
+#define KP (double)(0.2)
 
 class Drivetrain
 {
@@ -24,15 +26,18 @@ class Drivetrain
         geometry_msgs::Twist getOutput();
         
         void setOutput(geometry_msgs::Twist output_data);
-        void setOutput(double linear_x, double linear_y, double linear_z, double angular_x, double angular_y, double angular_z);
         void setOutput(double power, double turn);
         void setTurn(double turn);
+        void setPower(double power);
         
         double angleWrap(double angle);
         bool turnDirection(double start_angle, double end_angle);
         bool turnToAngle(double currentAngle, double target_angle);
 
     private:
+        double clamp(double x, double max_out, double min_out);
+        void setOutput(double linear_x, double linear_y, double linear_z, double angular_x, double angular_y, double angular_z);
+
         geometry_msgs::Twist output;
 };
 

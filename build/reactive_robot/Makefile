@@ -89,17 +89,6 @@ rebuild_cache/fast: rebuild_cache
 
 .PHONY : rebuild_cache/fast
 
-# Special rule for the target edit_cache
-edit_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
-	/usr/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
-.PHONY : edit_cache
-
-# Special rule for the target edit_cache
-edit_cache/fast: edit_cache
-
-.PHONY : edit_cache/fast
-
 # Special rule for the target test
 test:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running tests..."
@@ -121,6 +110,17 @@ install/local: preinstall
 install/local/fast: install/local
 
 .PHONY : install/local/fast
+
+# Special rule for the target edit_cache
+edit_cache:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
+	/usr/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
+.PHONY : edit_cache
+
+# Special rule for the target edit_cache
+edit_cache/fast: edit_cache
+
+.PHONY : edit_cache/fast
 
 # Special rule for the target install/strip
 install/strip: preinstall
@@ -166,6 +166,36 @@ depend:
 .PHONY : depend
 
 # Convenience name for target.
+reactive_robot/CMakeFiles/collision_node.dir/rule:
+	cd /home/jkleiber/intro_robotics_ws/build && $(MAKE) -f CMakeFiles/Makefile2 reactive_robot/CMakeFiles/collision_node.dir/rule
+.PHONY : reactive_robot/CMakeFiles/collision_node.dir/rule
+
+# Convenience name for target.
+collision_node: reactive_robot/CMakeFiles/collision_node.dir/rule
+
+.PHONY : collision_node
+
+# fast build rule for target.
+collision_node/fast:
+	cd /home/jkleiber/intro_robotics_ws/build && $(MAKE) -f reactive_robot/CMakeFiles/collision_node.dir/build.make reactive_robot/CMakeFiles/collision_node.dir/build
+.PHONY : collision_node/fast
+
+# Convenience name for target.
+reactive_robot/CMakeFiles/autodrive_node.dir/rule:
+	cd /home/jkleiber/intro_robotics_ws/build && $(MAKE) -f CMakeFiles/Makefile2 reactive_robot/CMakeFiles/autodrive_node.dir/rule
+.PHONY : reactive_robot/CMakeFiles/autodrive_node.dir/rule
+
+# Convenience name for target.
+autodrive_node: reactive_robot/CMakeFiles/autodrive_node.dir/rule
+
+.PHONY : autodrive_node
+
+# fast build rule for target.
+autodrive_node/fast:
+	cd /home/jkleiber/intro_robotics_ws/build && $(MAKE) -f reactive_robot/CMakeFiles/autodrive_node.dir/build.make reactive_robot/CMakeFiles/autodrive_node.dir/build
+.PHONY : autodrive_node/fast
+
+# Convenience name for target.
 reactive_robot/CMakeFiles/reactive_robot_gennodejs.dir/rule:
 	cd /home/jkleiber/intro_robotics_ws/build && $(MAKE) -f CMakeFiles/Makefile2 reactive_robot/CMakeFiles/reactive_robot_gennodejs.dir/rule
 .PHONY : reactive_robot/CMakeFiles/reactive_robot_gennodejs.dir/rule
@@ -179,6 +209,21 @@ reactive_robot_gennodejs: reactive_robot/CMakeFiles/reactive_robot_gennodejs.dir
 reactive_robot_gennodejs/fast:
 	cd /home/jkleiber/intro_robotics_ws/build && $(MAKE) -f reactive_robot/CMakeFiles/reactive_robot_gennodejs.dir/build.make reactive_robot/CMakeFiles/reactive_robot_gennodejs.dir/build
 .PHONY : reactive_robot_gennodejs/fast
+
+# Convenience name for target.
+reactive_robot/CMakeFiles/decision_node.dir/rule:
+	cd /home/jkleiber/intro_robotics_ws/build && $(MAKE) -f CMakeFiles/Makefile2 reactive_robot/CMakeFiles/decision_node.dir/rule
+.PHONY : reactive_robot/CMakeFiles/decision_node.dir/rule
+
+# Convenience name for target.
+decision_node: reactive_robot/CMakeFiles/decision_node.dir/rule
+
+.PHONY : decision_node
+
+# fast build rule for target.
+decision_node/fast:
+	cd /home/jkleiber/intro_robotics_ws/build && $(MAKE) -f reactive_robot/CMakeFiles/decision_node.dir/build.make reactive_robot/CMakeFiles/decision_node.dir/build
+.PHONY : decision_node/fast
 
 # Convenience name for target.
 reactive_robot/CMakeFiles/reactive_robot_generate_messages_nodejs.dir/rule:
@@ -211,21 +256,6 @@ reactive_robot_genlisp/fast:
 .PHONY : reactive_robot_genlisp/fast
 
 # Convenience name for target.
-reactive_robot/CMakeFiles/reactive_robot_generate_messages_lisp.dir/rule:
-	cd /home/jkleiber/intro_robotics_ws/build && $(MAKE) -f CMakeFiles/Makefile2 reactive_robot/CMakeFiles/reactive_robot_generate_messages_lisp.dir/rule
-.PHONY : reactive_robot/CMakeFiles/reactive_robot_generate_messages_lisp.dir/rule
-
-# Convenience name for target.
-reactive_robot_generate_messages_lisp: reactive_robot/CMakeFiles/reactive_robot_generate_messages_lisp.dir/rule
-
-.PHONY : reactive_robot_generate_messages_lisp
-
-# fast build rule for target.
-reactive_robot_generate_messages_lisp/fast:
-	cd /home/jkleiber/intro_robotics_ws/build && $(MAKE) -f reactive_robot/CMakeFiles/reactive_robot_generate_messages_lisp.dir/build.make reactive_robot/CMakeFiles/reactive_robot_generate_messages_lisp.dir/build
-.PHONY : reactive_robot_generate_messages_lisp/fast
-
-# Convenience name for target.
 reactive_robot/CMakeFiles/reactive_robot_geneus.dir/rule:
 	cd /home/jkleiber/intro_robotics_ws/build && $(MAKE) -f CMakeFiles/Makefile2 reactive_robot/CMakeFiles/reactive_robot_geneus.dir/rule
 .PHONY : reactive_robot/CMakeFiles/reactive_robot_geneus.dir/rule
@@ -239,6 +269,66 @@ reactive_robot_geneus: reactive_robot/CMakeFiles/reactive_robot_geneus.dir/rule
 reactive_robot_geneus/fast:
 	cd /home/jkleiber/intro_robotics_ws/build && $(MAKE) -f reactive_robot/CMakeFiles/reactive_robot_geneus.dir/build.make reactive_robot/CMakeFiles/reactive_robot_geneus.dir/build
 .PHONY : reactive_robot_geneus/fast
+
+# Convenience name for target.
+reactive_robot/CMakeFiles/reactive_robot_generate_messages_eus.dir/rule:
+	cd /home/jkleiber/intro_robotics_ws/build && $(MAKE) -f CMakeFiles/Makefile2 reactive_robot/CMakeFiles/reactive_robot_generate_messages_eus.dir/rule
+.PHONY : reactive_robot/CMakeFiles/reactive_robot_generate_messages_eus.dir/rule
+
+# Convenience name for target.
+reactive_robot_generate_messages_eus: reactive_robot/CMakeFiles/reactive_robot_generate_messages_eus.dir/rule
+
+.PHONY : reactive_robot_generate_messages_eus
+
+# fast build rule for target.
+reactive_robot_generate_messages_eus/fast:
+	cd /home/jkleiber/intro_robotics_ws/build && $(MAKE) -f reactive_robot/CMakeFiles/reactive_robot_generate_messages_eus.dir/build.make reactive_robot/CMakeFiles/reactive_robot_generate_messages_eus.dir/build
+.PHONY : reactive_robot_generate_messages_eus/fast
+
+# Convenience name for target.
+reactive_robot/CMakeFiles/reactive_robot_gencpp.dir/rule:
+	cd /home/jkleiber/intro_robotics_ws/build && $(MAKE) -f CMakeFiles/Makefile2 reactive_robot/CMakeFiles/reactive_robot_gencpp.dir/rule
+.PHONY : reactive_robot/CMakeFiles/reactive_robot_gencpp.dir/rule
+
+# Convenience name for target.
+reactive_robot_gencpp: reactive_robot/CMakeFiles/reactive_robot_gencpp.dir/rule
+
+.PHONY : reactive_robot_gencpp
+
+# fast build rule for target.
+reactive_robot_gencpp/fast:
+	cd /home/jkleiber/intro_robotics_ws/build && $(MAKE) -f reactive_robot/CMakeFiles/reactive_robot_gencpp.dir/build.make reactive_robot/CMakeFiles/reactive_robot_gencpp.dir/build
+.PHONY : reactive_robot_gencpp/fast
+
+# Convenience name for target.
+reactive_robot/CMakeFiles/reactive_robot_generate_messages_cpp.dir/rule:
+	cd /home/jkleiber/intro_robotics_ws/build && $(MAKE) -f CMakeFiles/Makefile2 reactive_robot/CMakeFiles/reactive_robot_generate_messages_cpp.dir/rule
+.PHONY : reactive_robot/CMakeFiles/reactive_robot_generate_messages_cpp.dir/rule
+
+# Convenience name for target.
+reactive_robot_generate_messages_cpp: reactive_robot/CMakeFiles/reactive_robot_generate_messages_cpp.dir/rule
+
+.PHONY : reactive_robot_generate_messages_cpp
+
+# fast build rule for target.
+reactive_robot_generate_messages_cpp/fast:
+	cd /home/jkleiber/intro_robotics_ws/build && $(MAKE) -f reactive_robot/CMakeFiles/reactive_robot_generate_messages_cpp.dir/build.make reactive_robot/CMakeFiles/reactive_robot_generate_messages_cpp.dir/build
+.PHONY : reactive_robot_generate_messages_cpp/fast
+
+# Convenience name for target.
+reactive_robot/CMakeFiles/_reactive_robot_generate_messages_check_deps_obstacle.dir/rule:
+	cd /home/jkleiber/intro_robotics_ws/build && $(MAKE) -f CMakeFiles/Makefile2 reactive_robot/CMakeFiles/_reactive_robot_generate_messages_check_deps_obstacle.dir/rule
+.PHONY : reactive_robot/CMakeFiles/_reactive_robot_generate_messages_check_deps_obstacle.dir/rule
+
+# Convenience name for target.
+_reactive_robot_generate_messages_check_deps_obstacle: reactive_robot/CMakeFiles/_reactive_robot_generate_messages_check_deps_obstacle.dir/rule
+
+.PHONY : _reactive_robot_generate_messages_check_deps_obstacle
+
+# fast build rule for target.
+_reactive_robot_generate_messages_check_deps_obstacle/fast:
+	cd /home/jkleiber/intro_robotics_ws/build && $(MAKE) -f reactive_robot/CMakeFiles/_reactive_robot_generate_messages_check_deps_obstacle.dir/build.make reactive_robot/CMakeFiles/_reactive_robot_generate_messages_check_deps_obstacle.dir/build
+.PHONY : _reactive_robot_generate_messages_check_deps_obstacle/fast
 
 # Convenience name for target.
 reactive_robot/CMakeFiles/std_msgs_generate_messages_py.dir/rule:
@@ -286,6 +376,21 @@ rosgraph_msgs_generate_messages_nodejs/fast:
 .PHONY : rosgraph_msgs_generate_messages_nodejs/fast
 
 # Convenience name for target.
+reactive_robot/CMakeFiles/geometry_msgs_generate_messages_eus.dir/rule:
+	cd /home/jkleiber/intro_robotics_ws/build && $(MAKE) -f CMakeFiles/Makefile2 reactive_robot/CMakeFiles/geometry_msgs_generate_messages_eus.dir/rule
+.PHONY : reactive_robot/CMakeFiles/geometry_msgs_generate_messages_eus.dir/rule
+
+# Convenience name for target.
+geometry_msgs_generate_messages_eus: reactive_robot/CMakeFiles/geometry_msgs_generate_messages_eus.dir/rule
+
+.PHONY : geometry_msgs_generate_messages_eus
+
+# fast build rule for target.
+geometry_msgs_generate_messages_eus/fast:
+	cd /home/jkleiber/intro_robotics_ws/build && $(MAKE) -f reactive_robot/CMakeFiles/geometry_msgs_generate_messages_eus.dir/build.make reactive_robot/CMakeFiles/geometry_msgs_generate_messages_eus.dir/build
+.PHONY : geometry_msgs_generate_messages_eus/fast
+
+# Convenience name for target.
 reactive_robot/CMakeFiles/roscpp_generate_messages_cpp.dir/rule:
 	cd /home/jkleiber/intro_robotics_ws/build && $(MAKE) -f CMakeFiles/Makefile2 reactive_robot/CMakeFiles/roscpp_generate_messages_cpp.dir/rule
 .PHONY : reactive_robot/CMakeFiles/roscpp_generate_messages_cpp.dir/rule
@@ -329,6 +434,36 @@ std_msgs_generate_messages_cpp: reactive_robot/CMakeFiles/std_msgs_generate_mess
 std_msgs_generate_messages_cpp/fast:
 	cd /home/jkleiber/intro_robotics_ws/build && $(MAKE) -f reactive_robot/CMakeFiles/std_msgs_generate_messages_cpp.dir/build.make reactive_robot/CMakeFiles/std_msgs_generate_messages_cpp.dir/build
 .PHONY : std_msgs_generate_messages_cpp/fast
+
+# Convenience name for target.
+reactive_robot/CMakeFiles/reactive_robot_generate_messages_lisp.dir/rule:
+	cd /home/jkleiber/intro_robotics_ws/build && $(MAKE) -f CMakeFiles/Makefile2 reactive_robot/CMakeFiles/reactive_robot_generate_messages_lisp.dir/rule
+.PHONY : reactive_robot/CMakeFiles/reactive_robot_generate_messages_lisp.dir/rule
+
+# Convenience name for target.
+reactive_robot_generate_messages_lisp: reactive_robot/CMakeFiles/reactive_robot_generate_messages_lisp.dir/rule
+
+.PHONY : reactive_robot_generate_messages_lisp
+
+# fast build rule for target.
+reactive_robot_generate_messages_lisp/fast:
+	cd /home/jkleiber/intro_robotics_ws/build && $(MAKE) -f reactive_robot/CMakeFiles/reactive_robot_generate_messages_lisp.dir/build.make reactive_robot/CMakeFiles/reactive_robot_generate_messages_lisp.dir/build
+.PHONY : reactive_robot_generate_messages_lisp/fast
+
+# Convenience name for target.
+reactive_robot/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/rule:
+	cd /home/jkleiber/intro_robotics_ws/build && $(MAKE) -f CMakeFiles/Makefile2 reactive_robot/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/rule
+.PHONY : reactive_robot/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/rule
+
+# Convenience name for target.
+geometry_msgs_generate_messages_cpp: reactive_robot/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/rule
+
+.PHONY : geometry_msgs_generate_messages_cpp
+
+# fast build rule for target.
+geometry_msgs_generate_messages_cpp/fast:
+	cd /home/jkleiber/intro_robotics_ws/build && $(MAKE) -f reactive_robot/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/build.make reactive_robot/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/build
+.PHONY : geometry_msgs_generate_messages_cpp/fast
 
 # Convenience name for target.
 reactive_robot/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/rule:
@@ -466,6 +601,21 @@ std_msgs_generate_messages_eus/fast:
 .PHONY : std_msgs_generate_messages_eus/fast
 
 # Convenience name for target.
+reactive_robot/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/rule:
+	cd /home/jkleiber/intro_robotics_ws/build && $(MAKE) -f CMakeFiles/Makefile2 reactive_robot/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/rule
+.PHONY : reactive_robot/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/rule
+
+# Convenience name for target.
+geometry_msgs_generate_messages_lisp: reactive_robot/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/rule
+
+.PHONY : geometry_msgs_generate_messages_lisp
+
+# fast build rule for target.
+geometry_msgs_generate_messages_lisp/fast:
+	cd /home/jkleiber/intro_robotics_ws/build && $(MAKE) -f reactive_robot/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/build.make reactive_robot/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/build
+.PHONY : geometry_msgs_generate_messages_lisp/fast
+
+# Convenience name for target.
 reactive_robot/CMakeFiles/std_msgs_generate_messages_lisp.dir/rule:
 	cd /home/jkleiber/intro_robotics_ws/build && $(MAKE) -f CMakeFiles/Makefile2 reactive_robot/CMakeFiles/std_msgs_generate_messages_lisp.dir/rule
 .PHONY : reactive_robot/CMakeFiles/std_msgs_generate_messages_lisp.dir/rule
@@ -526,79 +676,145 @@ reactive_robot_generate_messages/fast:
 .PHONY : reactive_robot_generate_messages/fast
 
 # Convenience name for target.
-reactive_robot/CMakeFiles/_reactive_robot_generate_messages_check_deps_obstacle.dir/rule:
-	cd /home/jkleiber/intro_robotics_ws/build && $(MAKE) -f CMakeFiles/Makefile2 reactive_robot/CMakeFiles/_reactive_robot_generate_messages_check_deps_obstacle.dir/rule
-.PHONY : reactive_robot/CMakeFiles/_reactive_robot_generate_messages_check_deps_obstacle.dir/rule
+reactive_robot/CMakeFiles/geometry_msgs_generate_messages_nodejs.dir/rule:
+	cd /home/jkleiber/intro_robotics_ws/build && $(MAKE) -f CMakeFiles/Makefile2 reactive_robot/CMakeFiles/geometry_msgs_generate_messages_nodejs.dir/rule
+.PHONY : reactive_robot/CMakeFiles/geometry_msgs_generate_messages_nodejs.dir/rule
 
 # Convenience name for target.
-_reactive_robot_generate_messages_check_deps_obstacle: reactive_robot/CMakeFiles/_reactive_robot_generate_messages_check_deps_obstacle.dir/rule
+geometry_msgs_generate_messages_nodejs: reactive_robot/CMakeFiles/geometry_msgs_generate_messages_nodejs.dir/rule
 
-.PHONY : _reactive_robot_generate_messages_check_deps_obstacle
+.PHONY : geometry_msgs_generate_messages_nodejs
 
 # fast build rule for target.
-_reactive_robot_generate_messages_check_deps_obstacle/fast:
-	cd /home/jkleiber/intro_robotics_ws/build && $(MAKE) -f reactive_robot/CMakeFiles/_reactive_robot_generate_messages_check_deps_obstacle.dir/build.make reactive_robot/CMakeFiles/_reactive_robot_generate_messages_check_deps_obstacle.dir/build
-.PHONY : _reactive_robot_generate_messages_check_deps_obstacle/fast
+geometry_msgs_generate_messages_nodejs/fast:
+	cd /home/jkleiber/intro_robotics_ws/build && $(MAKE) -f reactive_robot/CMakeFiles/geometry_msgs_generate_messages_nodejs.dir/build.make reactive_robot/CMakeFiles/geometry_msgs_generate_messages_nodejs.dir/build
+.PHONY : geometry_msgs_generate_messages_nodejs/fast
 
 # Convenience name for target.
-reactive_robot/CMakeFiles/_reactive_robot_generate_messages_check_deps_autodrive.dir/rule:
-	cd /home/jkleiber/intro_robotics_ws/build && $(MAKE) -f CMakeFiles/Makefile2 reactive_robot/CMakeFiles/_reactive_robot_generate_messages_check_deps_autodrive.dir/rule
-.PHONY : reactive_robot/CMakeFiles/_reactive_robot_generate_messages_check_deps_autodrive.dir/rule
+reactive_robot/CMakeFiles/geometry_msgs_generate_messages_py.dir/rule:
+	cd /home/jkleiber/intro_robotics_ws/build && $(MAKE) -f CMakeFiles/Makefile2 reactive_robot/CMakeFiles/geometry_msgs_generate_messages_py.dir/rule
+.PHONY : reactive_robot/CMakeFiles/geometry_msgs_generate_messages_py.dir/rule
 
 # Convenience name for target.
-_reactive_robot_generate_messages_check_deps_autodrive: reactive_robot/CMakeFiles/_reactive_robot_generate_messages_check_deps_autodrive.dir/rule
+geometry_msgs_generate_messages_py: reactive_robot/CMakeFiles/geometry_msgs_generate_messages_py.dir/rule
 
-.PHONY : _reactive_robot_generate_messages_check_deps_autodrive
+.PHONY : geometry_msgs_generate_messages_py
 
 # fast build rule for target.
-_reactive_robot_generate_messages_check_deps_autodrive/fast:
-	cd /home/jkleiber/intro_robotics_ws/build && $(MAKE) -f reactive_robot/CMakeFiles/_reactive_robot_generate_messages_check_deps_autodrive.dir/build.make reactive_robot/CMakeFiles/_reactive_robot_generate_messages_check_deps_autodrive.dir/build
-.PHONY : _reactive_robot_generate_messages_check_deps_autodrive/fast
+geometry_msgs_generate_messages_py/fast:
+	cd /home/jkleiber/intro_robotics_ws/build && $(MAKE) -f reactive_robot/CMakeFiles/geometry_msgs_generate_messages_py.dir/build.make reactive_robot/CMakeFiles/geometry_msgs_generate_messages_py.dir/build
+.PHONY : geometry_msgs_generate_messages_py/fast
 
-# Convenience name for target.
-reactive_robot/CMakeFiles/reactive_robot_generate_messages_cpp.dir/rule:
-	cd /home/jkleiber/intro_robotics_ws/build && $(MAKE) -f CMakeFiles/Makefile2 reactive_robot/CMakeFiles/reactive_robot_generate_messages_cpp.dir/rule
-.PHONY : reactive_robot/CMakeFiles/reactive_robot_generate_messages_cpp.dir/rule
+src/autodrive_node.o: src/autodrive_node.cpp.o
 
-# Convenience name for target.
-reactive_robot_generate_messages_cpp: reactive_robot/CMakeFiles/reactive_robot_generate_messages_cpp.dir/rule
+.PHONY : src/autodrive_node.o
 
-.PHONY : reactive_robot_generate_messages_cpp
+# target to build an object file
+src/autodrive_node.cpp.o:
+	cd /home/jkleiber/intro_robotics_ws/build && $(MAKE) -f reactive_robot/CMakeFiles/autodrive_node.dir/build.make reactive_robot/CMakeFiles/autodrive_node.dir/src/autodrive_node.cpp.o
+.PHONY : src/autodrive_node.cpp.o
 
-# fast build rule for target.
-reactive_robot_generate_messages_cpp/fast:
-	cd /home/jkleiber/intro_robotics_ws/build && $(MAKE) -f reactive_robot/CMakeFiles/reactive_robot_generate_messages_cpp.dir/build.make reactive_robot/CMakeFiles/reactive_robot_generate_messages_cpp.dir/build
-.PHONY : reactive_robot_generate_messages_cpp/fast
+src/autodrive_node.i: src/autodrive_node.cpp.i
 
-# Convenience name for target.
-reactive_robot/CMakeFiles/reactive_robot_gencpp.dir/rule:
-	cd /home/jkleiber/intro_robotics_ws/build && $(MAKE) -f CMakeFiles/Makefile2 reactive_robot/CMakeFiles/reactive_robot_gencpp.dir/rule
-.PHONY : reactive_robot/CMakeFiles/reactive_robot_gencpp.dir/rule
+.PHONY : src/autodrive_node.i
 
-# Convenience name for target.
-reactive_robot_gencpp: reactive_robot/CMakeFiles/reactive_robot_gencpp.dir/rule
+# target to preprocess a source file
+src/autodrive_node.cpp.i:
+	cd /home/jkleiber/intro_robotics_ws/build && $(MAKE) -f reactive_robot/CMakeFiles/autodrive_node.dir/build.make reactive_robot/CMakeFiles/autodrive_node.dir/src/autodrive_node.cpp.i
+.PHONY : src/autodrive_node.cpp.i
 
-.PHONY : reactive_robot_gencpp
+src/autodrive_node.s: src/autodrive_node.cpp.s
 
-# fast build rule for target.
-reactive_robot_gencpp/fast:
-	cd /home/jkleiber/intro_robotics_ws/build && $(MAKE) -f reactive_robot/CMakeFiles/reactive_robot_gencpp.dir/build.make reactive_robot/CMakeFiles/reactive_robot_gencpp.dir/build
-.PHONY : reactive_robot_gencpp/fast
+.PHONY : src/autodrive_node.s
 
-# Convenience name for target.
-reactive_robot/CMakeFiles/reactive_robot_generate_messages_eus.dir/rule:
-	cd /home/jkleiber/intro_robotics_ws/build && $(MAKE) -f CMakeFiles/Makefile2 reactive_robot/CMakeFiles/reactive_robot_generate_messages_eus.dir/rule
-.PHONY : reactive_robot/CMakeFiles/reactive_robot_generate_messages_eus.dir/rule
+# target to generate assembly for a file
+src/autodrive_node.cpp.s:
+	cd /home/jkleiber/intro_robotics_ws/build && $(MAKE) -f reactive_robot/CMakeFiles/autodrive_node.dir/build.make reactive_robot/CMakeFiles/autodrive_node.dir/src/autodrive_node.cpp.s
+.PHONY : src/autodrive_node.cpp.s
 
-# Convenience name for target.
-reactive_robot_generate_messages_eus: reactive_robot/CMakeFiles/reactive_robot_generate_messages_eus.dir/rule
+src/collision_node.o: src/collision_node.cpp.o
 
-.PHONY : reactive_robot_generate_messages_eus
+.PHONY : src/collision_node.o
 
-# fast build rule for target.
-reactive_robot_generate_messages_eus/fast:
-	cd /home/jkleiber/intro_robotics_ws/build && $(MAKE) -f reactive_robot/CMakeFiles/reactive_robot_generate_messages_eus.dir/build.make reactive_robot/CMakeFiles/reactive_robot_generate_messages_eus.dir/build
-.PHONY : reactive_robot_generate_messages_eus/fast
+# target to build an object file
+src/collision_node.cpp.o:
+	cd /home/jkleiber/intro_robotics_ws/build && $(MAKE) -f reactive_robot/CMakeFiles/collision_node.dir/build.make reactive_robot/CMakeFiles/collision_node.dir/src/collision_node.cpp.o
+.PHONY : src/collision_node.cpp.o
+
+src/collision_node.i: src/collision_node.cpp.i
+
+.PHONY : src/collision_node.i
+
+# target to preprocess a source file
+src/collision_node.cpp.i:
+	cd /home/jkleiber/intro_robotics_ws/build && $(MAKE) -f reactive_robot/CMakeFiles/collision_node.dir/build.make reactive_robot/CMakeFiles/collision_node.dir/src/collision_node.cpp.i
+.PHONY : src/collision_node.cpp.i
+
+src/collision_node.s: src/collision_node.cpp.s
+
+.PHONY : src/collision_node.s
+
+# target to generate assembly for a file
+src/collision_node.cpp.s:
+	cd /home/jkleiber/intro_robotics_ws/build && $(MAKE) -f reactive_robot/CMakeFiles/collision_node.dir/build.make reactive_robot/CMakeFiles/collision_node.dir/src/collision_node.cpp.s
+.PHONY : src/collision_node.cpp.s
+
+src/decision_node.o: src/decision_node.cpp.o
+
+.PHONY : src/decision_node.o
+
+# target to build an object file
+src/decision_node.cpp.o:
+	cd /home/jkleiber/intro_robotics_ws/build && $(MAKE) -f reactive_robot/CMakeFiles/decision_node.dir/build.make reactive_robot/CMakeFiles/decision_node.dir/src/decision_node.cpp.o
+.PHONY : src/decision_node.cpp.o
+
+src/decision_node.i: src/decision_node.cpp.i
+
+.PHONY : src/decision_node.i
+
+# target to preprocess a source file
+src/decision_node.cpp.i:
+	cd /home/jkleiber/intro_robotics_ws/build && $(MAKE) -f reactive_robot/CMakeFiles/decision_node.dir/build.make reactive_robot/CMakeFiles/decision_node.dir/src/decision_node.cpp.i
+.PHONY : src/decision_node.cpp.i
+
+src/decision_node.s: src/decision_node.cpp.s
+
+.PHONY : src/decision_node.s
+
+# target to generate assembly for a file
+src/decision_node.cpp.s:
+	cd /home/jkleiber/intro_robotics_ws/build && $(MAKE) -f reactive_robot/CMakeFiles/decision_node.dir/build.make reactive_robot/CMakeFiles/decision_node.dir/src/decision_node.cpp.s
+.PHONY : src/decision_node.cpp.s
+
+src/drivetrain.o: src/drivetrain.cpp.o
+
+.PHONY : src/drivetrain.o
+
+# target to build an object file
+src/drivetrain.cpp.o:
+	cd /home/jkleiber/intro_robotics_ws/build && $(MAKE) -f reactive_robot/CMakeFiles/autodrive_node.dir/build.make reactive_robot/CMakeFiles/autodrive_node.dir/src/drivetrain.cpp.o
+	cd /home/jkleiber/intro_robotics_ws/build && $(MAKE) -f reactive_robot/CMakeFiles/decision_node.dir/build.make reactive_robot/CMakeFiles/decision_node.dir/src/drivetrain.cpp.o
+.PHONY : src/drivetrain.cpp.o
+
+src/drivetrain.i: src/drivetrain.cpp.i
+
+.PHONY : src/drivetrain.i
+
+# target to preprocess a source file
+src/drivetrain.cpp.i:
+	cd /home/jkleiber/intro_robotics_ws/build && $(MAKE) -f reactive_robot/CMakeFiles/autodrive_node.dir/build.make reactive_robot/CMakeFiles/autodrive_node.dir/src/drivetrain.cpp.i
+	cd /home/jkleiber/intro_robotics_ws/build && $(MAKE) -f reactive_robot/CMakeFiles/decision_node.dir/build.make reactive_robot/CMakeFiles/decision_node.dir/src/drivetrain.cpp.i
+.PHONY : src/drivetrain.cpp.i
+
+src/drivetrain.s: src/drivetrain.cpp.s
+
+.PHONY : src/drivetrain.s
+
+# target to generate assembly for a file
+src/drivetrain.cpp.s:
+	cd /home/jkleiber/intro_robotics_ws/build && $(MAKE) -f reactive_robot/CMakeFiles/autodrive_node.dir/build.make reactive_robot/CMakeFiles/autodrive_node.dir/src/drivetrain.cpp.s
+	cd /home/jkleiber/intro_robotics_ws/build && $(MAKE) -f reactive_robot/CMakeFiles/decision_node.dir/build.make reactive_robot/CMakeFiles/decision_node.dir/src/drivetrain.cpp.s
+.PHONY : src/drivetrain.cpp.s
 
 # Help Target
 help:
@@ -609,20 +825,30 @@ help:
 	@echo "... list_install_components"
 	@echo "... install"
 	@echo "... rebuild_cache"
-	@echo "... edit_cache"
 	@echo "... test"
 	@echo "... install/local"
+	@echo "... edit_cache"
+	@echo "... collision_node"
+	@echo "... autodrive_node"
 	@echo "... reactive_robot_gennodejs"
+	@echo "... decision_node"
 	@echo "... reactive_robot_generate_messages_nodejs"
 	@echo "... reactive_robot_genlisp"
-	@echo "... reactive_robot_generate_messages_lisp"
 	@echo "... reactive_robot_geneus"
+	@echo "... reactive_robot_generate_messages_eus"
+	@echo "... reactive_robot_gencpp"
+	@echo "... reactive_robot_generate_messages_cpp"
+	@echo "... install/strip"
+	@echo "... _reactive_robot_generate_messages_check_deps_obstacle"
 	@echo "... std_msgs_generate_messages_py"
 	@echo "... roscpp_generate_messages_py"
 	@echo "... rosgraph_msgs_generate_messages_nodejs"
+	@echo "... geometry_msgs_generate_messages_eus"
 	@echo "... roscpp_generate_messages_cpp"
 	@echo "... rosgraph_msgs_generate_messages_cpp"
 	@echo "... std_msgs_generate_messages_cpp"
+	@echo "... reactive_robot_generate_messages_lisp"
+	@echo "... geometry_msgs_generate_messages_cpp"
 	@echo "... rosgraph_msgs_generate_messages_py"
 	@echo "... rosgraph_msgs_generate_messages_lisp"
 	@echo "... roscpp_generate_messages_nodejs"
@@ -632,16 +858,25 @@ help:
 	@echo "... std_msgs_generate_messages_nodejs"
 	@echo "... roscpp_generate_messages_lisp"
 	@echo "... std_msgs_generate_messages_eus"
+	@echo "... geometry_msgs_generate_messages_lisp"
 	@echo "... std_msgs_generate_messages_lisp"
 	@echo "... reactive_robot_generate_messages_py"
 	@echo "... roscpp_generate_messages_eus"
 	@echo "... reactive_robot_generate_messages"
-	@echo "... install/strip"
-	@echo "... _reactive_robot_generate_messages_check_deps_obstacle"
-	@echo "... _reactive_robot_generate_messages_check_deps_autodrive"
-	@echo "... reactive_robot_generate_messages_cpp"
-	@echo "... reactive_robot_gencpp"
-	@echo "... reactive_robot_generate_messages_eus"
+	@echo "... geometry_msgs_generate_messages_nodejs"
+	@echo "... geometry_msgs_generate_messages_py"
+	@echo "... src/autodrive_node.o"
+	@echo "... src/autodrive_node.i"
+	@echo "... src/autodrive_node.s"
+	@echo "... src/collision_node.o"
+	@echo "... src/collision_node.i"
+	@echo "... src/collision_node.s"
+	@echo "... src/decision_node.o"
+	@echo "... src/decision_node.i"
+	@echo "... src/decision_node.s"
+	@echo "... src/drivetrain.o"
+	@echo "... src/drivetrain.i"
+	@echo "... src/drivetrain.s"
 .PHONY : help
 
 

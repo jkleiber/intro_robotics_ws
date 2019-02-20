@@ -1,4 +1,5 @@
 #include <ros/ros.h>
+#include <ros/console.h>
 
 //ROS/System libs and msgs
 #include <cstdlib>
@@ -7,10 +8,11 @@
 #include <nav_msgs/Odometry.h>
 
 //User libs and msgs
-#include "reactive_robot/constants.h"
 #include "reactive_robot/drivetrain.h"
 #include <tf/transform_datatypes.h>
 
+#define METERS_TO_FT 0.3048
+#define RAD_TO_DEG (double)(180.0 / 3.14159)
 
 /* Typedefs*/
 typedef struct position_state_t
@@ -39,9 +41,7 @@ void odometryCallback(const nav_msgs::Odometry::ConstPtr& odometer)
 {
     //Declare local variables
     double temp1, temp2;                //Unused other than function parameters (replace with NULL?)
-    double distance_to_feet_factor;     //Factor used to convert ROS units into meters (unknown)
     double distance_traveled;           //Distance from the last turn
-    
     position_state new_pos;             //The current position of the robot
     
     //Get the current position
@@ -55,9 +55,11 @@ void odometryCallback(const nav_msgs::Odometry::ConstPtr& odometer)
 
     //TODO: Figure out if this is degrees or not
     m.getRPY(temp1, temp2, current_angle);
+    ROS_INFO("Current angle rads: %f\n", current_angle);
+    current_angle = current_angle * RAD_TO_DEG;
     
     //Calculate the distance traveled from the fixed position
-    distance_traveled = sqrt(((new_pos.x - old_pos.x)*(new_pos.x - old_pos.x)) + (((new_pos.y - old_pos.y)*(new_pos.y - old_pos.y)))) * distance_to_feet_factor;
+    distance_traveled = sqrt(((new_pos.x - old_pos.x)*(new_pos.x - old_pos.x)) + ((new_pos.y - old_pos.y)*(new_pos.y - old_pos.y))) * METERS_TO_FT;
 
     //If the distance traveled is more than a foot, turn +/- 15 degrees
     if(distance_traveled >= 1)
@@ -115,11 +117,11 @@ int main(int argc, char **argv)
         //Otherwise drive straight
         else
         {
-            drivetrain.set_output(1, 0);
+            drivetrain.setOutput(0.3, 0);
         }
 
         //Publish the drivetrain output
-        autodrive_pub.publish(drivetrain.get_output());        
+        autodrive_pub.publish(drivetrain.getOutput());        
     }
 }
 
