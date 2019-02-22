@@ -1,9 +1,9 @@
 <launch>
     <!-- reactive_robot nodes to launch -->
     <node pkg="reactive_robot" type="autodrive_node" name="autodrive_node" output="screen"/>
-    <node pkg="reactive_robot" type="collision_node" name="collision_node"/>
+    <node pkg="reactive_robot" type="collision_node" name="collision_node" output="screen"/>
     <node pkg="reactive_robot" type="decision_node" name="decision_node" />
-
+    
     <!-- TurtleBot nodes to launch -->
     <arg name="world_file"  default="$(find reactive_robot)/worlds/room.world"/> 
     <!--<arg name="world_file"  default="$(env TURTLEBOT_GAZEBO_WORLD_FILE)"/>-->

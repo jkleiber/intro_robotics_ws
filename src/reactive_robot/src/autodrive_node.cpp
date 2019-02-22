@@ -15,12 +15,6 @@
 #define RAD_TO_DEG (double)(180.0 / 3.14159)
 
 /* Typedefs*/
-typedef struct position_state_t
-{
-    double x;
-    double y;
-    double z;
-} position_state;
 
 
 //Drivetrain
@@ -56,11 +50,10 @@ void odometryCallback(const nav_msgs::Odometry::ConstPtr& odometer)
     //Get the robot orientation
     tf::Pose pose;
     tf::poseMsgToTF(odometer->pose.pose, pose);
+
+    //Get the current angle in degrees
     current_angle = drivetrain.angleWrap(tf::getYaw(pose.getRotation()) * RAD_TO_DEG);
-    
-    //Debug
-    //printf("Current angle degrees?: %f\n", current_angle);
-    
+
     //Calculate the distance traveled from the fixed position
     distance_traveled = sqrt(((new_pos.x - old_pos.x)*(new_pos.x - old_pos.x)) + ((new_pos.y - old_pos.y)*(new_pos.y - old_pos.y))) * METERS_TO_FT;
 
