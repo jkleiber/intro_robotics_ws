@@ -42,4 +42,9 @@
         <remap from="scan" to="/scan"/>
     </node>
 
+
+    <!-- Keyboard control -->
+    <remap from="cmd_vel_mux/input/teleop" to="reactive_robot/keyboard_input"/>
+    <include file="$(find turtlebot_teleop)/launch/keyboard_teleop.launch"/>
+
 </launch>

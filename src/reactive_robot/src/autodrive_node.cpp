@@ -53,12 +53,9 @@ void odometryCallback(const nav_msgs::Odometry::ConstPtr& odometer)
     new_pos.y = odometer->pose.pose.position.y;
     new_pos.z = odometer->pose.pose.position.z;
 
-
+    //Get the robot orientation
     tf::Pose pose;
     tf::poseMsgToTF(odometer->pose.pose, pose);
-
-    printf("old_pos.x=%f \t new_pos.x=%f\n", old_pos.x, new_pos.x);
-
     current_angle = drivetrain.angleWrap(tf::getYaw(pose.getRotation()) * RAD_TO_DEG);
     
     //Debug
