@@ -1,8 +1,0 @@
-prefix=/home/trey/School/CS4023/intro_robotics_ws/install
-
-Name: reactive_robot
-Description: Description of reactive_robot
-Version: 0.0.0
-Cflags: -I/home/trey/School/CS4023/intro_robotics_ws/install/include
-Libs: -L/home/trey/School/CS4023/intro_robotics_ws/install/lib 
-Requires: roscpp std_msgs message_runtime
