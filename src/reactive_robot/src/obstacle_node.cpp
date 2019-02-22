@@ -1,4 +1,6 @@
 #include <ros/ros.h>
+#include <math.h>
+
 
 //Scanner libs and msgs
 #include <sensor_msgs/LaserScan.h>
@@ -72,8 +74,18 @@ void scanCallback(const sensor_msgs::LaserScan::ConstPtr& obstacle_event)
     reactive_robot::obstacle obstacle_msg;
 
     //Start and end indices of an object
-    int start_point = NULL;
-    int end_point   = NULL;
+    int start_point = INT_MAX;
+    int end_point   = INT_MAX;
+
+    
+    /*
+    for(int i =0; i < obstacle_event->ranges.size(); ++i)
+    {
+        printf("range[%d]=%f, ", i,obstacle_event->ranges[i]);
+    }
+    */
+
+    printf("\n\r");
 
     //Loop through the ranges vector at each angle
     for(int angle = 0; angle < obstacle_event->ranges.size(); ++angle)
@@ -82,7 +94,7 @@ void scanCallback(const sensor_msgs::LaserScan::ConstPtr& obstacle_event)
         if(obstacle_event->range_min < obstacle_event->ranges[angle] && 0.3048 >= obstacle_event->ranges[angle])
         {
             //If the start point has not already been set
-            if(start_point == NULL)
+            if(start_point == INT_MAX)
             {
                 start_point = angle;
             }
@@ -91,14 +103,14 @@ void scanCallback(const sensor_msgs::LaserScan::ConstPtr& obstacle_event)
         else
         {
             //If the start point has been set and the end point has not been set
-            if(start_point != NULL && end_point == NULL)
+            if(start_point != INT_MAX && end_point == INT_MAX)
             {
                 end_point = angle - 1;
             }
         }
     }
     //If an object was detected
-    if(start_point != NULL) 
+    if(start_point != INT_MAX) 
     {
         //Determine if it is symmetric
         bool symmetric = isSymmetrical(start_point, end_point, obstacle_event);

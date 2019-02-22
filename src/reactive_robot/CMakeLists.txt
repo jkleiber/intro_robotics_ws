@@ -169,6 +169,12 @@ add_executable(decision_node src/decision_node.cpp src/drivetrain.cpp)
 target_link_libraries(decision_node ${catkin_LIBRARIES})
 add_dependencies(decision_node reactive_robot_generate_messages_cpp)
 
+# Obstacle Node
+add_executable(obstacle_node src/obstacle_node.cpp src/drivetrain.cpp)
+target_link_libraries(obstacle_node ${catkin_LIBRARIES})
+add_dependencies(obstacle_node reactive_robot_generate_messages_cpp)
+
+
 #############
 ## Install ##
 #############

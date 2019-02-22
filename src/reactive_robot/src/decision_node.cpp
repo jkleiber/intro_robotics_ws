@@ -68,6 +68,8 @@ void keyboardCallback(const geometry_msgs::Twist::ConstPtr& keyboard_event)
 void obstacleCallback(const reactive_robot::obstacle::ConstPtr& obstacle_event)
 {
     obstacle_type = obstacle_event->state;
+
+    //printf("\n\rscanner_angle=%f, current_angle=%f\n\r", obstacle_event->angle, current_angle);
     //obstacle_output = obstacle_event->drive;
 }
 
@@ -146,12 +148,14 @@ int main(int argc, char **argv)
         if(collide_detected)
         {
             drivetrain.resetOutput();
+            escape_action_active = false;
         }
         //Get keyboard input and output it to the turtlebot
         else if(twistNotZero(keyboard_commands))
         {
             //Set the drivetrain output to the keyboard input
             drivetrain.setOutput(keyboard_commands);
+            escape_action_active = false;
         }
         //If a symmetric obstacle is detected, we need to escape 
         else if(obstacle_type == SYMMETRIC)
