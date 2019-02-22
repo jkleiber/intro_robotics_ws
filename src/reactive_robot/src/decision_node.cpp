@@ -71,6 +71,16 @@ void obstacleCallback(const reactive_robot::obstacle::ConstPtr& obstacle_event)
 /**
  * 
  */
+bool twistNotZero(geometry_msgs::Twist twist)
+{
+    return twist.linear.x || twist.linear.y || twist.linear.z || twist.angular.x || twist.angular.y ||twist.angular.z;
+}
+
+
+
+/**
+ * 
+ */
 int main(int argc, char **argv)
 {
     //Start the node
@@ -111,10 +121,13 @@ int main(int argc, char **argv)
             drivetrain.resetOutput();
         }
         //Get keyboard input and output it to the turtlebot
-        else if(keyboard_input_detected)
+        else if(twistNotZero(keyboard_commands))
         {
             //Set the drivetrain output to the keyboard input
             drivetrain.setOutput(keyboard_commands);
+
+            //Indicate that the autodriving has been overridden by the user
+            keyboard_input_detected = true;
         }
         //If an symmetric obstacle is detected, we need to escape 
         else if(obstacle_type == SYMMETRIC)
@@ -128,11 +141,9 @@ int main(int argc, char **argv)
         //The lowest priority is to drive around randomly, so do that if all other priorities are being fulfilled
         else
         {
+            //Use the autodrive output
             drivetrain.setOutput(autodrive_output);
         }
-
-        //Disregard any unused keyboard input
-        keyboard_input_detected = false;
 
         //Publish the desired drivetrain output to the command velocity multiplexer
         teleop_pub.publish(drivetrain.getOutput());

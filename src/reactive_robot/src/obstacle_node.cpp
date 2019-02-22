@@ -69,7 +69,7 @@ void scanCallback(const sensor_msgs::LaserScan::ConstPtr& obstacle_event)
     {
         //Determine if it is symmetric
         bool symmetric = isSymmetrical(start_point, end_point, obstacle_event);
-        obstacle_msg->distance = calculateDistance(); // TODO: parameters and resolve error
+        obstacle_msg.distance = calculateDistance(); // TODO: parameters and resolve error
     }
 }
 /**
