@@ -7,21 +7,21 @@ import struct
 
 
 class obstacle(genpy.Message):
-  _md5sum = "3fee00ef7d93fcd86cc6221b0265b0f2"
+  _md5sum = "6b7c0fc076289782d62bfcafc053166e"
   _type = "reactive_robot/obstacle"
   _has_header = False #flag to mark the presence of a Header object
   _full_text = """uint8 EMPTY = 0
 uint8 SYMMETRIC = 1
 uint8 ASYMMETRIC = 2
 uint8 state
-"""
+float64 distance"""
   # Pseudo-constants
   EMPTY = 0
   SYMMETRIC = 1
   ASYMMETRIC = 2
 
-  __slots__ = ['state']
-  _slot_types = ['uint8']
+  __slots__ = ['state','distance']
+  _slot_types = ['uint8','float64']
 
   def __init__(self, *args, **kwds):
     """
@@ -31,7 +31,7 @@ uint8 state
     changes.  You cannot mix in-order arguments and keyword arguments.
 
     The available fields are:
-       state
+       state,distance
 
     :param args: complete set of field values, in .msg order
     :param kwds: use keyword arguments corresponding to message field names
@@ -42,8 +42,11 @@ uint8 state
       #message fields cannot be None, assign default values for those that are
       if self.state is None:
         self.state = 0
+      if self.distance is None:
+        self.distance = 0.
     else:
       self.state = 0
+      self.distance = 0.
 
   def _get_types(self):
     """
@@ -57,7 +60,8 @@ uint8 state
     :param buff: buffer, ``StringIO``
     """
     try:
-      buff.write(_get_struct_B().pack(self.state))
+      _x = self
+      buff.write(_get_struct_Bd().pack(_x.state, _x.distance))
     except struct.error as se: self._check_types(struct.error("%s: '%s' when writing '%s'" % (type(se), str(se), str(locals().get('_x', self)))))
     except TypeError as te: self._check_types(ValueError("%s: '%s' when writing '%s'" % (type(te), str(te), str(locals().get('_x', self)))))
 
@@ -68,9 +72,10 @@ uint8 state
     """
     try:
       end = 0
+      _x = self
       start = end
-      end += 1
-      (self.state,) = _get_struct_B().unpack(str[start:end])
+      end += 9
+      (_x.state, _x.distance,) = _get_struct_Bd().unpack(str[start:end])
       return self
     except struct.error as e:
       raise genpy.DeserializationError(e) #most likely buffer underfill
@@ -83,7 +88,8 @@ uint8 state
     :param numpy: numpy python module
     """
     try:
-      buff.write(_get_struct_B().pack(self.state))
+      _x = self
+      buff.write(_get_struct_Bd().pack(_x.state, _x.distance))
     except struct.error as se: self._check_types(struct.error("%s: '%s' when writing '%s'" % (type(se), str(se), str(locals().get('_x', self)))))
     except TypeError as te: self._check_types(ValueError("%s: '%s' when writing '%s'" % (type(te), str(te), str(locals().get('_x', self)))))
 
@@ -95,9 +101,10 @@ uint8 state
     """
     try:
       end = 0
+      _x = self
       start = end
-      end += 1
-      (self.state,) = _get_struct_B().unpack(str[start:end])
+      end += 9
+      (_x.state, _x.distance,) = _get_struct_Bd().unpack(str[start:end])
       return self
     except struct.error as e:
       raise genpy.DeserializationError(e) #most likely buffer underfill
@@ -106,9 +113,9 @@ _struct_I = genpy.struct_I
 def _get_struct_I():
     global _struct_I
     return _struct_I
-_struct_B = None
-def _get_struct_B():
-    global _struct_B
-    if _struct_B is None:
-        _struct_B = struct.Struct("<B")
-    return _struct_B
+_struct_Bd = None
+def _get_struct_Bd():
+    global _struct_Bd
+    if _struct_Bd is None:
+        _struct_Bd = struct.Struct("<Bd")
+    return _struct_Bd

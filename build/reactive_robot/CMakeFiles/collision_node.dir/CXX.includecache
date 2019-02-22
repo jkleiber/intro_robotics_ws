@@ -6,7 +6,7 @@
 
 #IncludeRegexTransform: 
 
-/home/jkleiber/intro_robotics_ws/devel/include/reactive_robot/collision.h
+/home/trey/School/CS4023/intro_robotics_ws/devel/include/reactive_robot/collision.h
 string
 -
 vector
@@ -22,7 +22,7 @@ ros/builtin_message_traits.h
 ros/message_operations.h
 -
 
-/home/jkleiber/intro_robotics_ws/src/reactive_robot/src/collision_node.cpp
+/home/trey/School/CS4023/intro_robotics_ws/src/reactive_robot/src/collision_node.cpp
 ros/ros.h
 -
 kobuki_msgs/BumperEvent.h

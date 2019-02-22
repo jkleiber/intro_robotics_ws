@@ -6,7 +6,7 @@
 
 #IncludeRegexTransform: 
 
-/home/jkleiber/intro_robotics_ws/src/reactive_robot/include/reactive_robot/drivetrain.h
+/home/trey/School/CS4023/intro_robotics_ws/src/reactive_robot/include/reactive_robot/drivetrain.h
 ros/ros.h
 -
 ros/console.h
@@ -14,7 +14,7 @@ ros/console.h
 geometry_msgs/Twist.h
 -
 
-/home/jkleiber/intro_robotics_ws/src/reactive_robot/src/autodrive_node.cpp
+/home/trey/School/CS4023/intro_robotics_ws/src/reactive_robot/src/autodrive_node.cpp
 ros/ros.h
 -
 ros/console.h
@@ -28,13 +28,13 @@ ros/ros.h
 nav_msgs/Odometry.h
 -
 reactive_robot/drivetrain.h
-/home/jkleiber/intro_robotics_ws/src/reactive_robot/src/reactive_robot/drivetrain.h
+/home/trey/School/CS4023/intro_robotics_ws/src/reactive_robot/src/reactive_robot/drivetrain.h
 tf/transform_datatypes.h
 -
 
-/home/jkleiber/intro_robotics_ws/src/reactive_robot/src/drivetrain.cpp
+/home/trey/School/CS4023/intro_robotics_ws/src/reactive_robot/src/drivetrain.cpp
 reactive_robot/drivetrain.h
-/home/jkleiber/intro_robotics_ws/src/reactive_robot/src/reactive_robot/drivetrain.h
+/home/trey/School/CS4023/intro_robotics_ws/src/reactive_robot/src/reactive_robot/drivetrain.h
 
 /opt/ros/kinetic/include/geometry_msgs/Point.h
 string

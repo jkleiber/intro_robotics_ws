@@ -7,4 +7,5 @@
 # new environment variables
 
 # modified environment variables
-export PWD="/home/jkleiber/intro_robotics_ws/build"
+export PWD="/home/trey/School/CS4023/intro_robotics_ws/build"
+export ROS_PACKAGE_PATH="/home/jkleiber/intro_robotics_ws/src:/home/trey/School/CS4023/intro_robotics_ws/src:/opt/ros/kinetic/share"

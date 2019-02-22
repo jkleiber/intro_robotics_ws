@@ -19,6 +19,7 @@ class obstacle {
     if (initObj === null) {
       // initObj === null is a special case for deserialization where we don't initialize fields
       this.state = null;
+      this.distance = null;
     }
     else {
       if (initObj.hasOwnProperty('state')) {
@@ -27,6 +28,12 @@ class obstacle {
       else {
         this.state = 0;
       }
+      if (initObj.hasOwnProperty('distance')) {
+        this.distance = initObj.distance
+      }
+      else {
+        this.distance = 0.0;
+      }
     }
   }
 
@@ -34,6 +41,8 @@ class obstacle {
     // Serializes a message object of type obstacle
     // Serialize message field [state]
     bufferOffset = _serializer.uint8(obj.state, buffer, bufferOffset);
+    // Serialize message field [distance]
+    bufferOffset = _serializer.float64(obj.distance, buffer, bufferOffset);
     return bufferOffset;
   }
 
@@ -43,11 +52,13 @@ class obstacle {
     let data = new obstacle(null);
     // Deserialize message field [state]
     data.state = _deserializer.uint8(buffer, bufferOffset);
+    // Deserialize message field [distance]
+    data.distance = _deserializer.float64(buffer, bufferOffset);
     return data;
   }
 
   static getMessageSize(object) {
-    return 1;
+    return 9;
   }
 
   static datatype() {
@@ -57,7 +68,7 @@ class obstacle {
 
   static md5sum() {
     //Returns md5sum for a message object
-    return '3fee00ef7d93fcd86cc6221b0265b0f2';
+    return '6b7c0fc076289782d62bfcafc053166e';
   }
 
   static messageDefinition() {
@@ -67,7 +78,7 @@ class obstacle {
     uint8 SYMMETRIC = 1
     uint8 ASYMMETRIC = 2
     uint8 state
-    
+    float64 distance
     `;
   }
 
@@ -82,6 +93,13 @@ class obstacle {
     }
     else {
       resolved.state = 0
+    }
+
+    if (msg.distance !== undefined) {
+      resolved.distance = msg.distance;
+    }
+    else {
+      resolved.distance = 0.0
     }
 
     return resolved;

@@ -24,10 +24,12 @@ struct obstacle_
   typedef obstacle_<ContainerAllocator> Type;
 
   obstacle_()
-    : state(0)  {
+    : state(0)
+    , distance(0.0)  {
     }
   obstacle_(const ContainerAllocator& _alloc)
-    : state(0)  {
+    : state(0)
+    , distance(0.0)  {
   (void)_alloc;
     }
 
@@ -35,6 +37,9 @@ struct obstacle_
 
    typedef uint8_t _state_type;
   _state_type state;
+
+   typedef double _distance_type;
+  _distance_type distance;
 
 
 
@@ -82,7 +87,7 @@ namespace message_traits
 
 
 // BOOLTRAITS {'IsFixedSize': True, 'IsMessage': True, 'HasHeader': False}
-// {'geometry_msgs': ['/opt/ros/kinetic/share/geometry_msgs/cmake/../msg'], 'reactive_robot': ['/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg'], 'std_msgs': ['/opt/ros/kinetic/share/std_msgs/cmake/../msg']}
+// {'geometry_msgs': ['/opt/ros/kinetic/share/geometry_msgs/cmake/../msg'], 'reactive_robot': ['/home/trey/School/CS4023/intro_robotics_ws/src/reactive_robot/msg'], 'std_msgs': ['/opt/ros/kinetic/share/std_msgs/cmake/../msg']}
 
 // !!!!!!!!!!! ['__class__', '__delattr__', '__dict__', '__doc__', '__eq__', '__format__', '__getattribute__', '__hash__', '__init__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', '_parsed_fields', 'constants', 'fields', 'full_name', 'has_header', 'header_present', 'names', 'package', 'parsed_fields', 'short_name', 'text', 'types']
 
@@ -125,12 +130,12 @@ struct MD5Sum< ::reactive_robot::obstacle_<ContainerAllocator> >
 {
   static const char* value()
   {
-    return "3fee00ef7d93fcd86cc6221b0265b0f2";
+    return "6b7c0fc076289782d62bfcafc053166e";
   }
 
   static const char* value(const ::reactive_robot::obstacle_<ContainerAllocator>&) { return value(); }
-  static const uint64_t static_value1 = 0x3fee00ef7d93fcd8ULL;
-  static const uint64_t static_value2 = 0x6cc6221b0265b0f2ULL;
+  static const uint64_t static_value1 = 0x6b7c0fc076289782ULL;
+  static const uint64_t static_value2 = 0xd62bfcafc053166eULL;
 };
 
 template<class ContainerAllocator>
@@ -153,6 +158,7 @@ struct Definition< ::reactive_robot::obstacle_<ContainerAllocator> >
 uint8 SYMMETRIC = 1\n\
 uint8 ASYMMETRIC = 2\n\
 uint8 state\n\
+float64 distance\n\
 ";
   }
 
@@ -172,6 +178,7 @@ namespace serialization
     template<typename Stream, typename T> inline static void allInOne(Stream& stream, T m)
     {
       stream.next(m.state);
+      stream.next(m.distance);
     }
 
     ROS_DECLARE_ALLINONE_SERIALIZER
@@ -192,6 +199,8 @@ struct Printer< ::reactive_robot::obstacle_<ContainerAllocator> >
   {
     s << indent << "state: ";
     Printer<uint8_t>::stream(s, indent + "  ", v.state);
+    s << indent << "distance: ";
+    Printer<double>::stream(s, indent + "  ", v.distance);
   }
 };
 

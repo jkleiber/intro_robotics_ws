@@ -99,12 +99,12 @@ bool Drivetrain::turnDirection(double start_angle, double end_angle)
     //Determine which direction will be faster to turn
     if(delta > 180)
     {
-        //Turn right
-        return true;
+        //Turn left
+        return false;
     }
 
-    //Turn left
-    return false;
+    //Turn right
+    return true;
 }
 
 
@@ -124,7 +124,10 @@ bool Drivetrain::turnToAngle(double current_angle, double target_angle)
     current_angle = this->angleWrap(current_angle);
     target_angle = this->angleWrap(target_angle);
 
-    ROS_INFO("Current Angle: %f, Target Angle: %f -> %d", current_angle, target_angle, this->turnDirection(current_angle, target_angle));
+    //Debug
+    //ROS_INFO("Current Angle: %f, Target Angle: %f -> %d", current_angle, target_angle, this->turnDirection(current_angle, target_angle));
+    
+    
     //Calculate error
     error = abs(current_angle - target_angle);
 

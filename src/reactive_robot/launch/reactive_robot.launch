@@ -1,6 +1,6 @@
 <launch>
     <!-- reactive_robot nodes to launch -->
-    <node pkg="reactive_robot" type="autodrive_node" name="autodrive_node"/>
+    <node pkg="reactive_robot" type="autodrive_node" name="autodrive_node" output="screen"/>
     <node pkg="reactive_robot" type="collision_node" name="collision_node"/>
     <node pkg="reactive_robot" type="decision_node" name="decision_node" />
 

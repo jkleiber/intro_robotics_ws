@@ -23,24 +23,31 @@
 (defconstant reactive_robot::obstacle::*ASYMMETRIC* 2)
 (defclass reactive_robot::obstacle
   :super ros::object
-  :slots (_state ))
+  :slots (_state _distance ))
 
 (defmethod reactive_robot::obstacle
   (:init
    (&key
     ((:state __state) 0)
+    ((:distance __distance) 0.0)
     )
    (send-super :init)
    (setq _state (round __state))
+   (setq _distance (float __distance))
    self)
   (:state
    (&optional __state)
    (if __state (setq _state __state)) _state)
+  (:distance
+   (&optional __distance)
+   (if __distance (setq _distance __distance)) _distance)
   (:serialization-length
    ()
    (+
     ;; uint8 _state
     1
+    ;; float64 _distance
+    8
     ))
   (:serialize
    (&optional strm)
@@ -48,28 +55,32 @@
               (make-string-output-stream (send self :serialization-length)))))
      ;; uint8 _state
        (write-byte _state s)
+     ;; float64 _distance
+       (sys::poke _distance (send s :buffer) (send s :count) :double) (incf (stream-count s) 8)
      ;;
      (if (null strm) (get-output-stream-string s))))
   (:deserialize
    (buf &optional (ptr- 0))
    ;; uint8 _state
      (setq _state (sys::peek buf ptr- :char)) (incf ptr- 1)
+   ;; float64 _distance
+     (setq _distance (sys::peek buf ptr- :double)) (incf ptr- 8)
    ;;
    self)
   )
 
-(setf (get reactive_robot::obstacle :md5sum-) "3fee00ef7d93fcd86cc6221b0265b0f2")
+(setf (get reactive_robot::obstacle :md5sum-) "6b7c0fc076289782d62bfcafc053166e")
 (setf (get reactive_robot::obstacle :datatype-) "reactive_robot/obstacle")
 (setf (get reactive_robot::obstacle :definition-)
       "uint8 EMPTY = 0
 uint8 SYMMETRIC = 1
 uint8 ASYMMETRIC = 2
 uint8 state
-
+float64 distance
 ")
 
 
 
-(provide :reactive_robot/obstacle "3fee00ef7d93fcd86cc6221b0265b0f2")
+(provide :reactive_robot/obstacle "6b7c0fc076289782d62bfcafc053166e")
 
 

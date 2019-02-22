@@ -11,7 +11,7 @@
 #include "reactive_robot/drivetrain.h"
 #include <tf/transform_datatypes.h>
 
-#define METERS_TO_FT 0.3048
+#define METERS_TO_FT 3.25
 #define RAD_TO_DEG (double)(180.0 / 3.14159)
 
 /* Typedefs*/
@@ -23,10 +23,13 @@ typedef struct position_state_t
 } position_state;
 
 
+//Drivetrain
+Drivetrain drivetrain;
+
 
 //Publishers
 ros::Publisher autodrive_pub;
-position_state old_pos;
+geometry_msgs::Point old_pos;
 bool turning;
 double current_angle;
 double target_angle;
@@ -42,21 +45,24 @@ void odometryCallback(const nav_msgs::Odometry::ConstPtr& odometer)
     //Declare local variables
     double temp1, temp2;                //Unused other than function parameters (replace with NULL?)
     double distance_traveled;           //Distance from the last turn
-    position_state new_pos;             //The current position of the robot
     
+    geometry_msgs::Point new_pos;
+        
     //Get the current position
     new_pos.x = odometer->pose.pose.position.x;
     new_pos.y = odometer->pose.pose.position.y;
     new_pos.z = odometer->pose.pose.position.z;
 
-    //Get the current orientation
-    tf::Quaternion q(odometer->pose.pose.orientation.x, odometer->pose.pose.orientation.y, odometer->pose.pose.orientation.z);
-    tf::Matrix3x3 m(q);
 
-    //TODO: Figure out if this is degrees or not
-    m.getRPY(temp1, temp2, current_angle);
-    ROS_INFO("Current angle rads: %f\n", current_angle);
-    current_angle = current_angle * RAD_TO_DEG;
+    tf::Pose pose;
+    tf::poseMsgToTF(odometer->pose.pose, pose);
+
+    printf("old_pos.x=%f \t new_pos.x=%f\n", old_pos.x, new_pos.x);
+
+    current_angle = drivetrain.angleWrap(tf::getYaw(pose.getRotation()) * RAD_TO_DEG);
+    
+    //Debug
+    //printf("Current angle degrees?: %f\n", current_angle);
     
     //Calculate the distance traveled from the fixed position
     distance_traveled = sqrt(((new_pos.x - old_pos.x)*(new_pos.x - old_pos.x)) + ((new_pos.y - old_pos.y)*(new_pos.y - old_pos.y))) * METERS_TO_FT;
@@ -88,12 +94,16 @@ int main(int argc, char **argv)
     ros::NodeHandle autodrive_node;
 
     //Instantiate a drivetrain object for handling driving
-    Drivetrain drivetrain;
+    
 
     //Initialize globals
     current_angle = 0;
     turning = false;
     target_angle = 0;
+    old_pos.x = 0;
+    old_pos.y = 0;
+    old_pos.z = 0;
+    
 
     //Subscribe to odometry data
     ros::Subscriber odom_sub = autodrive_node.subscribe(autodrive_node.resolveName("/odom"), 10, &odometryCallback);
@@ -109,6 +119,7 @@ int main(int argc, char **argv)
         //Handle the callbacks
         ros::spinOnce();
 
+        
         //If the robot is turning to a target, turn
         if(turning)
         {
@@ -119,9 +130,12 @@ int main(int argc, char **argv)
         {
             drivetrain.setOutput(0.3, 0);
         }
+        
+
 
         //Publish the drivetrain output
         autodrive_pub.publish(drivetrain.getOutput());        
+        loop_rate.sleep();
     }
 }
 
