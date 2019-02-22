@@ -105,6 +105,7 @@ void scanCallback(const sensor_msgs::LaserScan::ConstPtr& obstacle_event)
     {
         obstacle_msg.state = obstacle_msg.EMPTY;
     }
+    obstacle_pub.publish(obstacle_msg);
 }
 /**
  * Runs the loop needed to handle obstacle detection 
