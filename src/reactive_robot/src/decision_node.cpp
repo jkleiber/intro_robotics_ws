@@ -93,7 +93,14 @@ bool twistNotZero(geometry_msgs::Twist twist)
 {
     return twist.linear.x || twist.linear.y || twist.linear.z || twist.angular.x || twist.angular.y ||twist.angular.z;
 }
-
+/**
+ * 
+ */
+void saveMap(const ros::WallTimerEvent& event)
+{
+    //TODO: Justin can't tell me what to do, get this path working into maps folder
+    system("rosrun map_server map_saver -f ~/test_map");
+}
 
 
 /**
@@ -128,6 +135,8 @@ int main(int argc, char **argv)
 
 
     double end_angle;
+    //Save the map every 5 seconds
+    ros::WallTimer mapeSaver = main_decision_node.createWallTimer(ros::WallDuration(5), saveMap);
 
     //Given state inputs from each callback, make a decision on what to do
     while(ros::ok())
@@ -186,7 +195,7 @@ int main(int argc, char **argv)
 
         //Publish the desired drivetrain output to the command velocity multiplexer
         teleop_pub.publish(drivetrain.getOutput());
-        
+
         //Make sure to limit ourselves to the loop rate
         loop_rate.sleep();
     }

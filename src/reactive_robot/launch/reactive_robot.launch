@@ -46,4 +46,8 @@
     <remap from="cmd_vel_mux/input/teleop" to="reactive_robot/keyboard_input"/>
     <include file="$(find turtlebot_teleop)/launch/keyboard_teleop.launch"/>
 
+
+    <!-- SLAM mapping -->
+    <include file="$(find turtlebot_navigation)/launch/includes/gmapping/$(arg 3d_sensor)_gmapping.launch.xml"/>
+
 </launch>
