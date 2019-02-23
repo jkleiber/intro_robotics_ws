@@ -10,7 +10,6 @@
 
 //User libs and msgs
 #include "reactive_robot/drivetrain.h"
-#include "reactive_robot/keyboard_override.h"
 
 #define METERS_TO_FT 3.25
 #define RAD_TO_DEG (double)(180.0 / 3.14159)
@@ -42,7 +41,6 @@ void odometryCallback(const nav_msgs::Odometry::ConstPtr& odometer)
     
     //Messages and services
     geometry_msgs::Point new_pos;
-    reactive_robot::keyboard_override key_srv;
 
     //Get the current position
     new_pos.x = odometer->pose.pose.position.x;

@@ -25,10 +25,12 @@ struct obstacle_
 
   obstacle_()
     : state(0)
+    , angle(0.0)
     , distance(0.0)  {
     }
   obstacle_(const ContainerAllocator& _alloc)
     : state(0)
+    , angle(0.0)
     , distance(0.0)  {
   (void)_alloc;
     }
@@ -38,7 +40,10 @@ struct obstacle_
    typedef uint8_t _state_type;
   _state_type state;
 
-   typedef double _distance_type;
+   typedef float _angle_type;
+  _angle_type angle;
+
+   typedef float _distance_type;
   _distance_type distance;
 
 
@@ -130,12 +135,12 @@ struct MD5Sum< ::reactive_robot::obstacle_<ContainerAllocator> >
 {
   static const char* value()
   {
-    return "6b7c0fc076289782d62bfcafc053166e";
+    return "9dd79e7d21afdca6e8253b4c331cb2ee";
   }
 
   static const char* value(const ::reactive_robot::obstacle_<ContainerAllocator>&) { return value(); }
-  static const uint64_t static_value1 = 0x6b7c0fc076289782ULL;
-  static const uint64_t static_value2 = 0xd62bfcafc053166eULL;
+  static const uint64_t static_value1 = 0x9dd79e7d21afdca6ULL;
+  static const uint64_t static_value2 = 0xe8253b4c331cb2eeULL;
 };
 
 template<class ContainerAllocator>
@@ -158,7 +163,8 @@ struct Definition< ::reactive_robot::obstacle_<ContainerAllocator> >
 uint8 SYMMETRIC = 1\n\
 uint8 ASYMMETRIC = 2\n\
 uint8 state\n\
-float64 distance\n\
+float32 angle\n\
+float32 distance\n\
 ";
   }
 
@@ -178,6 +184,7 @@ namespace serialization
     template<typename Stream, typename T> inline static void allInOne(Stream& stream, T m)
     {
       stream.next(m.state);
+      stream.next(m.angle);
       stream.next(m.distance);
     }
 
@@ -199,8 +206,10 @@ struct Printer< ::reactive_robot::obstacle_<ContainerAllocator> >
   {
     s << indent << "state: ";
     Printer<uint8_t>::stream(s, indent + "  ", v.state);
+    s << indent << "angle: ";
+    Printer<float>::stream(s, indent + "  ", v.angle);
     s << indent << "distance: ";
-    Printer<double>::stream(s, indent + "  ", v.distance);
+    Printer<float>::stream(s, indent + "  ", v.distance);
   }
 };
 

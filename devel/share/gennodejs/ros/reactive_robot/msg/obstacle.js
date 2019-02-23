@@ -19,6 +19,7 @@ class obstacle {
     if (initObj === null) {
       // initObj === null is a special case for deserialization where we don't initialize fields
       this.state = null;
+      this.angle = null;
       this.distance = null;
     }
     else {
@@ -27,6 +28,12 @@ class obstacle {
       }
       else {
         this.state = 0;
+      }
+      if (initObj.hasOwnProperty('angle')) {
+        this.angle = initObj.angle
+      }
+      else {
+        this.angle = 0.0;
       }
       if (initObj.hasOwnProperty('distance')) {
         this.distance = initObj.distance
@@ -41,8 +48,10 @@ class obstacle {
     // Serializes a message object of type obstacle
     // Serialize message field [state]
     bufferOffset = _serializer.uint8(obj.state, buffer, bufferOffset);
+    // Serialize message field [angle]
+    bufferOffset = _serializer.float32(obj.angle, buffer, bufferOffset);
     // Serialize message field [distance]
-    bufferOffset = _serializer.float64(obj.distance, buffer, bufferOffset);
+    bufferOffset = _serializer.float32(obj.distance, buffer, bufferOffset);
     return bufferOffset;
   }
 
@@ -52,8 +61,10 @@ class obstacle {
     let data = new obstacle(null);
     // Deserialize message field [state]
     data.state = _deserializer.uint8(buffer, bufferOffset);
+    // Deserialize message field [angle]
+    data.angle = _deserializer.float32(buffer, bufferOffset);
     // Deserialize message field [distance]
-    data.distance = _deserializer.float64(buffer, bufferOffset);
+    data.distance = _deserializer.float32(buffer, bufferOffset);
     return data;
   }
 
@@ -68,7 +79,7 @@ class obstacle {
 
   static md5sum() {
     //Returns md5sum for a message object
-    return '6b7c0fc076289782d62bfcafc053166e';
+    return '9dd79e7d21afdca6e8253b4c331cb2ee';
   }
 
   static messageDefinition() {
@@ -78,7 +89,8 @@ class obstacle {
     uint8 SYMMETRIC = 1
     uint8 ASYMMETRIC = 2
     uint8 state
-    float64 distance
+    float32 angle
+    float32 distance
     `;
   }
 
@@ -93,6 +105,13 @@ class obstacle {
     }
     else {
       resolved.state = 0
+    }
+
+    if (msg.angle !== undefined) {
+      resolved.angle = msg.angle;
+    }
+    else {
+      resolved.angle = 0.0
     }
 
     if (msg.distance !== undefined) {
