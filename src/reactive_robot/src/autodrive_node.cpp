@@ -6,27 +6,27 @@
 #include <geometry_msgs/Twist.h>
 #include <ros/ros.h>
 #include <nav_msgs/Odometry.h>
+#include <tf/transform_datatypes.h>
 
 //User libs and msgs
 #include "reactive_robot/drivetrain.h"
-#include <tf/transform_datatypes.h>
+#include "reactive_robot/keyboard_override.h"
 
 #define METERS_TO_FT 3.25
 #define RAD_TO_DEG (double)(180.0 / 3.14159)
 
-/* Typedefs*/
-
-
 //Drivetrain
 Drivetrain drivetrain;
 
-
-//Publishers
+//Publisher
 ros::Publisher autodrive_pub;
+
+//Global variables
 geometry_msgs::Point old_pos;
 bool turning;
 double current_angle;
 double target_angle;
+bool odometry_init;
 
 /**
  * autodriveCallback - when collisions are detected by the bumpers, track the state of the bumpers
@@ -40,12 +40,22 @@ void odometryCallback(const nav_msgs::Odometry::ConstPtr& odometer)
     double temp1, temp2;                //Unused other than function parameters (replace with NULL?)
     double distance_traveled;           //Distance from the last turn
     
+    //Messages and services
     geometry_msgs::Point new_pos;
-        
+    reactive_robot::keyboard_override key_srv;
+
     //Get the current position
     new_pos.x = odometer->pose.pose.position.x;
     new_pos.y = odometer->pose.pose.position.y;
     new_pos.z = odometer->pose.pose.position.z;
+
+
+    //Reset the old position if this is the first callback
+    if(odometry_init)
+    {
+        old_pos = new_pos;
+        odometry_init = false;
+    }
 
     //Get the robot orientation
     tf::Pose pose;
@@ -83,17 +93,11 @@ int main(int argc, char **argv)
     //Set up the node handle for auto driving
     ros::NodeHandle autodrive_node;
 
-    //Instantiate a drivetrain object for handling driving
-    
-
     //Initialize globals
     current_angle = 0;
     turning = false;
     target_angle = 0;
-    old_pos.x = 0;
-    old_pos.y = 0;
-    old_pos.z = 0;
-    
+    odometry_init = true;
 
     //Subscribe to odometry data
     ros::Subscriber odom_sub = autodrive_node.subscribe(autodrive_node.resolveName("/odom"), 10, &odometryCallback);
@@ -121,8 +125,6 @@ int main(int argc, char **argv)
             drivetrain.setOutput(0.3, 0);
         }
         
-
-
         //Publish the drivetrain output
         autodrive_pub.publish(drivetrain.getOutput());        
         loop_rate.sleep();

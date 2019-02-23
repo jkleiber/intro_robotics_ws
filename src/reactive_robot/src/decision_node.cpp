@@ -6,6 +6,7 @@
 #include <reactive_robot/collision.h>
 #include <reactive_robot/drivetrain.h>
 #include <reactive_robot/obstacle.h>
+#include "reactive_robot/keyboard_override.h"
 
 /* Macros and constants */
 //Obstacle states
@@ -18,7 +19,6 @@
 //Track the current state of each part of the schema
 bool collide_detected;
 bool forward_drive;
-bool keyboard_input_detected;
 uint8_t obstacle_type;
 double turn_angle_delta;
 
@@ -51,8 +51,7 @@ void collisionCallback(const reactive_robot::collision::ConstPtr& collision_even
  * 
  */
 void keyboardCallback(const geometry_msgs::Twist::ConstPtr& keyboard_event)
-{
-    keyboard_input_detected = true;
+{    
     keyboard_commands = *keyboard_event;
 }
 
@@ -91,7 +90,6 @@ int main(int argc, char **argv)
 
     //Initialize state trackers
     collide_detected = false;
-    keyboard_input_detected = false;
     obstacle_type = EMPTY;
 
     //Initialize the motion data
@@ -125,9 +123,6 @@ int main(int argc, char **argv)
         {
             //Set the drivetrain output to the keyboard input
             drivetrain.setOutput(keyboard_commands);
-
-            //Indicate that the autodriving has been overridden by the user
-            keyboard_input_detected = true;
         }
         //If an symmetric obstacle is detected, we need to escape 
         else if(obstacle_type == SYMMETRIC)
