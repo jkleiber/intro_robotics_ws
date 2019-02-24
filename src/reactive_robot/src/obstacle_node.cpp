@@ -8,6 +8,10 @@
 //User libs and msgs
 #include <reactive_robot/obstacle.h>
 
+//For isnan debug
+#include<cmath>
+
+
 //Constant
 #define RAD_TO_DEG (double)(180.0 / 3.14159)
 
@@ -78,20 +82,40 @@ void scanCallback(const sensor_msgs::LaserScan::ConstPtr& obstacle_event)
     int end_point   = INT_MAX;
 
     
-    /*
+    //Debug
+    
+    bool fullnan = true;
     for(int i =0; i < obstacle_event->ranges.size(); ++i)
     {
-        printf("range[%d]=%f, ", i,obstacle_event->ranges[i]);
+        if(!std::isnan(obstacle_event->ranges[i]))
+        {
+            fullnan = false;
+        }
     }
-    */
+    
+    if(fullnan)
+    {
+        printf("Full scan was NaN");
+    }
+    else
+    {
+        for(int i =0; i < obstacle_event->ranges.size(); ++i)
+        {
+            printf("range[%d]=%f, ", i,obstacle_event->ranges[i]);
+        }
+    }
 
-    printf("\n\r");
+    printf("\n\r\n\r");
+    
+
+
+
 
     //Loop through the ranges vector at each angle
     for(int angle = 0; angle < obstacle_event->ranges.size(); ++angle)
     {
         //Determine if an obstacle is detected within one foot of the robot
-        if(obstacle_event->range_min < obstacle_event->ranges[angle] && 0.3048 >= obstacle_event->ranges[angle])
+        if(obstacle_event->range_min < obstacle_event->ranges[angle] && 2*0.3048 >= obstacle_event->ranges[angle] && !std::isnan(obstacle_event->ranges[angle]))
         {
             //If the start point has not already been set
             if(start_point == INT_MAX)
@@ -109,6 +133,16 @@ void scanCallback(const sensor_msgs::LaserScan::ConstPtr& obstacle_event)
             }
         }
     }
+
+    if(start_point != INT_MAX && end_point == INT_MAX)
+    {
+        end_point = obstacle_event->ranges.size() - 1;
+    }
+
+
+    printf("start_point=%d, end_point=%d w/ range_min=%f \n\r\n\r", start_point, end_point,obstacle_event->range_min);
+
+
     //If an object was detected
     if(start_point != INT_MAX) 
     {

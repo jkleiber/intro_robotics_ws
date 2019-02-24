@@ -135,8 +135,10 @@ int main(int argc, char **argv)
 
 
     double end_angle;
+    
     //Save the map every 5 seconds
-    ros::WallTimer mapeSaver = main_decision_node.createWallTimer(ros::WallDuration(5), saveMap);
+    //Temporarily disable bc it prints to console
+    //ros::WallTimer mapeSaver = main_decision_node.createWallTimer(ros::WallDuration(5), saveMap);
 
     //Given state inputs from each callback, make a decision on what to do
     while(ros::ok())
@@ -186,11 +188,13 @@ int main(int argc, char **argv)
 
         }
         //The lowest priority is to drive around randomly, so do that if all other priorities are being fulfilled
+        /*
         else if (!escape_action_active)
         {
             //Use the autodrive output
             drivetrain.setOutput(autodrive_output);
         }
+        */
 
         //Publish the desired drivetrain output to the command velocity multiplexer
         teleop_pub.publish(drivetrain.getOutput());
