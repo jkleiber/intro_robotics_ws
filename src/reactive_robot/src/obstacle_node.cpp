@@ -81,41 +81,54 @@ void scanCallback(const sensor_msgs::LaserScan::ConstPtr& obstacle_event)
     int start_point = INT_MAX;
     int end_point   = INT_MAX;
 
+
+
+
+
+    double right_scan[213];
+    double center_scan[213 + 1];
+    double left_scan[213];
     
-    //Debug
-    
-    bool fullnan = true;
-    for(int i =0; i < obstacle_event->ranges.size(); ++i)
+    double distance_to_left_obj = INT_MAX;
+    double distance_to_right_obj = INT_MAX;
+
+
+
+
+    //Right third
+    for(int i = 0; i < 213; i++)
     {
-        if(!std::isnan(obstacle_event->ranges[i]))
+        if(!std::isnan(obstacle_event->ranges[i] && obstacle_event->ranges[i] <= distance_to_right_obj))
         {
-            fullnan = false;
+            distance_to_right_obj = obstacle_event->ranges[i];
         }
-    }
-    
-    if(fullnan)
+    } 
+
+    //Left third
+    for(int i = 427; i < 640; i++)
     {
-        printf("Full scan was NaN");
-    }
-    else
-    {
-        for(int i =0; i < obstacle_event->ranges.size(); ++i)
+        if(!std::isnan(obstacle_event->ranges[i] && obstacle_event->ranges[i] <= distance_to_left_obj))
         {
-            printf("range[%d]=%f, ", i,obstacle_event->ranges[i]);
+            distance_to_left_obj = obstacle_event->ranges[i];
         }
+    } 
+
+
+    if(distance_to_left_obj < distance_to_right_obj)
+    {
+        //Turn left
     }
-
-    printf("\n\r\n\r");
+    else if (distance_to_left_obj > distance_to_right_obj) {
+        //Turn right
+    }
     
-
-
 
 
     //Loop through the ranges vector at each angle
     for(int angle = 0; angle < obstacle_event->ranges.size(); ++angle)
     {
         //Determine if an obstacle is detected within one foot of the robot
-        if(obstacle_event->range_min < obstacle_event->ranges[angle] && 2*0.3048 >= obstacle_event->ranges[angle] && !std::isnan(obstacle_event->ranges[angle]))
+        if(obstacle_event->range_min < obstacle_event->ranges[angle] && 1 >= obstacle_event->ranges[angle] && !std::isnan(obstacle_event->ranges[angle]))
         {
             //If the start point has not already been set
             if(start_point == INT_MAX)
