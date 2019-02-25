@@ -9,7 +9,7 @@
 
 //User libs and msgs
 #include "reactive_robot/drivetrain.h"
-#include <tf/transform_datatypes.h>
+#include "reactive_robot/obstacle.h"
 
 #define METERS_TO_FT 3.25
 #define RAD_TO_DEG (double)(180.0 / 3.14159)
@@ -30,6 +30,8 @@ Drivetrain drivetrain;
 //Publishers
 ros::Publisher autodrive_pub;
 geometry_msgs::Point old_pos;
+geometry_msgs::Point cur_pos;
+
 bool turning;
 double current_angle;
 double target_angle;
@@ -46,14 +48,20 @@ void odometryCallback(const nav_msgs::Odometry::ConstPtr& odometer)
     double temp1, temp2;                //Unused other than function parameters (replace with NULL?)
     double distance_traveled;           //Distance from the last turn
     
-    geometry_msgs::Point new_pos;
-        
     //Get the current position
-    new_pos.x = odometer->pose.pose.position.x;
-    new_pos.y = odometer->pose.pose.position.y;
-    new_pos.z = odometer->pose.pose.position.z;
+    cur_pos.x = odometer->pose.pose.position.x;
+    cur_pos.y = odometer->pose.pose.position.y;
+    cur_pos.z = odometer->pose.pose.position.z;
 
 
+    //Reset the old position if this is the first callback
+    if(odometry_init)
+    {
+        old_pos = cur_pos;
+        odometry_init = false;
+    }
+
+    //Get the robot orientation
     tf::Pose pose;
     tf::poseMsgToTF(odometer->pose.pose, pose);
 
@@ -65,7 +73,7 @@ void odometryCallback(const nav_msgs::Odometry::ConstPtr& odometer)
     //printf("Current angle degrees?: %f\n", current_angle);
     
     //Calculate the distance traveled from the fixed position
-    distance_traveled = sqrt(((new_pos.x - old_pos.x)*(new_pos.x - old_pos.x)) + ((new_pos.y - old_pos.y)*(new_pos.y - old_pos.y))) * METERS_TO_FT;
+    distance_traveled = sqrt(((cur_pos.x - old_pos.x)*(cur_pos.x - old_pos.x)) + ((cur_pos.y - old_pos.y)*(cur_pos.y - old_pos.y))) * METERS_TO_FT;
 
     //If the distance traveled is more than a foot, turn +/- 15 degrees
     if(distance_traveled >= 1)
@@ -77,9 +85,20 @@ void odometryCallback(const nav_msgs::Odometry::ConstPtr& odometer)
         target_angle = current_angle + ((rand() % 30) - 15);
 
         //Update the old position for calculating distance
-        old_pos = new_pos;
+        old_pos = cur_pos;
     }
 }
+
+
+void obstacleCallback(const reactive_robot::obstacle::ConstPtr& obstacle)
+{
+    if(obstacle->state != obstacle->EMPTY)
+    {
+        old_pos = cur_pos;
+        turning = false;
+    }
+}
+
 
 
 /**
@@ -107,7 +126,8 @@ int main(int argc, char **argv)
 
     //Subscribe to odometry data
     ros::Subscriber odom_sub = autodrive_node.subscribe(autodrive_node.resolveName("/odom"), 10, &odometryCallback);
-    
+    ros::Subscriber obstacle_sub = autodrive_node.subscribe(autodrive_node.resolveName("reactive_robot/obstacle"), 10, &obstacleCallback);
+
     //Publish state to the autodrive topic
     autodrive_pub = autodrive_node.advertise<geometry_msgs::Twist>(autodrive_node.resolveName("/reactive_robot/autodrive"), 10);
 
@@ -128,7 +148,7 @@ int main(int argc, char **argv)
         //Otherwise drive straight
         else
         {
-            drivetrain.setOutput(0.3, 0);
+            drivetrain.setOutput(0.5, 0);
         }
         
 

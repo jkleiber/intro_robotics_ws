@@ -6,6 +6,22 @@
 //User libs and msgs
 #include <reactive_robot/obstacle.h>
 
+//For isnan debug
+#include<cmath>
+
+
+//Constants
+#define RAD_TO_DEG (double)(180.0 / 3.14159)
+
+#define TOTAL_SAMPLES 640                                       //Laser scan samples
+#define N_CENTER_SAMPLES 50                                     //Width of center view region
+#define N_SIDE_SAMPLES ((TOTAL_SAMPLES - N_CENTER_SAMPLES) / 2) //Allocate the number of samples for the side views
+#define LEFT_SAMPLES_IDX TOTAL_SAMPLES - N_SIDE_SAMPLES         //Where the left samples start
+#define RIGHT_SAMPLES_IDX N_SIDE_SAMPLES                        //Where the right samples end
+#define DETECTION_RANGE 1                                       //Range in meters to detect obstacles
+
+
+
 //Publisher
 ros::Publisher obstacle_pub;
 
@@ -68,43 +84,83 @@ void scanCallback(const sensor_msgs::LaserScan::ConstPtr& obstacle_event)
     reactive_robot::obstacle obstacle_msg;
 
     //Start and end indices of an object
-    int start_point = NULL;
-    int end_point   = NULL;
+    int symmetric_obj_index = -1;
 
-    //Loop through the ranges vector at each angle
-    for(int angle = 0; angle < obstacle_event->ranges.size(); ++angle)
+    //Store the samples in three nice arrays
+    double left_scan[N_SIDE_SAMPLES];
+    double center_scan[N_CENTER_SAMPLES];
+    double right_scan[N_SIDE_SAMPLES];
+    
+    //Track distance to nearest object in each view region
+    double distance_to_left_obj = INT_MAX;
+    double distance_to_center_obj = INT_MAX;
+    double distance_to_right_obj = INT_MAX;
+
+    //Loop through all the samples
+    for(int i = 0; i < TOTAL_SAMPLES; ++i)
     {
-        //Determine if an obstacle is detected within one foot of the robot
-        if(obstacle_event->range_min < obstacle_event->ranges[angle] && 0.3048 >= obstacle_event->ranges[angle])
+        //Right samples
+        if(i < RIGHT_SAMPLES_IDX)
         {
-            //If the start point has not already been set
-            if(start_point == NULL)
+            if(!std::isnan(obstacle_event->ranges[i]) && obstacle_event->ranges[i] <= distance_to_right_obj)
             {
-                start_point = angle;
+                distance_to_right_obj = obstacle_event->ranges[i];
             }
         }
-        //Else an obstacle is not detected
+        //Center region
+        else if(i >= RIGHT_SAMPLES_IDX && i < LEFT_SAMPLES_IDX)
+        {
+            if(!std::isnan(obstacle_event->ranges[i]) && obstacle_event->ranges[i] <= distance_to_center_obj)
+            {
+                distance_to_center_obj = obstacle_event->ranges[i];
+                symmetric_obj_index = i;
+            }
+        }
+        //Left region
         else
         {
-            //If the start point has been set and the end point has not been set
-            if(start_point != NULL && end_point == NULL)
+            if(!std::isnan(obstacle_event->ranges[i]) && obstacle_event->ranges[i] <= distance_to_left_obj)
             {
-                end_point = angle - 1;
+                distance_to_left_obj = obstacle_event->ranges[i];
             }
         }
+        
     }
-    //If an object was detected
-    if(start_point != NULL) 
-    {
-        //Determine if it is symmetric
-        bool symmetric = isSymmetrical(start_point, end_point, obstacle_event);
-        obstacle_msg.state = symmetric ? obstacle_msg.SYMMETRIC : obstacle_msg.ASYMMETRIC;
-        obstacle_msg.distance = calculateDistance(start_point, end_point, obstacle_event);
-    }
-    else 
+
+
+    if(distance_to_left_obj > DETECTION_RANGE && distance_to_center_obj > DETECTION_RANGE && distance_to_right_obj > DETECTION_RANGE)
     {
         obstacle_msg.state = obstacle_msg.EMPTY;
+        obstacle_msg.drive.angular.z = 0;
     }
+    else if(distance_to_center_obj <= DETECTION_RANGE)
+    {
+        obstacle_msg.state = obstacle_msg.SYMMETRIC;
+        obstacle_msg.angle = ((symmetric_obj_index * obstacle_event->angle_increment) + obstacle_event->angle_min) * RAD_TO_DEG;
+    }
+    else
+    {
+        obstacle_msg.state = obstacle_msg.ASYMMETRIC;
+        obstacle_msg.drive.linear.x = 0;
+        obstacle_msg.drive.linear.y = 0;
+        obstacle_msg.drive.linear.z = 0;
+        
+
+        if(distance_to_left_obj < distance_to_right_obj)
+        {
+            obstacle_msg.drive.angular.z = -0.4;
+        }
+        else if (distance_to_left_obj > distance_to_right_obj)
+        {
+            obstacle_msg.drive.angular.z = 0.4;
+        }
+        else
+        {
+            obstacle_msg.drive.angular.z = 0;
+        }
+    }
+
+    //Publish the instructions from this node
     obstacle_pub.publish(obstacle_msg);
 }
 /**
