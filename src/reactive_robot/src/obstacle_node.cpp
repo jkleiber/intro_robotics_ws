@@ -1,4 +1,6 @@
 #include <ros/ros.h>
+#include <math.h>
+
 
 //Scanner libs and msgs
 #include <sensor_msgs/LaserScan.h>
@@ -72,6 +74,7 @@ float calculateDistance(int start_index, int end_index, const sensor_msgs::Laser
     }
     return closest_distance;
 }
+
 /**
  * scanCallback - Detects obstacles in front of the robot and deduces the symmetry and distance
  * of the object.
@@ -102,7 +105,7 @@ void scanCallback(const sensor_msgs::LaserScan::ConstPtr& obstacle_event)
         //Right samples
         if(i < RIGHT_SAMPLES_IDX)
         {
-            if(!std::isnan(obstacle_event->ranges[i]) && obstacle_event->ranges[i] <= distance_to_right_obj)
+            if(!std::isnan(obstacle_event->ranges[i] && obstacle_event->ranges[i] <= distance_to_right_obj))
             {
                 distance_to_right_obj = obstacle_event->ranges[i];
             }
@@ -110,16 +113,15 @@ void scanCallback(const sensor_msgs::LaserScan::ConstPtr& obstacle_event)
         //Center region
         else if(i >= RIGHT_SAMPLES_IDX && i < LEFT_SAMPLES_IDX)
         {
-            if(!std::isnan(obstacle_event->ranges[i]) && obstacle_event->ranges[i] <= distance_to_center_obj)
+            if(!std::isnan(obstacle_event->ranges[i] && obstacle_event->ranges[i] <= distance_to_center_obj))
             {
                 distance_to_center_obj = obstacle_event->ranges[i];
-                symmetric_obj_index = i;
             }
         }
         //Left region
         else
         {
-            if(!std::isnan(obstacle_event->ranges[i]) && obstacle_event->ranges[i] <= distance_to_left_obj)
+            if(!std::isnan(obstacle_event->ranges[i] && obstacle_event->ranges[i] <= distance_to_left_obj))
             {
                 distance_to_left_obj = obstacle_event->ranges[i];
             }

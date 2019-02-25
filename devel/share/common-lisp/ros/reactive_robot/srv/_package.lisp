@@ -1,0 +1,10 @@
+(cl:defpackage reactive_robot-srv
+  (:use )
+  (:export
+   "KEYBOARD_OVERRIDE"
+   "<KEYBOARD_OVERRIDE-REQUEST>"
+   "KEYBOARD_OVERRIDE-REQUEST"
+   "<KEYBOARD_OVERRIDE-RESPONSE>"
+   "KEYBOARD_OVERRIDE-RESPONSE"
+  ))
+

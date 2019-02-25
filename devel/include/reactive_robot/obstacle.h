@@ -15,6 +15,7 @@
 #include <ros/builtin_message_traits.h>
 #include <ros/message_operations.h>
 
+#include <geometry_msgs/Twist.h>
 
 namespace reactive_robot
 {
@@ -25,11 +26,15 @@ struct obstacle_
 
   obstacle_()
     : state(0)
-    , distance(0.0)  {
+    , angle(0.0)
+    , distance(0.0)
+    , drive()  {
     }
   obstacle_(const ContainerAllocator& _alloc)
     : state(0)
-    , distance(0.0)  {
+    , angle(0.0)
+    , distance(0.0)
+    , drive(_alloc)  {
   (void)_alloc;
     }
 
@@ -38,8 +43,14 @@ struct obstacle_
    typedef uint8_t _state_type;
   _state_type state;
 
-   typedef double _distance_type;
+   typedef float _angle_type;
+  _angle_type angle;
+
+   typedef float _distance_type;
   _distance_type distance;
+
+   typedef  ::geometry_msgs::Twist_<ContainerAllocator>  _drive_type;
+  _drive_type drive;
 
 
 
@@ -130,12 +141,12 @@ struct MD5Sum< ::reactive_robot::obstacle_<ContainerAllocator> >
 {
   static const char* value()
   {
-    return "6b7c0fc076289782d62bfcafc053166e";
+    return "9def4b737c98a8f46cacc0980db0cf56";
   }
 
   static const char* value(const ::reactive_robot::obstacle_<ContainerAllocator>&) { return value(); }
-  static const uint64_t static_value1 = 0x6b7c0fc076289782ULL;
-  static const uint64_t static_value2 = 0xd62bfcafc053166eULL;
+  static const uint64_t static_value1 = 0x9def4b737c98a8f4ULL;
+  static const uint64_t static_value2 = 0x6cacc0980db0cf56ULL;
 };
 
 template<class ContainerAllocator>
@@ -158,7 +169,27 @@ struct Definition< ::reactive_robot::obstacle_<ContainerAllocator> >
 uint8 SYMMETRIC = 1\n\
 uint8 ASYMMETRIC = 2\n\
 uint8 state\n\
-float64 distance\n\
+float32 angle\n\
+float32 distance\n\
+geometry_msgs/Twist drive\n\
+================================================================================\n\
+MSG: geometry_msgs/Twist\n\
+# This expresses velocity in free space broken into its linear and angular parts.\n\
+Vector3  linear\n\
+Vector3  angular\n\
+\n\
+================================================================================\n\
+MSG: geometry_msgs/Vector3\n\
+# This represents a vector in free space. \n\
+# It is only meant to represent a direction. Therefore, it does not\n\
+# make sense to apply a translation to it (e.g., when applying a \n\
+# generic rigid transformation to a Vector3, tf2 will only apply the\n\
+# rotation). If you want your data to be translatable too, use the\n\
+# geometry_msgs/Point message instead.\n\
+\n\
+float64 x\n\
+float64 y\n\
+float64 z\n\
 ";
   }
 
@@ -178,7 +209,9 @@ namespace serialization
     template<typename Stream, typename T> inline static void allInOne(Stream& stream, T m)
     {
       stream.next(m.state);
+      stream.next(m.angle);
       stream.next(m.distance);
+      stream.next(m.drive);
     }
 
     ROS_DECLARE_ALLINONE_SERIALIZER
@@ -199,8 +232,13 @@ struct Printer< ::reactive_robot::obstacle_<ContainerAllocator> >
   {
     s << indent << "state: ";
     Printer<uint8_t>::stream(s, indent + "  ", v.state);
+    s << indent << "angle: ";
+    Printer<float>::stream(s, indent + "  ", v.angle);
     s << indent << "distance: ";
-    Printer<double>::stream(s, indent + "  ", v.distance);
+    Printer<float>::stream(s, indent + "  ", v.distance);
+    s << indent << "drive: ";
+    s << std::endl;
+    Printer< ::geometry_msgs::Twist_<ContainerAllocator> >::stream(s, indent + "  ", v.drive);
   }
 };
 

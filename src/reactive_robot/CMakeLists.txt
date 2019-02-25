@@ -57,11 +57,9 @@ add_message_files(
 )
 
 ## Generate services in the 'srv' folder
-# add_service_files(
-#   FILES
-#   Service1.srv
-#   Service2.srv
-# )
+#add_service_files(
+#  FILES
+#)
 
 ## Generate actions in the 'action' folder
 # add_action_files(
@@ -170,6 +168,12 @@ add_dependencies(collision_node reactive_robot_generate_messages_cpp)
 add_executable(decision_node src/decision_node.cpp src/drivetrain.cpp)
 target_link_libraries(decision_node ${catkin_LIBRARIES})
 add_dependencies(decision_node reactive_robot_generate_messages_cpp)
+
+# Obstacle Node
+add_executable(obstacle_node src/obstacle_node.cpp src/drivetrain.cpp)
+target_link_libraries(obstacle_node ${catkin_LIBRARIES})
+add_dependencies(obstacle_node reactive_robot_generate_messages_cpp)
+
 
 #############
 ## Install ##
