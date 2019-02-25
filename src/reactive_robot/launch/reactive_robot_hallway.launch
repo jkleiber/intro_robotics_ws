@@ -7,7 +7,7 @@
     
     <!-- TurtleBot nodes to launch -->
     
-    <arg name="world_file"  default="$(find reactive_robot)/worlds/Hallway.world"/>
+    <arg name="world_file"  default="$(find reactive_robot)/worlds/hallway.world"/>
 
     <arg name="base"      value="$(optenv TURTLEBOT_BASE kobuki)"/> <!-- create, roomba -->
     <arg name="battery"   value="$(optenv TURTLEBOT_BATTERY /proc/acpi/battery/BAT0)"/>  <!-- /proc/acpi/battery/BAT0 --> 
@@ -48,10 +48,10 @@
     <include file="$(find turtlebot_teleop)/launch/keyboard_teleop.launch"/>
 
 
+    <!-- Disable console prints -->
+    <remap from="rosout" to="rosout_throwaway"/>
+
     <!-- SLAM mapping -->
-    
-    
-    <!-- Temporarily disable bc it prints to console -->
-    <!-- <include file="$(find turtlebot_navigation)/launch/includes/gmapping/$(arg 3d_sensor)_gmapping.launch.xml"/> -->
+    <include file="$(find turtlebot_navigation)/launch/includes/gmapping/$(arg 3d_sensor)_gmapping.launch.xml"/>
 
 </launch>
