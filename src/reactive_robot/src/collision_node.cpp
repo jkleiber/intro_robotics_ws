@@ -1,8 +1,10 @@
 //ROS libs and msgs
 #include <ros/ros.h>
 
+
 //Turtlebot libs and msgs
 #include <kobuki_msgs/BumperEvent.h>
+
 
 //User libs and msgs
 #include <reactive_robot/collision.h>
@@ -23,7 +25,6 @@ ros::Publisher collision_pub;
 
 //Keep track of the bumper states
 bumper_state bump_states;
-
 
 
 /**
@@ -69,7 +70,6 @@ void collision_callback(const kobuki_msgs::BumperEvent::ConstPtr& bump_event)
     //Publish the state of the collision detection module
     collision_pub.publish(collide_msg);
 }
-
 
 
 /**

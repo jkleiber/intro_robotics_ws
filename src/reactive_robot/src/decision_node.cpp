@@ -3,11 +3,13 @@
 #include <geometry_msgs/Twist.h>
 #include <nav_msgs/Odometry.h>
 
+
 //User msgs and libs
 #include <reactive_robot/collision.h>
 #include <reactive_robot/drivetrain.h>
 #include <reactive_robot/obstacle.h>
 #include <tf/transform_datatypes.h>
+
 
 /* Macros and constants */
 //Obstacle states
@@ -28,6 +30,7 @@ double turn_angle_delta;
 double current_angle;
 Drivetrain drivetrain;
 
+
 //State data variables
 geometry_msgs::Twist autodrive_output;
 geometry_msgs::Twist keyboard_commands;
@@ -44,7 +47,6 @@ void autodriveCallback(const geometry_msgs::Twist::ConstPtr& drive_event)
     //Update autodrive output
     autodrive_output = *drive_event;
 }
-
 
 
 /**
@@ -84,6 +86,7 @@ void obstacleCallback(const reactive_robot::obstacle::ConstPtr& obstacle_event)
     //Update output to Twist in obstacle message
     obstacle_output = obstacle_event->drive;
 }
+
 
 /**
  * @brief Callback for robot position

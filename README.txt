@@ -1,17 +1,3 @@
-CONTENTS OF THIS FILE
----------------------
-
- * Introduction
- * Installation
- * Starting the Bot
-  * Starting the Bot with Drush
-  * Starting the Bot with bot_start.php
- * Using the Bot
- * IRC Message Hooks
- * Other IRC Hooks
- * Design Decisions
-
-
 INTRODUCTION
 ------------
 
@@ -58,8 +44,9 @@ running it again.
 Summary:
 1. Install ROS Kinetic and Gazebo.
 2. Download the workspace to your machine.
-3. Build the nodes with "catkin_make".
-4. Run the launch file with "roslaunch reactive_robot reactive_robot.launch".
+3. Run the startup script "setup.bash" in the workspace.
+4. Run "source ~/.bashrc" or restart the terminal.
+5. Run the launch file with "roslaunch reactive_robot reactive_robot_$MAP.launch", replacing $MAP with either "hallway" or "room" depending on the map.
 
 
 WORLDS
