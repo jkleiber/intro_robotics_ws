@@ -82,10 +82,12 @@ double Drivetrain::angleWrap(double angle)
 }
 
 /**
+ * @brief 
  * 
- * 
- * @return  True if the robot should turn right
- *          False if the robot should turn left
+ * @param start_angle 
+ * @param end_angle 
+ * @return true Robot should turn right
+ * @return false Robot should turn left
  */
 bool Drivetrain::turnDirection(double start_angle, double end_angle)
 {
@@ -112,7 +114,12 @@ bool Drivetrain::turnDirection(double start_angle, double end_angle)
 
 //TODO: use PID instead
 /**
+ * @brief Turns to a target angle
  * 
+ * @param current_angle Current angle of the robot
+ * @param target_angle Target angle
+ * @return true The robots current angle is within tolerance of target angle
+ * @return false The robot has not reached the target angle
  */
 bool Drivetrain::turnToAngle(double current_angle, double target_angle)
 {
@@ -123,10 +130,6 @@ bool Drivetrain::turnToAngle(double current_angle, double target_angle)
     //Wrap the angles
     current_angle = this->angleWrap(current_angle);
     target_angle = this->angleWrap(target_angle);
-
-    //Debug
-    //ROS_INFO("Current Angle: %f, Target Angle: %f -> %d", current_angle, target_angle, this->turnDirection(current_angle, target_angle));
-    
     
     //Calculate error
     error = abs(current_angle - target_angle);
@@ -161,10 +164,16 @@ bool Drivetrain::turnToAngle(double current_angle, double target_angle)
 
 
 /**
- * clamp - make sure a variable x does not exceed a maximum or fall below a minimum
+ * @brief Clamps the output to a max speed
+ * 
+ * @param x Input variable to clamp
+ * @param max_out Max speed clamp
+ * @param min_out Min speed clamp
+ * @return double Clamped input variable
  */
 double Drivetrain::clamp(double x, double max_out, double min_out)
 {
+    //If input variable is greater than max or less than min, clamp and return
     x = x > max_out ? max_out : x;
     x = x < min_out ? min_out : x;
 
@@ -173,10 +182,18 @@ double Drivetrain::clamp(double x, double max_out, double min_out)
 
 
 /**
+ * @brief Updates the angular and linear velocity of the robot
  * 
+ * @param linear_x Linear x velocity
+ * @param linear_y Linear y velocity
+ * @param linear_z Linear z velocity
+ * @param angular_x Angular x velocity
+ * @param angular_y Angular y velocity
+ * @param angular_z Angular z velocity
  */
 void Drivetrain::setOutput(double linear_x, double linear_y, double linear_z, double angular_x, double angular_y, double angular_z)
 {
+    //Update all velocities
     this->output.linear.x = linear_x;
     this->output.linear.y = linear_y;
     this->output.linear.z = linear_z;
