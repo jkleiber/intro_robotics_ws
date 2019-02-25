@@ -1,10 +1,10 @@
 
 "use strict";
 
-let obstacle = require('./obstacle.js');
 let collision = require('./collision.js');
+let obstacle = require('./obstacle.js');
 
 module.exports = {
-  obstacle: obstacle,
   collision: collision,
+  obstacle: obstacle,
 };
