@@ -157,7 +157,7 @@ int main(int argc, char **argv)
     
     //Save the map every 5 seconds
     //Temporarily disable bc it prints to console
-    //ros::WallTimer mapeSaver = main_decision_node.createWallTimer(ros::WallDuration(5), saveMap);
+    ros::WallTimer mapeSaver = main_decision_node.createWallTimer(ros::WallDuration(5), saveMap);
 
     //Given state inputs from each callback, make a decision on what to do
     while(ros::ok())
