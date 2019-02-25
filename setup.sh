@@ -31,4 +31,6 @@ source ~/.bashrc;
 #Make the workspace
 catkin_make;
 
+#Source everything
+set -i $-
 source ~/.bashrc;
