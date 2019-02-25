@@ -1,7 +1,6 @@
-#!/bin/bash
+#!/bin/bash -i
 
-#Pretend to be interactive
-set -i $-
+#-i above makes script interactive without issue?
 
 echo "Workspace directory:"$PWD;
 
@@ -10,7 +9,6 @@ rm -rf build
 
 #Add ROS Kinetic to the bashrc
 echo "source /opt/ros/kinetic/setup.bash" >> ~/.bashrc;
-set -i $-
 source ~/.bashrc;
 
 #Add the required environment variables
@@ -25,12 +23,10 @@ echo "source "$PWD"/devel/setup.bash" >> ~/.bashrc;
 
 
 #Source the run commands file to update the terminal
-set -i $-
 source ~/.bashrc;
 
 #Make the workspace
 catkin_make;
 
 #Source everything
-set -i $-
 source ~/.bashrc;
