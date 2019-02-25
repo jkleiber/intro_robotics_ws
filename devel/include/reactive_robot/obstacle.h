@@ -15,6 +15,7 @@
 #include <ros/builtin_message_traits.h>
 #include <ros/message_operations.h>
 
+#include <geometry_msgs/Twist.h>
 
 namespace reactive_robot
 {
@@ -26,12 +27,14 @@ struct obstacle_
   obstacle_()
     : state(0)
     , angle(0.0)
-    , distance(0.0)  {
+    , distance(0.0)
+    , drive()  {
     }
   obstacle_(const ContainerAllocator& _alloc)
     : state(0)
     , angle(0.0)
-    , distance(0.0)  {
+    , distance(0.0)
+    , drive(_alloc)  {
   (void)_alloc;
     }
 
@@ -45,6 +48,9 @@ struct obstacle_
 
    typedef float _distance_type;
   _distance_type distance;
+
+   typedef  ::geometry_msgs::Twist_<ContainerAllocator>  _drive_type;
+  _drive_type drive;
 
 
 
@@ -92,7 +98,7 @@ namespace message_traits
 
 
 // BOOLTRAITS {'IsFixedSize': True, 'IsMessage': True, 'HasHeader': False}
-// {'nav_msgs': ['/opt/ros/kinetic/share/nav_msgs/cmake/../msg'], 'geometry_msgs': ['/opt/ros/kinetic/share/geometry_msgs/cmake/../msg'], 'reactive_robot': ['/home/trey/School/CS4023/intro_robotics_ws/src/reactive_robot/msg'], 'std_msgs': ['/opt/ros/kinetic/share/std_msgs/cmake/../msg'], 'actionlib_msgs': ['/opt/ros/kinetic/share/actionlib_msgs/cmake/../msg']}
+// {'nav_msgs': ['/opt/ros/kinetic/share/nav_msgs/cmake/../msg'], 'geometry_msgs': ['/opt/ros/kinetic/share/geometry_msgs/cmake/../msg'], 'reactive_robot': ['/home/jkleiber/intro_robotics_ws/src/reactive_robot/msg'], 'std_msgs': ['/opt/ros/kinetic/share/std_msgs/cmake/../msg'], 'actionlib_msgs': ['/opt/ros/kinetic/share/actionlib_msgs/cmake/../msg']}
 
 // !!!!!!!!!!! ['__class__', '__delattr__', '__dict__', '__doc__', '__eq__', '__format__', '__getattribute__', '__hash__', '__init__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', '_parsed_fields', 'constants', 'fields', 'full_name', 'has_header', 'header_present', 'names', 'package', 'parsed_fields', 'short_name', 'text', 'types']
 
@@ -135,12 +141,12 @@ struct MD5Sum< ::reactive_robot::obstacle_<ContainerAllocator> >
 {
   static const char* value()
   {
-    return "9dd79e7d21afdca6e8253b4c331cb2ee";
+    return "9def4b737c98a8f46cacc0980db0cf56";
   }
 
   static const char* value(const ::reactive_robot::obstacle_<ContainerAllocator>&) { return value(); }
-  static const uint64_t static_value1 = 0x9dd79e7d21afdca6ULL;
-  static const uint64_t static_value2 = 0xe8253b4c331cb2eeULL;
+  static const uint64_t static_value1 = 0x9def4b737c98a8f4ULL;
+  static const uint64_t static_value2 = 0x6cacc0980db0cf56ULL;
 };
 
 template<class ContainerAllocator>
@@ -165,6 +171,25 @@ uint8 ASYMMETRIC = 2\n\
 uint8 state\n\
 float32 angle\n\
 float32 distance\n\
+geometry_msgs/Twist drive\n\
+================================================================================\n\
+MSG: geometry_msgs/Twist\n\
+# This expresses velocity in free space broken into its linear and angular parts.\n\
+Vector3  linear\n\
+Vector3  angular\n\
+\n\
+================================================================================\n\
+MSG: geometry_msgs/Vector3\n\
+# This represents a vector in free space. \n\
+# It is only meant to represent a direction. Therefore, it does not\n\
+# make sense to apply a translation to it (e.g., when applying a \n\
+# generic rigid transformation to a Vector3, tf2 will only apply the\n\
+# rotation). If you want your data to be translatable too, use the\n\
+# geometry_msgs/Point message instead.\n\
+\n\
+float64 x\n\
+float64 y\n\
+float64 z\n\
 ";
   }
 
@@ -186,6 +211,7 @@ namespace serialization
       stream.next(m.state);
       stream.next(m.angle);
       stream.next(m.distance);
+      stream.next(m.drive);
     }
 
     ROS_DECLARE_ALLINONE_SERIALIZER
@@ -210,6 +236,9 @@ struct Printer< ::reactive_robot::obstacle_<ContainerAllocator> >
     Printer<float>::stream(s, indent + "  ", v.angle);
     s << indent << "distance: ";
     Printer<float>::stream(s, indent + "  ", v.distance);
+    s << indent << "drive: ";
+    s << std::endl;
+    Printer< ::geometry_msgs::Twist_<ContainerAllocator> >::stream(s, indent + "  ", v.drive);
   }
 };
 

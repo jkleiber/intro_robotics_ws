@@ -5,4 +5,6 @@
           ANGLE
           DISTANCE-VAL
           DISTANCE
+          DRIVE-VAL
+          DRIVE
 ))

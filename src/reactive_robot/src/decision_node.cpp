@@ -70,7 +70,7 @@ void obstacleCallback(const reactive_robot::obstacle::ConstPtr& obstacle_event)
     obstacle_type = obstacle_event->state;
 
     //printf("\n\rscanner_angle=%f, current_angle=%f\n\r", obstacle_event->angle, current_angle);
-    //obstacle_output = obstacle_event->drive;
+    obstacle_output = obstacle_event->drive;
 }
 
 /**
@@ -119,7 +119,6 @@ int main(int argc, char **argv)
     collide_detected = false;
     obstacle_type = EMPTY;
 
-
     //Subscribe to each of the topics published by the child nodes
     ros::Subscriber autodrive_sub = main_decision_node.subscribe(main_decision_node.resolveName("/reactive_robot/autodrive"), 10, &autodriveCallback);
     ros::Subscriber collision_sub = main_decision_node.subscribe(main_decision_node.resolveName("/reactive_robot/collision"), 10, &collisionCallback);
@@ -133,7 +132,7 @@ int main(int argc, char **argv)
     //Set the loop rate of the decision function to 100 Hz
     ros::Rate loop_rate(100);
 
-
+    //Keep track of end angle when escaping
     double end_angle;
     
     //Save the map every 5 seconds
@@ -169,6 +168,7 @@ int main(int argc, char **argv)
                 //TODO: Change current angle to the angle of the object
                 end_angle = drivetrain.angleWrap(current_angle + 180);
             }
+            
             //If we have not reached the end angle
             if(!drivetrain.turnToAngle(current_angle, end_angle))
             {
@@ -185,7 +185,7 @@ int main(int argc, char **argv)
         //If an asymmetric obstacle is detected, we need to avoid
         else if(obstacle_type == ASYMMETRIC && !escape_action_active)
         {
-
+            drivetrain.setOutput(obstacle_output);
         }
         //The lowest priority is to drive around randomly, so do that if all other priorities are being fulfilled
         /*

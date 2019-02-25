@@ -11,6 +11,7 @@ const _deserializer = _ros_msg_utils.Deserialize;
 const _arrayDeserializer = _deserializer.Array;
 const _finder = _ros_msg_utils.Find;
 const _getByteLength = _ros_msg_utils.getByteLength;
+let geometry_msgs = _finder('geometry_msgs');
 
 //-----------------------------------------------------------
 
@@ -21,6 +22,7 @@ class obstacle {
       this.state = null;
       this.angle = null;
       this.distance = null;
+      this.drive = null;
     }
     else {
       if (initObj.hasOwnProperty('state')) {
@@ -41,6 +43,12 @@ class obstacle {
       else {
         this.distance = 0.0;
       }
+      if (initObj.hasOwnProperty('drive')) {
+        this.drive = initObj.drive
+      }
+      else {
+        this.drive = new geometry_msgs.msg.Twist();
+      }
     }
   }
 
@@ -52,6 +60,8 @@ class obstacle {
     bufferOffset = _serializer.float32(obj.angle, buffer, bufferOffset);
     // Serialize message field [distance]
     bufferOffset = _serializer.float32(obj.distance, buffer, bufferOffset);
+    // Serialize message field [drive]
+    bufferOffset = geometry_msgs.msg.Twist.serialize(obj.drive, buffer, bufferOffset);
     return bufferOffset;
   }
 
@@ -65,11 +75,13 @@ class obstacle {
     data.angle = _deserializer.float32(buffer, bufferOffset);
     // Deserialize message field [distance]
     data.distance = _deserializer.float32(buffer, bufferOffset);
+    // Deserialize message field [drive]
+    data.drive = geometry_msgs.msg.Twist.deserialize(buffer, bufferOffset);
     return data;
   }
 
   static getMessageSize(object) {
-    return 9;
+    return 57;
   }
 
   static datatype() {
@@ -79,7 +91,7 @@ class obstacle {
 
   static md5sum() {
     //Returns md5sum for a message object
-    return '9dd79e7d21afdca6e8253b4c331cb2ee';
+    return '9def4b737c98a8f46cacc0980db0cf56';
   }
 
   static messageDefinition() {
@@ -91,6 +103,25 @@ class obstacle {
     uint8 state
     float32 angle
     float32 distance
+    geometry_msgs/Twist drive
+    ================================================================================
+    MSG: geometry_msgs/Twist
+    # This expresses velocity in free space broken into its linear and angular parts.
+    Vector3  linear
+    Vector3  angular
+    
+    ================================================================================
+    MSG: geometry_msgs/Vector3
+    # This represents a vector in free space. 
+    # It is only meant to represent a direction. Therefore, it does not
+    # make sense to apply a translation to it (e.g., when applying a 
+    # generic rigid transformation to a Vector3, tf2 will only apply the
+    # rotation). If you want your data to be translatable too, use the
+    # geometry_msgs/Point message instead.
+    
+    float64 x
+    float64 y
+    float64 z
     `;
   }
 
@@ -119,6 +150,13 @@ class obstacle {
     }
     else {
       resolved.distance = 0.0
+    }
+
+    if (msg.drive !== undefined) {
+      resolved.drive = geometry_msgs.msg.Twist.Resolve(msg.drive)
+    }
+    else {
+      resolved.drive = new geometry_msgs.msg.Twist()
     }
 
     return resolved;
