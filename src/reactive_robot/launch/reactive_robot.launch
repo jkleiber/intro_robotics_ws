@@ -49,9 +49,9 @@
     <include file="$(find turtlebot_teleop)/launch/keyboard_teleop.launch"/>
 
     <!-- Disable console prints -->
-    <remap from="rosout" to="rosout_throwaway">
+    <remap from="rosout" to="rosout_throwaway"/>
 
-    <!-- SLAM mapping -->
-    <include file="$(find turtlebot_navigation)/launch/includes/gmapping/$(arg 3d_sensor)_gmapping.launch.xml"/>
+    <!-- SLAM mapping 
+    <include file="$(find turtlebot_navigation)/launch/includes/gmapping/$(arg 3d_sensor)_gmapping.launch.xml"/>-->
 
 </launch>

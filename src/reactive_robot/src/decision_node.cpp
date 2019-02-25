@@ -69,17 +69,6 @@ void keyboardCallback(const geometry_msgs::Twist::ConstPtr& keyboard_event)
 
 
 /**
- * @brief Callback for obstacle avoidance
- * 
- * @param obstacle_event  Event containing instructions from obstacle_node
- */
-void keyboardCallback(const geometry_msgs::Twist::ConstPtr& keyboard_event)
-{    
-    keyboard_commands = *keyboard_event;
-}
-
-
-/**
  * 
  */
 void obstacleCallback(const reactive_robot::obstacle::ConstPtr& obstacle_event)
@@ -116,15 +105,6 @@ void odometryCallback(const nav_msgs::Odometry::ConstPtr& odometer)
 bool twistNotZero(geometry_msgs::Twist twist)
 {
     return twist.linear.x || twist.linear.y || twist.linear.z || twist.angular.x || twist.angular.y ||twist.angular.z;
-}
-
-/**
- * 
- */
-void saveMap(const ros::WallTimerEvent& event)
-{
-    //TODO: Justin can't tell me what to do, get this path working into maps folder
-    system("rosrun map_server map_saver -f ~/test_map");
 }
 
 
@@ -236,7 +216,7 @@ int main(int argc, char **argv)
         else
         {
             //Failsafe
-           drivetrain.resetOutput();
+            drivetrain.resetOutput();
         }
        
         //Publish the desired drivetrain output to the command velocity multiplexer

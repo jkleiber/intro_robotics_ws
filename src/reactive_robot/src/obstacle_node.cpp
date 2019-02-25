@@ -14,13 +14,14 @@
 
 //Constants
 #define RAD_TO_DEG (double)(180.0 / 3.14159)
+#define FT_TO_METERS (double)(1.0 / 3.25)
 
 #define TOTAL_SAMPLES 640                                       //Laser scan samples
-#define N_CENTER_SAMPLES 50                                     //Width of center view region
+#define N_CENTER_SAMPLES 75                                     //Width of center view region
 #define N_SIDE_SAMPLES ((TOTAL_SAMPLES - N_CENTER_SAMPLES) / 2) //Allocate the number of samples for the side views
 #define LEFT_SAMPLES_IDX TOTAL_SAMPLES - N_SIDE_SAMPLES         //Where the left samples start
 #define RIGHT_SAMPLES_IDX N_SIDE_SAMPLES                        //Where the right samples end
-#define DETECTION_RANGE 1                                       //Range in meters to detect obstacles
+#define DETECTION_RANGE (double)(2 * FT_TO_METERS)              //Range in meters to detect obstacles
 
 
 
@@ -105,7 +106,7 @@ void scanCallback(const sensor_msgs::LaserScan::ConstPtr& obstacle_event)
         //Right samples
         if(i < RIGHT_SAMPLES_IDX)
         {
-            if(!std::isnan(obstacle_event->ranges[i] && obstacle_event->ranges[i] <= distance_to_right_obj))
+            if(!std::isnan(obstacle_event->ranges[i]) && obstacle_event->ranges[i] <= distance_to_right_obj)
             {
                 distance_to_right_obj = obstacle_event->ranges[i];
             }
@@ -113,7 +114,7 @@ void scanCallback(const sensor_msgs::LaserScan::ConstPtr& obstacle_event)
         //Center region
         else if(i >= RIGHT_SAMPLES_IDX && i < LEFT_SAMPLES_IDX)
         {
-            if(!std::isnan(obstacle_event->ranges[i] && obstacle_event->ranges[i] <= distance_to_center_obj))
+            if(!std::isnan(obstacle_event->ranges[i]) && obstacle_event->ranges[i] <= distance_to_center_obj)
             {
                 distance_to_center_obj = obstacle_event->ranges[i];
             }
@@ -121,7 +122,7 @@ void scanCallback(const sensor_msgs::LaserScan::ConstPtr& obstacle_event)
         //Left region
         else
         {
-            if(!std::isnan(obstacle_event->ranges[i] && obstacle_event->ranges[i] <= distance_to_left_obj))
+            if(!std::isnan(obstacle_event->ranges[i]) && obstacle_event->ranges[i] <= distance_to_left_obj)
             {
                 distance_to_left_obj = obstacle_event->ranges[i];
             }
@@ -135,7 +136,7 @@ void scanCallback(const sensor_msgs::LaserScan::ConstPtr& obstacle_event)
         obstacle_msg.state = obstacle_msg.EMPTY;
         obstacle_msg.drive.angular.z = 0;
     }
-    else if(distance_to_center_obj <= DETECTION_RANGE)
+    else if(distance_to_center_obj <= DETECTION_RANGE || distance_to_left_obj == distance_to_right_obj)
     {
         obstacle_msg.state = obstacle_msg.SYMMETRIC;
         obstacle_msg.angle = ((symmetric_obj_index * obstacle_event->angle_increment) + obstacle_event->angle_min) * RAD_TO_DEG;
@@ -143,7 +144,7 @@ void scanCallback(const sensor_msgs::LaserScan::ConstPtr& obstacle_event)
     else
     {
         obstacle_msg.state = obstacle_msg.ASYMMETRIC;
-        obstacle_msg.drive.linear.x = 0;
+        obstacle_msg.drive.linear.x = 0.1;
         obstacle_msg.drive.linear.y = 0;
         obstacle_msg.drive.linear.z = 0;
         
@@ -152,13 +153,9 @@ void scanCallback(const sensor_msgs::LaserScan::ConstPtr& obstacle_event)
         {
             obstacle_msg.drive.angular.z = -0.4;
         }
-        else if (distance_to_left_obj > distance_to_right_obj)
-        {
-            obstacle_msg.drive.angular.z = 0.4;
-        }
         else
         {
-            obstacle_msg.drive.angular.z = 0;
+            obstacle_msg.drive.angular.z = 0.4;
         }
     }
 
