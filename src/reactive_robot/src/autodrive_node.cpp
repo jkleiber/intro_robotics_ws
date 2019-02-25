@@ -31,7 +31,7 @@ double target_angle;
 bool odometry_init;
 
 /**
- * autodriveCallback - when collisions are detected by the bumpers, track the state of the bumpers
+ * @brief When collisions are detected by the bumpers, track the state of the bumpers
  * in order to halt the robot before further damage occurs.
  * 
  * @param odometer: the message sent from the navigation base describing the robots odometry
@@ -82,12 +82,20 @@ void odometryCallback(const nav_msgs::Odometry::ConstPtr& odometer)
     }
 }
 
-
+/**
+ * @brief When obstacles are detected, update old position to current position
+ * 
+ * @param obstacle: the created obstacle message describing obstacle state angle, distance, and drive controls
+ */
 void obstacleCallback(const reactive_robot::obstacle::ConstPtr& obstacle)
 {
+    //If there is currently an obstacle being detected
     if(obstacle->state != obstacle->EMPTY)
     {
+        //Update old position
         old_pos = cur_pos;
+
+        //Update global variable
         turning = false;
     }
 }
@@ -95,7 +103,11 @@ void obstacleCallback(const reactive_robot::obstacle::ConstPtr& obstacle)
 
 
 /**
- * Drive the robot automatically
+ * @brief Main method
+ * 
+ * @param argc Number of args
+ * @param argv Args into the executable
+ * @return int Exit code
  */
 int main(int argc, char **argv)
 {

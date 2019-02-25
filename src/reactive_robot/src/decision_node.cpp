@@ -41,18 +41,20 @@ geometry_msgs::Twist obstacle_output;
  */
 void autodriveCallback(const geometry_msgs::Twist::ConstPtr& drive_event)
 {
+    //Update autodrive output
     autodrive_output = *drive_event;
 }
 
 
 
 /**
- * @brief Callback for collision
+ * @brief Callback for collisions
  * 
  * @param collision_event  Event containing instructions from collision_node
  */
 void collisionCallback(const reactive_robot::collision::ConstPtr& collision_event)
 {
+    //Update collision boolean
     collide_detected = collision_event->collision;
 }
 
@@ -64,18 +66,22 @@ void collisionCallback(const reactive_robot::collision::ConstPtr& collision_even
  */
 void keyboardCallback(const geometry_msgs::Twist::ConstPtr& keyboard_event)
 {    
+    //Update keyboard commands
     keyboard_commands = *keyboard_event;
 }
 
 
 /**
+ * @brief Callback for obstacles
  * 
+ * @param obstacle_event Event containing information on obstacles and avoid instructions
  */
 void obstacleCallback(const reactive_robot::obstacle::ConstPtr& obstacle_event)
 {
+    //Update obstacle type
     obstacle_type = obstacle_event->state;
 
-    //printf("\n\rscanner_angle=%f, current_angle=%f\n\r", obstacle_event->angle, current_angle);
+    //Update output to Twist in obstacle message
     obstacle_output = obstacle_event->drive;
 }
 

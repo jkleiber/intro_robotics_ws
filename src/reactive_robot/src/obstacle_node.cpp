@@ -1,6 +1,6 @@
+//ROS msgs and libs
 #include <ros/ros.h>
 #include <math.h>
-
 
 //Scanner libs and msgs
 #include <sensor_msgs/LaserScan.h>
@@ -13,9 +13,8 @@
 
 
 //Constants
-#define RAD_TO_DEG (double)(180.0 / 3.14159)
-#define FT_TO_METERS (double)(1.0 / 3.25)
-
+#define RAD_TO_DEG (double)(180.0 / 3.14159)                    //Radians to Degrees
+#define FT_TO_METERS (double)(1.0 / 3.25)                       //Feet to Meters
 #define TOTAL_SAMPLES 640                                       //Laser scan samples
 #define N_CENTER_SAMPLES 75                                     //Width of center view region
 #define N_SIDE_SAMPLES ((TOTAL_SAMPLES - N_CENTER_SAMPLES) / 2) //Allocate the number of samples for the side views
@@ -23,61 +22,11 @@
 #define RIGHT_SAMPLES_IDX N_SIDE_SAMPLES                        //Where the right samples end
 #define DETECTION_RANGE (double)(2 * FT_TO_METERS)              //Range in meters to detect obstacles
 
-
-
 //Publisher
 ros::Publisher obstacle_pub;
 
 /**
- * isSymmetrical  - Determines whether an obstacle is symmetric within a 10% tolerance
- * 
- * @param start_index: the start index of the obstacle
- * @param end_index: the end index of the obstacle
- * @param obstacle_event: the message sent from the LaserScan sensor messages containing the information of the scan
- * 
- * @return bool: returns true if the obstacle is symmetric and false if the object is asymmetric
- */
-bool isSymmetrical(int start_index, int end_index, const sensor_msgs::LaserScan::ConstPtr& obstacle_event) 
-{
-    //Set the return boolean to true to start
-    bool symmetric = true;
-    //Find the middle index of the obstalce
-    int mid_index = (start_index + end_index) / 2;
-    //Loop from left side and right side and cross check distances
-    for(int left = start_index; left < mid_index; ++left)
-    {
-        for(int right = end_index; right > mid_index; --right)
-        {
-            //Assign the distance to variables so ranges is only called once for each side respectively
-            float left_distance = obstacle_event->ranges[left];
-            float right_distance = obstacle_event->ranges[right];
-            //If the right distance is outside of left distance with a 10% tolerance, set symmetric to false and break 
-            if((left_distance + left_distance * 0.05) > right_distance || (left_distance - left_distance * 0.05) < right_distance)
-            {
-                symmetric = false;
-                break;
-            }
-        }
-    }
-    return symmetric;
-}
-
-/**
- * calculateDistance - Calculates the closest distance of the obstacle
- */
-float calculateDistance(int start_index, int end_index, const sensor_msgs::LaserScan::ConstPtr& obstacle_event)
-{
-    //Set closest disance to 1 meter, as all distances of the object will be closer (i.e. 1 foot or less)
-    float closest_distance = 1;
-    for(start_index; start_index <= end_index; ++start_index)
-    {
-        closest_distance = (obstacle_event->ranges[start_index] < closest_distance) ? obstacle_event->ranges[start_index] : closest_distance;
-    }
-    return closest_distance;
-}
-
-/**
- * scanCallback - Detects obstacles in front of the robot and deduces the symmetry and distance
+ * @brief Detects obstacles in front of the robot and deduces the symmetry and distance
  * of the object.
  * 
  * @param obstacle_event: the message sent from the LaserScan sensor messages containing the information of the scan
@@ -100,59 +49,73 @@ void scanCallback(const sensor_msgs::LaserScan::ConstPtr& obstacle_event)
     double distance_to_center_obj = INT_MAX;
     double distance_to_right_obj = INT_MAX;
 
-    //Loop through all the samples
+    //Loop through all the samples and update closest distance from objects in each region if needed
     for(int i = 0; i < TOTAL_SAMPLES; ++i)
     {
-        //Right samples
+        //Right region
         if(i < RIGHT_SAMPLES_IDX)
         {
+            //If the distance to the right obstacle is less than the current closest distance
             if(!std::isnan(obstacle_event->ranges[i]) && obstacle_event->ranges[i] <= distance_to_right_obj)
             {
+                //Update closest distance to right object
                 distance_to_right_obj = obstacle_event->ranges[i];
             }
         }
         //Center region
         else if(i >= RIGHT_SAMPLES_IDX && i < LEFT_SAMPLES_IDX)
         {
+             //If the distance to the center obstacle is less than the current closest distance
             if(!std::isnan(obstacle_event->ranges[i]) && obstacle_event->ranges[i] <= distance_to_center_obj)
             {
+                //Update closest distance to cetner object
                 distance_to_center_obj = obstacle_event->ranges[i];
             }
         }
         //Left region
         else
         {
+             //If the distance to the left obstacle is less than the current closest distance
             if(!std::isnan(obstacle_event->ranges[i]) && obstacle_event->ranges[i] <= distance_to_left_obj)
             {
+                //Update closest distance to left object
                 distance_to_left_obj = obstacle_event->ranges[i];
             }
         }
         
     }
 
-
+    //If no obstacle is detected
     if(distance_to_left_obj > DETECTION_RANGE && distance_to_center_obj > DETECTION_RANGE && distance_to_right_obj > DETECTION_RANGE)
     {
+        //Update stae to empty
         obstacle_msg.state = obstacle_msg.EMPTY;
+        //Reset angular velocity
         obstacle_msg.drive.angular.z = 0;
     }
+    //If an object directly in front of the object is detected
     else if(distance_to_center_obj <= DETECTION_RANGE || distance_to_left_obj == distance_to_right_obj)
     {
+        //Update state to symmetric
         obstacle_msg.state = obstacle_msg.SYMMETRIC;
+        //Update obstacles angle from robot
         obstacle_msg.angle = ((symmetric_obj_index * obstacle_event->angle_increment) + obstacle_event->angle_min) * RAD_TO_DEG;
     }
+    //Otherwise the object is in the left or right region
     else
     {
+        //Update message state and linear velocities
         obstacle_msg.state = obstacle_msg.ASYMMETRIC;
         obstacle_msg.drive.linear.x = 0.1;
         obstacle_msg.drive.linear.y = 0;
         obstacle_msg.drive.linear.z = 0;
         
-
+        //If the left object is closer, turn right
         if(distance_to_left_obj < distance_to_right_obj)
         {
             obstacle_msg.drive.angular.z = -0.4;
         }
+        //If the right object is closer, turn left
         else
         {
             obstacle_msg.drive.angular.z = 0.4;
@@ -162,8 +125,13 @@ void scanCallback(const sensor_msgs::LaserScan::ConstPtr& obstacle_event)
     //Publish the instructions from this node
     obstacle_pub.publish(obstacle_msg);
 }
+
 /**
- * Runs the loop needed to handle obstacle detection 
+ * @brief Main method
+ * 
+ * @param argc Number of args
+ * @param argv Args into the executable
+ * @return int Exit code
  */
 int main(int argc, char **argv)
 {
