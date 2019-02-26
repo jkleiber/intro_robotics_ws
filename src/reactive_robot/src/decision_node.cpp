@@ -2,33 +2,34 @@
 #include <ros/ros.h>
 #include <geometry_msgs/Twist.h>
 #include <nav_msgs/Odometry.h>
+#include <tf/transform_datatypes.h>
+
 
 //User msgs and libs
 #include <reactive_robot/collision.h>
 #include <reactive_robot/drivetrain.h>
 #include <reactive_robot/obstacle.h>
-#include <tf/transform_datatypes.h>
+
 
 /* Macros and constants */
-//Obstacle states
-#define EMPTY       0
-#define SYMMETRIC   1 
-#define ASYMMETRIC  2
-#define RAD_TO_DEG (double)(180.0 / 3.14159)
+#define RAD_TO_DEG (double)(180.0 / 3.14159)    //Conversion factor from radians to degrees
 
 
 /* Global variables */
 //Track the current state of each part of the schema
 bool collide_detected;
+bool collision_latch;
+bool escape_action_active;
 bool forward_drive;
 bool keyboard_input_detected;
-bool escape_action_active;
 uint8_t obstacle_type;
-double turn_angle_delta;
-double current_angle;
-Drivetrain drivetrain;
 
-//State data variables
+//Odometry
+double current_angle;       //Angle the robot is facing
+double turn_angle_delta;    //Amount to turn
+
+//Output Control
+Drivetrain drivetrain;
 geometry_msgs::Twist autodrive_output;
 geometry_msgs::Twist keyboard_commands;
 geometry_msgs::Twist obstacle_output;
@@ -41,19 +42,24 @@ geometry_msgs::Twist obstacle_output;
  */
 void autodriveCallback(const geometry_msgs::Twist::ConstPtr& drive_event)
 {
+    //Update autodrive output
     autodrive_output = *drive_event;
 }
 
 
-
 /**
- * @brief Callback for collision
+ * @brief Callback for collisions
  * 
  * @param collision_event  Event containing instructions from collision_node
  */
 void collisionCallback(const reactive_robot::collision::ConstPtr& collision_event)
 {
+    //Detect if there is a collision
     collide_detected = collision_event->collision;
+
+    //Latch collision flag if a collision is found
+    //This will only unlatch if keyboard input is used to get the robot out of a jam
+    collision_latch = collide_detected ? true : collision_latch;
 }
 
 
@@ -64,20 +70,25 @@ void collisionCallback(const reactive_robot::collision::ConstPtr& collision_even
  */
 void keyboardCallback(const geometry_msgs::Twist::ConstPtr& keyboard_event)
 {    
+    //Update keyboard commands
     keyboard_commands = *keyboard_event;
 }
 
 
 /**
+ * @brief Callback for obstacles
  * 
+ * @param obstacle_event Event containing information on obstacles and avoid instructions
  */
 void obstacleCallback(const reactive_robot::obstacle::ConstPtr& obstacle_event)
 {
+    //Update obstacle type
     obstacle_type = obstacle_event->state;
 
-    //printf("\n\rscanner_angle=%f, current_angle=%f\n\r", obstacle_event->angle, current_angle);
+    //Update output to Twist in obstacle message
     obstacle_output = obstacle_event->drive;
 }
+
 
 /**
  * @brief Callback for robot position
@@ -137,17 +148,23 @@ int main(int argc, char **argv)
 
     //Initialize state trackers
     collide_detected = false;
-    obstacle_type = EMPTY;
+    obstacle_type = reactive_robot::obstacle::EMPTY;
 
     //Subscribe to each of the topics published by the child nodes
-    ros::Subscriber autodrive_sub = main_decision_node.subscribe(main_decision_node.resolveName("/reactive_robot/autodrive"), 10, &autodriveCallback);
-    ros::Subscriber collision_sub = main_decision_node.subscribe(main_decision_node.resolveName("/reactive_robot/collision"), 10, &collisionCallback);
-    ros::Subscriber keyboard_sub  = main_decision_node.subscribe(main_decision_node.resolveName("/reactive_robot/keyboard_input"), 10, &keyboardCallback);
-    ros::Subscriber obstacle_sub  = main_decision_node.subscribe(main_decision_node.resolveName("/reactive_robot/obstacle"), 10, &obstacleCallback);
-    ros::Subscriber odom_sub      = main_decision_node.subscribe(main_decision_node.resolveName("/odom"), 10, &odometryCallback);
+    ros::Subscriber autodrive_sub = main_decision_node.subscribe(
+        main_decision_node.resolveName("/reactive_robot/autodrive"), 10, &autodriveCallback);
+    ros::Subscriber collision_sub = main_decision_node.subscribe(
+        main_decision_node.resolveName("/reactive_robot/collision"), 10, &collisionCallback);
+    ros::Subscriber keyboard_sub  = main_decision_node.subscribe(
+        main_decision_node.resolveName("/reactive_robot/keyboard_input"), 10, &keyboardCallback);
+    ros::Subscriber obstacle_sub  = main_decision_node.subscribe(
+        main_decision_node.resolveName("/reactive_robot/obstacle"), 10, &obstacleCallback);
+    ros::Subscriber odom_sub      = main_decision_node.subscribe(
+        main_decision_node.resolveName("/odom"), 10, &odometryCallback);
 
     //Publish to the turtlebot's cmd_vel_mux topic
-    ros::Publisher teleop_pub = main_decision_node.advertise<geometry_msgs::Twist>(main_decision_node.resolveName("/cmd_vel_mux/input/teleop"), 10);
+    ros::Publisher teleop_pub = main_decision_node.advertise<geometry_msgs::Twist>(
+        main_decision_node.resolveName("/cmd_vel_mux/input/teleop"), 10);
 
     //Set the loop rate of the decision function to 100 Hz
     ros::Rate loop_rate(100);
@@ -177,9 +194,11 @@ int main(int argc, char **argv)
             //Set the drivetrain output to the keyboard input
             drivetrain.setOutput(keyboard_commands);
             escape_action_active = false;
+            collision_latch = false;
         }
         //If a symmetric obstacle is detected, we need to escape 
-        else if(obstacle_type == SYMMETRIC || escape_action_active)
+        else if((obstacle_type == reactive_robot::obstacle::SYMMETRIC || escape_action_active)
+             && !collision_latch)
         {
             //If we have not already started escaping
             if(!escape_action_active)
@@ -203,12 +222,12 @@ int main(int argc, char **argv)
             }
         }
         //If an asymmetric obstacle is detected, we need to avoid
-        else if(obstacle_type == ASYMMETRIC && !escape_action_active)
+        else if(obstacle_type == reactive_robot::obstacle::ASYMMETRIC && !escape_action_active && !collision_latch)
         {
             drivetrain.setOutput(obstacle_output);
         }
         //The lowest priority is to drive around randomly, so do that if all other priorities are being fulfilled
-        else if (!escape_action_active)
+        else if (!escape_action_active && !collision_latch)
         {
             //Use the autodrive output
             drivetrain.setOutput(autodrive_output);
