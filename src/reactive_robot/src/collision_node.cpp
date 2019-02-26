@@ -1,10 +1,6 @@
 //ROS libs and msgs
 #include <ros/ros.h>
-
-
-//Turtlebot libs and msgs
 #include <kobuki_msgs/BumperEvent.h>
-
 
 //User libs and msgs
 #include <reactive_robot/collision.h>
@@ -20,11 +16,11 @@ typedef struct bumper_state_t
 } bumper_state;
 
 
-//Publishers
+//Publisher
 ros::Publisher collision_pub;
 
-//Keep track of the bumper states
-bumper_state bump_states;
+/* Global variables */
+bumper_state bump_states;   //Keep track of the bumper states
 
 
 /**
@@ -52,8 +48,6 @@ void collision_callback(const kobuki_msgs::BumperEvent::ConstPtr& bump_event)
         bump_states.center_bumper = bump_event->bumper == bump_event->CENTER ? 0 : bump_states.center_bumper;
         bump_states.right_bumper = bump_event->bumper == bump_event->RIGHT ? 0 : bump_states.right_bumper;
     }
-
-    //printf("bump: left=%d \t center=%d \t right=%d\n\r", bump_states.left_bumper, bump_states.center_bumper ,bump_states.right_bumper);
 
     //Collision message construction
     //If any of the flags are set to 1, we need to set the collision message flag to true

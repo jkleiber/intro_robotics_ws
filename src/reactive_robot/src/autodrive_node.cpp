@@ -1,21 +1,23 @@
-#include <cstdlib>
-
-/* ROS/System libs and msgs */
+//ROS/System libs and msgs
 #include <ros/ros.h>
 #include <ros/console.h>
 #include <geometry_msgs/Twist.h>
-#include <ros/ros.h>
 #include <nav_msgs/Odometry.h>
 #include <tf/transform_datatypes.h>
 
-/* User libs and msgs */
+
+//User libs and msgs
 #include "reactive_robot/drivetrain.h"
 #include "reactive_robot/obstacle.h"
 
 
+//Other libs
+#include <cstdlib>
+
+
 /* Macros and constants */
-#define METERS_TO_FT 3.25
-#define RAD_TO_DEG (double)(180.0 / 3.14159)
+#define METERS_TO_FT 3.25                       //Conversion factor from meters to feet
+#define RAD_TO_DEG (double)(180.0 / 3.14159)    //Conversion factor from radians to degrees
 
 
 //Drivetrain
@@ -29,9 +31,9 @@ ros::Publisher autodrive_pub;
 /* Global variables */
 geometry_msgs::Point old_pos;   //The position of the robot when it last turned
 geometry_msgs::Point cur_pos;   //The current position of the robot
-bool turning;                   //Is the robot turning?
 double current_angle;           //The current angle the robot is facing
 double target_angle;            //The angle the robot needs to be facing
+bool turning;                   //Is the robot turning?
 bool odometry_init;             //Prevents errors on first callback
 
 

@@ -2,18 +2,17 @@
 #include <ros/ros.h>
 #include <geometry_msgs/Twist.h>
 #include <nav_msgs/Odometry.h>
+#include <tf/transform_datatypes.h>
 
 
 //User msgs and libs
 #include <reactive_robot/collision.h>
 #include <reactive_robot/drivetrain.h>
 #include <reactive_robot/obstacle.h>
-#include <tf/transform_datatypes.h>
 
 
 /* Macros and constants */
-//Obstacle states
-#define RAD_TO_DEG (double)(180.0 / 3.14159)
+#define RAD_TO_DEG (double)(180.0 / 3.14159)    //Conversion factor from radians to degrees
 
 
 /* Global variables */
@@ -26,8 +25,8 @@ bool keyboard_input_detected;
 uint8_t obstacle_type;
 
 //Odometry
-double current_angle;
-double turn_angle_delta;
+double current_angle;       //Angle the robot is facing
+double turn_angle_delta;    //Amount to turn
 
 //Output Control
 Drivetrain drivetrain;

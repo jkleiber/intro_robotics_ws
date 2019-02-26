@@ -1,15 +1,15 @@
 //ROS msgs and libs
 #include <ros/ros.h>
-#include <math.h>
-
-//Scanner libs and msgs
 #include <sensor_msgs/LaserScan.h>
+
 
 //User libs and msgs
 #include <reactive_robot/obstacle.h>
 
-//For isnan debug
-#include<cmath>
+
+//Other libs
+#include <cmath>
+#include <math.h>
 
 
 //Constants
