@@ -1,7 +1,5 @@
 //ROS libs and msgs
 #include <ros/ros.h>
-
-//Turtlebot libs and msgs
 #include <kobuki_msgs/BumperEvent.h>
 
 //User libs and msgs
@@ -18,12 +16,11 @@ typedef struct bumper_state_t
 } bumper_state;
 
 
-//Publishers
+//Publisher
 ros::Publisher collision_pub;
 
-//Keep track of the bumper states
-bumper_state bump_states;
-
+/* Global variables */
+bumper_state bump_states;   //Keep track of the bumper states
 
 
 /**
@@ -52,8 +49,6 @@ void collision_callback(const kobuki_msgs::BumperEvent::ConstPtr& bump_event)
         bump_states.right_bumper = bump_event->bumper == bump_event->RIGHT ? 0 : bump_states.right_bumper;
     }
 
-    printf("bump: left=%d \t center=%d \t right=%d\n\r", bump_states.left_bumper, bump_states.center_bumper ,bump_states.right_bumper);
-
     //Collision message construction
     //If any of the flags are set to 1, we need to set the collision message flag to true
     if(bump_states.left_bumper || bump_states.center_bumper || bump_states.right_bumper)
@@ -71,7 +66,6 @@ void collision_callback(const kobuki_msgs::BumperEvent::ConstPtr& bump_event)
 }
 
 
-
 /**
  * Runs the loop needed to handle collision detection
  */
@@ -84,7 +78,8 @@ int main(int argc, char **argv)
     ros::NodeHandle collision_node;
 
     //Subscribe to the bump sensors
-    ros::Subscriber bump_sub = collision_node.subscribe(collision_node.resolveName("/mobile_base/events/bumper"), 10, &collision_callback);
+    ros::Subscriber bump_sub = collision_node.subscribe(
+        collision_node.resolveName("/mobile_base/events/bumper"), 10, &collision_callback);
 
     //Publish state to the collision topic
     collision_pub = collision_node.advertise<reactive_robot::collision>("/reactive_robot/collision", 10);
