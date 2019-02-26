@@ -19,16 +19,18 @@
 /* Global variables */
 //Track the current state of each part of the schema
 bool collide_detected;
+bool collision_latch;
+bool escape_action_active;
 bool forward_drive;
 bool keyboard_input_detected;
-bool escape_action_active;
 uint8_t obstacle_type;
-double turn_angle_delta;
+
+//Odometry
 double current_angle;
+double turn_angle_delta;
+
+//Output Control
 Drivetrain drivetrain;
-
-
-//State data variables
 geometry_msgs::Twist autodrive_output;
 geometry_msgs::Twist keyboard_commands;
 geometry_msgs::Twist obstacle_output;
@@ -53,8 +55,12 @@ void autodriveCallback(const geometry_msgs::Twist::ConstPtr& drive_event)
  */
 void collisionCallback(const reactive_robot::collision::ConstPtr& collision_event)
 {
-    //Update collision boolean
+    //Detect if there is a collision
     collide_detected = collision_event->collision;
+
+    //Latch collision flag if a collision is found
+    //This will only unlatch if keyboard input is used to get the robot out of a jam
+    collision_latch = collide_detected ? true : collision_latch;
 }
 
 
@@ -183,9 +189,11 @@ int main(int argc, char **argv)
             //Set the drivetrain output to the keyboard input
             drivetrain.setOutput(keyboard_commands);
             escape_action_active = false;
+            collision_latch = false;
         }
         //If a symmetric obstacle is detected, we need to escape 
-        else if(obstacle_type == reactive_robot::obstacle::SYMMETRIC || escape_action_active)
+        else if((obstacle_type == reactive_robot::obstacle::SYMMETRIC || escape_action_active)
+             && !collision_latch)
         {
             //If we have not already started escaping
             if(!escape_action_active)
@@ -209,12 +217,12 @@ int main(int argc, char **argv)
             }
         }
         //If an asymmetric obstacle is detected, we need to avoid
-        else if(obstacle_type == reactive_robot::obstacle::ASYMMETRIC && !escape_action_active)
+        else if(obstacle_type == reactive_robot::obstacle::ASYMMETRIC && !escape_action_active && !collision_latch)
         {
             drivetrain.setOutput(obstacle_output);
         }
         //The lowest priority is to drive around randomly, so do that if all other priorities are being fulfilled
-        else if (!escape_action_active)
+        else if (!escape_action_active && !collision_latch)
         {
             //Use the autodrive output
             drivetrain.setOutput(autodrive_output);

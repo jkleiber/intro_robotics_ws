@@ -20,7 +20,7 @@
 #define N_SIDE_SAMPLES ((TOTAL_SAMPLES - N_CENTER_SAMPLES) / 2) //Allocate the number of samples for the side views
 #define LEFT_SAMPLES_IDX TOTAL_SAMPLES - N_SIDE_SAMPLES         //Where the left samples start
 #define RIGHT_SAMPLES_IDX N_SIDE_SAMPLES                        //Where the right samples end
-#define DETECTION_RANGE (double)(2 * FT_TO_METERS)              //Range in meters to detect obstacles
+#define DETECTION_RANGE (double)(2.5 * FT_TO_METERS)            //Range in meters to detect obstacles
 
 //Publisher
 ros::Publisher obstacle_pub;

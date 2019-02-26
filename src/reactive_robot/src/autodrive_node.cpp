@@ -151,7 +151,7 @@ int main(int argc, char **argv)
         //Otherwise drive straight
         else
         {
-            drivetrain.setOutput(0.5, 0);
+            drivetrain.setOutput(0.4, 0);
         }
         
         //Publish the drivetrain output

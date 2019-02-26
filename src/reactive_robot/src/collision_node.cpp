@@ -53,7 +53,7 @@ void collision_callback(const kobuki_msgs::BumperEvent::ConstPtr& bump_event)
         bump_states.right_bumper = bump_event->bumper == bump_event->RIGHT ? 0 : bump_states.right_bumper;
     }
 
-    printf("bump: left=%d \t center=%d \t right=%d\n\r", bump_states.left_bumper, bump_states.center_bumper ,bump_states.right_bumper);
+    //printf("bump: left=%d \t center=%d \t right=%d\n\r", bump_states.left_bumper, bump_states.center_bumper ,bump_states.right_bumper);
 
     //Collision message construction
     //If any of the flags are set to 1, we need to set the collision message flag to true

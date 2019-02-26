@@ -10,11 +10,11 @@
 #define TURN_ERROR_TOLERANCE (double)(1.0)
 
 //Output constants
-#define MAX_OUTPUT 0.5
-#define MIN_OUTPUT -0.5
+#define MAX_OUTPUT 0.75
+#define MIN_OUTPUT -0.75
 
 //PID constants
-#define KP (double)(0.2)
+#define KP (double)(0.18)
 
 class Drivetrain
 {
