@@ -13,9 +13,6 @@
 
 /* Macros and constants */
 //Obstacle states
-#define EMPTY       0
-#define SYMMETRIC   1 
-#define ASYMMETRIC  2
 #define RAD_TO_DEG (double)(180.0 / 3.14159)
 
 
@@ -146,7 +143,7 @@ int main(int argc, char **argv)
 
     //Initialize state trackers
     collide_detected = false;
-    obstacle_type = EMPTY;
+    obstacle_type = reactive_robot::obstacle::EMPTY;
 
     //Subscribe to each of the topics published by the child nodes
     ros::Subscriber autodrive_sub = main_decision_node.subscribe(main_decision_node.resolveName("/reactive_robot/autodrive"), 10, &autodriveCallback);
@@ -188,7 +185,7 @@ int main(int argc, char **argv)
             escape_action_active = false;
         }
         //If a symmetric obstacle is detected, we need to escape 
-        else if(obstacle_type == SYMMETRIC || escape_action_active)
+        else if(obstacle_type == reactive_robot::obstacle::SYMMETRIC || escape_action_active)
         {
             //If we have not already started escaping
             if(!escape_action_active)
@@ -212,7 +209,7 @@ int main(int argc, char **argv)
             }
         }
         //If an asymmetric obstacle is detected, we need to avoid
-        else if(obstacle_type == ASYMMETRIC && !escape_action_active)
+        else if(obstacle_type == reactive_robot::obstacle::ASYMMETRIC && !escape_action_active)
         {
             drivetrain.setOutput(obstacle_output);
         }

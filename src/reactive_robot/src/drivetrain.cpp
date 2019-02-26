@@ -112,7 +112,7 @@ bool Drivetrain::turnDirection(double start_angle, double end_angle)
 
 //TODO: use PID instead
 /**
- * @brief Turns to a target angle
+ * @brief Turns to a target angle using a P controller (Proportional controller)
  * 
  * @param current_angle Current angle of the robot
  * @param target_angle Target angle
