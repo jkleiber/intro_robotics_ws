@@ -86,7 +86,8 @@ void scanCallback(const sensor_msgs::LaserScan::ConstPtr& obstacle_event)
     }
 
     //If no obstacle is detected
-    if(distance_to_left_obj > DETECTION_RANGE && distance_to_center_obj > DETECTION_RANGE && distance_to_right_obj > DETECTION_RANGE)
+    if(distance_to_left_obj > DETECTION_RANGE && distance_to_center_obj > DETECTION_RANGE && 
+        distance_to_right_obj > DETECTION_RANGE)
     {
         //Update stae to empty
         obstacle_msg.state = obstacle_msg.EMPTY;
@@ -99,7 +100,8 @@ void scanCallback(const sensor_msgs::LaserScan::ConstPtr& obstacle_event)
         //Update state to symmetric
         obstacle_msg.state = obstacle_msg.SYMMETRIC;
         //Update obstacles angle from robot
-        obstacle_msg.angle = ((symmetric_obj_index * obstacle_event->angle_increment) + obstacle_event->angle_min) * RAD_TO_DEG;
+        obstacle_msg.angle = ((symmetric_obj_index * obstacle_event->angle_increment) + 
+            obstacle_event->angle_min) * RAD_TO_DEG;
     }
     //Otherwise the object is in the left or right region
     else
@@ -142,10 +144,12 @@ int main(int argc, char **argv)
     ros::NodeHandle obstacle_avoid_node;
 
     //Subscribe to the scanner
-    ros::Subscriber obstacle_sub = obstacle_avoid_node.subscribe(obstacle_avoid_node.resolveName("/scan"), 10, &scanCallback);
+    ros::Subscriber obstacle_sub = obstacle_avoid_node.subscribe(
+        obstacle_avoid_node.resolveName("/scan"), 10, &scanCallback);
 
     //Publish state to the obstacle topic
-    obstacle_pub = obstacle_avoid_node.advertise<reactive_robot::obstacle>(obstacle_avoid_node.resolveName("/reactive_robot/obstacle"), 10);
+    obstacle_pub = obstacle_avoid_node.advertise<reactive_robot::obstacle>(
+        obstacle_avoid_node.resolveName("/reactive_robot/obstacle"), 10);
 
     //Handle the callbacks
     ros::spin();

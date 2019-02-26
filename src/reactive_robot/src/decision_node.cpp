@@ -151,14 +151,20 @@ int main(int argc, char **argv)
     obstacle_type = reactive_robot::obstacle::EMPTY;
 
     //Subscribe to each of the topics published by the child nodes
-    ros::Subscriber autodrive_sub = main_decision_node.subscribe(main_decision_node.resolveName("/reactive_robot/autodrive"), 10, &autodriveCallback);
-    ros::Subscriber collision_sub = main_decision_node.subscribe(main_decision_node.resolveName("/reactive_robot/collision"), 10, &collisionCallback);
-    ros::Subscriber keyboard_sub  = main_decision_node.subscribe(main_decision_node.resolveName("/reactive_robot/keyboard_input"), 10, &keyboardCallback);
-    ros::Subscriber obstacle_sub  = main_decision_node.subscribe(main_decision_node.resolveName("/reactive_robot/obstacle"), 10, &obstacleCallback);
-    ros::Subscriber odom_sub      = main_decision_node.subscribe(main_decision_node.resolveName("/odom"), 10, &odometryCallback);
+    ros::Subscriber autodrive_sub = main_decision_node.subscribe(
+        main_decision_node.resolveName("/reactive_robot/autodrive"), 10, &autodriveCallback);
+    ros::Subscriber collision_sub = main_decision_node.subscribe(
+        main_decision_node.resolveName("/reactive_robot/collision"), 10, &collisionCallback);
+    ros::Subscriber keyboard_sub  = main_decision_node.subscribe(
+        main_decision_node.resolveName("/reactive_robot/keyboard_input"), 10, &keyboardCallback);
+    ros::Subscriber obstacle_sub  = main_decision_node.subscribe(
+        main_decision_node.resolveName("/reactive_robot/obstacle"), 10, &obstacleCallback);
+    ros::Subscriber odom_sub      = main_decision_node.subscribe(
+        main_decision_node.resolveName("/odom"), 10, &odometryCallback);
 
     //Publish to the turtlebot's cmd_vel_mux topic
-    ros::Publisher teleop_pub = main_decision_node.advertise<geometry_msgs::Twist>(main_decision_node.resolveName("/cmd_vel_mux/input/teleop"), 10);
+    ros::Publisher teleop_pub = main_decision_node.advertise<geometry_msgs::Twist>(
+        main_decision_node.resolveName("/cmd_vel_mux/input/teleop"), 10);
 
     //Set the loop rate of the decision function to 100 Hz
     ros::Rate loop_rate(100);

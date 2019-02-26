@@ -188,7 +188,8 @@ double Drivetrain::clamp(double x, double max_out, double min_out)
  * @param angular_y Angular y velocity
  * @param angular_z Angular z velocity
  */
-void Drivetrain::setOutput(double linear_x, double linear_y, double linear_z, double angular_x, double angular_y, double angular_z)
+void Drivetrain::setOutput(double linear_x, double linear_y, double linear_z, 
+    double angular_x, double angular_y, double angular_z)
 {
     //Update all velocities
     this->output.linear.x = linear_x;

@@ -73,7 +73,8 @@ void odometryCallback(const nav_msgs::Odometry::ConstPtr& odometer)
     current_angle = drivetrain.angleWrap(tf::getYaw(pose.getRotation()) * RAD_TO_DEG);
 
     //Calculate the distance traveled from the fixed position
-    distance_traveled = sqrt(((cur_pos.x - old_pos.x)*(cur_pos.x - old_pos.x)) + ((cur_pos.y - old_pos.y)*(cur_pos.y - old_pos.y))) * METERS_TO_FT;
+    distance_traveled = sqrt(((cur_pos.x - old_pos.x)*(cur_pos.x - old_pos.x)) + 
+        ((cur_pos.y - old_pos.y)*(cur_pos.y - old_pos.y))) * METERS_TO_FT;
 
     //If the distance traveled is more than 1 foot, turn +/- 15 degrees
     if(distance_traveled >= 1)
@@ -131,16 +132,19 @@ int main(int argc, char **argv)
     odometry_init = true;
 
     //Subscribe to odometry data
-    ros::Subscriber odom_sub = autodrive_node.subscribe(autodrive_node.resolveName("/odom"), 10, &odometryCallback);
-    ros::Subscriber obstacle_sub = autodrive_node.subscribe(autodrive_node.resolveName("reactive_robot/obstacle"), 10, &obstacleCallback);
+    ros::Subscriber odom_sub = autodrive_node.subscribe(
+        autodrive_node.resolveName("/odom"), 10, &odometryCallback);
+    ros::Subscriber obstacle_sub = autodrive_node.subscribe(
+        autodrive_node.resolveName("reactive_robot/obstacle"), 10, &obstacleCallback);
 
     //Publish state to the autodrive topic
-    autodrive_pub = autodrive_node.advertise<geometry_msgs::Twist>(autodrive_node.resolveName("/reactive_robot/autodrive"), 10);
+    autodrive_pub = autodrive_node.advertise<geometry_msgs::Twist>(
+        autodrive_node.resolveName("/reactive_robot/autodrive"), 10);
 
     //Set the loop rate (or tick rate) (Hz)
     ros::Rate loop_rate(100);
 
-    while(true)
+    while(ros::ok())
     {
         //Handle the callbacks
         ros::spinOnce();

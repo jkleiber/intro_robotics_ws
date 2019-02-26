@@ -78,7 +78,8 @@ int main(int argc, char **argv)
     ros::NodeHandle collision_node;
 
     //Subscribe to the bump sensors
-    ros::Subscriber bump_sub = collision_node.subscribe(collision_node.resolveName("/mobile_base/events/bumper"), 10, &collision_callback);
+    ros::Subscriber bump_sub = collision_node.subscribe(
+        collision_node.resolveName("/mobile_base/events/bumper"), 10, &collision_callback);
 
     //Publish state to the collision topic
     collision_pub = collision_node.advertise<reactive_robot::collision>("/reactive_robot/collision", 10);
