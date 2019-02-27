@@ -55,6 +55,9 @@ sends a zero vector when nothing is pressed. Therefore, the keyboard is not equi
 to stop the robot with the K button. We recommend reducing speed with the other key 
 pairs to stop the robot.
 
+The map from the most recent run will be saved in ~/reactive_robot_map.yaml. 
+The program can be ended by pressing ctrl+c twice.
+
 LAUNCH FILES
 ------------
 
