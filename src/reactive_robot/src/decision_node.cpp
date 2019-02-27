@@ -127,7 +127,7 @@ bool twistNotZero(geometry_msgs::Twist twist)
 void saveMap(const ros::WallTimerEvent& event)
 {
     //TODO: Justin can't tell me what to do, get this path working into maps folder
-    system("rosrun map_server map_saver -f ~/test_map");
+    system("rosrun map_server map_saver -f ~/reactive_robot_map");
 }
 
 
@@ -173,8 +173,7 @@ int main(int argc, char **argv)
     double end_angle;
     
     //Save the map every 5 seconds
-    //Temporarily disable bc it prints to console
-    ros::WallTimer mapeSaver = main_decision_node.createWallTimer(ros::WallDuration(5), saveMap);
+    ros::WallTimer mapSaver = main_decision_node.createWallTimer(ros::WallDuration(5), saveMap);
 
     //Given state inputs from each callback, make a decision on what to do
     while(ros::ok())
