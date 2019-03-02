@@ -208,7 +208,7 @@ int main(int argc, char **argv)
             }
             
             //If we have not reached the end angle
-            if(!drivetrain.turnToAngle(current_angle, end_angle))
+            if(!drivetrain.turnToAngle(current_angle, end_angle, false))
             {
                 //Continue escaping
                 escape_action_active = true;

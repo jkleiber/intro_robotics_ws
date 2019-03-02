@@ -32,7 +32,7 @@ class Drivetrain
         
         double angleWrap(double angle);
         bool turnDirection(double start_angle, double end_angle);
-        bool turnToAngle(double currentAngle, double target_angle);
+        bool turnToAngle(double currentAngle, double target_angle, bool keep_going);
 
     private:
         double clamp(double x, double max_out, double min_out);
