@@ -152,12 +152,12 @@ int main(int argc, char **argv)
         //If the robot is turning to a target, turn
         if(turning)
         {
-            turning = !drivetrain.turnToAngle(current_angle, target_angle);
+            turning = !drivetrain.turnToAngle(current_angle, target_angle, true);
         }
         //Otherwise drive straight
         else
         {
-            drivetrain.setOutput(0.4, 0);
+            drivetrain.setOutput(0.7, 0);
         }
         
         //Publish the drivetrain output

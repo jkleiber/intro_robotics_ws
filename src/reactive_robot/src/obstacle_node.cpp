@@ -115,12 +115,12 @@ void scanCallback(const sensor_msgs::LaserScan::ConstPtr& obstacle_event)
         //If the left object is closer, turn right
         if(distance_to_left_obj < distance_to_right_obj)
         {
-            obstacle_msg.drive.angular.z = -0.4;
+            obstacle_msg.drive.angular.z = -0.6;
         }
         //If the right object is closer, turn left
         else
         {
-            obstacle_msg.drive.angular.z = 0.4;
+            obstacle_msg.drive.angular.z = 0.6;
         }
     }
 

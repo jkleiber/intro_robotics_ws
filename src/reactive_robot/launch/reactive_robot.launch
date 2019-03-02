@@ -1,0 +1,17 @@
+<launch>
+    <!-- reactive_robot nodes to launch -->
+    <node pkg="reactive_robot" type="autodrive_node" name="autodrive_node" output="screen"/>
+    <node pkg="reactive_robot" type="collision_node" name="collision_node" output="screen"/>
+    <node pkg="reactive_robot" type="obstacle_node" name="obstacle_node" output="screen"/>
+    <node pkg="reactive_robot" type="decision_node" name="decision_node" output="screen"/>
+
+    <!-- Keyboard control -->
+    <remap from="cmd_vel_mux/input/teleop" to="reactive_robot/keyboard_input"/>
+    <include file="$(find turtlebot_teleop)/launch/keyboard_teleop.launch"/>
+
+    <arg name="3d_sensor" value="$(optenv TURTLEBOT_3D_SENSOR kinect)"/>  <!-- kinect, asus_xtion_pro --> 
+
+    <!-- SLAM mapping -->
+    <include file="$(find turtlebot_navigation)/launch/includes/gmapping/$(arg 3d_sensor)_gmapping.launch.xml"/>
+
+</launch>

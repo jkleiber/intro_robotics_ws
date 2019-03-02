@@ -120,7 +120,7 @@ bool Drivetrain::turnDirection(double start_angle, double end_angle)
  * @return true The robots current angle is within tolerance of target angle
  * @return false The robot has not reached the target angle
  */
-bool Drivetrain::turnToAngle(double current_angle, double target_angle)
+bool Drivetrain::turnToAngle(double current_angle, double target_angle, bool keep_going)
 {
     //Declare local variables
     double error;
@@ -133,6 +133,11 @@ bool Drivetrain::turnToAngle(double current_angle, double target_angle)
     //Calculate error
     error = abs(current_angle - target_angle);
 
+    if(!keep_going)
+    {
+        this->setPower(0);
+    }
+
     //If the current angle is close enough to the target angle, then stop turning
     if(error < TURN_ERROR_TOLERANCE)
     {
@@ -144,14 +149,12 @@ bool Drivetrain::turnToAngle(double current_angle, double target_angle)
     else if(this->turnDirection(current_angle, target_angle))
     {
         output = this->clamp(KP * error, MAX_OUTPUT, MIN_OUTPUT);
-        this->setPower(0);
         this->setTurn(output);
     }
     //If the robot is erring to the right, turn left to get to the target
     else
     {
         output = this->clamp(-(KP * error), MAX_OUTPUT, MIN_OUTPUT);
-        this->setPower(0);
         this->setTurn(output);   
     }
 
