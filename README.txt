@@ -17,88 +17,35 @@ specific project.
 
 INSTALLATION INSTRUCTIONS
 -------------------------
-
 1. Install ROS Kinetic and Gazebo.
 2. Download the workspace to your machine.
 3. Run the startup script "setup.bash" in the workspace.
 4. Run "source ~/.bashrc" or restart the terminal.
-5. Run the launch file with "roslaunch reactive_robot reactive_robot_$MAP.launch", 
-replacing $MAP with either "hallway" or "room" depending on the desired map.
+5. Run the launch file with "roslaunch reactive_robot reactive_robot.launch".
+6. SSH into the TurtleBot computer, then run “roslaunch turtlebot_bringup minimal.launch --screen” and “roslaunch turtlebot_bringup 3dsensor.launch” in separate terminals.
 
 OPERATION INSTRUCTIONS
 ----------------------
-
-After following the instructions above, the program should be launched and driving 
-around in either the hallway or the room world.  
-
-Note: Gazebo frequently crashes upon startup, so if Gazebo doesn't open upon running 
-the launch file, you may need to kill the program (ctrl+c) and try running it again.
-
-The robot will begin driving around on its own unless prompted by keyboard commands 
-from the user. The human can control the robot by clicking on the console running 
-roslaunch (to set focus) and then using the keys described in the 
-turtlebot_teleop_keyboard. These keys are as follows:
-
+The robot will begin driving around on its own unless prompted by keyboard commands from the user. The human can control the robot by clicking on the console running roslaunch (to set focus) and then using the keys described in the turtlebot_teleop_keyboard. These keys are as follows:
 Direction Control
-   u     i    o
+   u    i    o
    j    k    l
    m    ,    .
-
 Speed Control
 q/z : increase/decrease max speeds by 10%
 w/x : increase/decrease only linear speed by 10%
 e/c : increase/decrease only angular speed by 10%
 
 
-Note: The turtlebot_teleop_keyboard publishes a zero vector when pressing K. It also 
-sends a zero vector when nothing is pressed. Therefore, the keyboard is not equipped 
-to stop the robot with the K button. We recommend reducing speed with the other key 
-pairs to stop the robot.
+Note: The turtlebot_teleop_keyboard publishes a zero vector when pressing K. It also sends a zero vector when nothing is pressed. Therefore, the keyboard is not equipped to stop the robot with the K button. We recommend reducing speed with the other key pairs to stop the robot.
 
 The map from the most recent run will be saved in ~/reactive_robot_map.yaml. 
 The program can be ended by pressing ctrl+c twice.
 
 LAUNCH FILES
 ------------
+The launch files are simple and contain only a couple primary parts. In the first part, we launch our nodes. Then we launch the keyboard and remap its outputs to suit our needs. Finally we launch gmapping to get mapping capabilities.
 
-The launch files are simple and contain only a couple primary parts. Much of the file 
-is based on the provided turtlebot launch files, and is used to setup and launch the 
-turtlebot and Gazebo environment. The main change in this section is the inclusion 
-of our custom maps. 
-
-The rest of the file is simply launching nodes. These are either custom reactive_robot 
-nodes, or prebuilt ROS nodes for SLAM mapping and keyboard control, the latter of which 
-has been remapped to a custom topic.
-
-WORLD FILES
------------
-
-There are two environments provided for the robot to attempt to traverse, a hallway and 
-a room. There are a few basic things that exist in both files, but are not necessarily 
-objects. Instead they provide some foundational characteristics to the environment. The 
-lighting, skybox, and things like physics tick speed, shadows, and light diffusion are 
-defined here. The only model the worlds have in common is the ground plane. This is a 
-square, centered at the origin, that extends out arbitrarily far compared to our actual 
-models, and it has a defined friction as the robot travels over it.
-
-The two worlds have some common characteristics. Every object in the worlds that has not 
-been described is a wall that is 0.15m thick, 2.5m tall, immovable, solid, and resting 
-on the ground plane. All walls connect at right angles (with one exception). Considering 
-all of these factors, the the only difference between each wall will be it’s position and 
-length.
-
-The hallway consists of 3 individual walls. There are two walls (both 3m) that are parallel 
-to each other. They are connected on one end by another wall (1.5m).
-
-The room is a more complicated model, containing 7 distinct walls (although there appear to 
-only be 6). There are 3 walls (all 4.5m) that form a “U” shape. Attached to the ends of the 
-“U” are two different walls. The right side of the “U” (if viewing it from the bottom) has 
-wall (3m) extending “inwards” towards the shape’s other side. The left side has a wall (1.5m) 
-that continues upwards, effectively extending the wall it attaches to. This was done during 
-model making to ensure everything was properly spaced. Extending from this wall is another 
-wall (1.5m) that will extend towards the right side. In order to connect the top wall just 
-described with the lower wall (3m) we will have another wall (1.5m)  that “drops down” and 
-connects the two.
 
 CODE DESCRIPTION
 ----------------
