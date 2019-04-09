@@ -7,56 +7,79 @@
  */
 PID_Controller::PID_Controller()
 {
-
+    this->last_time = ros::Time::now().toSec();
+    this->last_var = 0;
+    this->integrator = 0;
+    this->err = 0;
+    this->prev_err = 0;
 }
 
-//TODO: use PID instead
 /**
- * @brief Turns to a target angle using a P controller (Proportional controller)
+ * @brief Construct a new pid controller::pid controller object
  * 
- * @param current_angle Current angle of the robot
- * @param target_angle Target angle
- * @return true The robots current angle is within tolerance of target angle
- * @return false The robot has not reached the target angle
+ * @param cur_var - Current value
  */
-bool PID_Controller::turnToAngle(double current_angle, double target_angle, bool keep_going)
+PID_Controller::PID_Controller(float cur_var)
 {
-    //Declare local variables
-    double error;
-    double output;
+    this->last_time = ros::Time::now().toSec();
+    this->last_var = cur_var;
+    this->integrator = 0;
+    this->err = 0;
+    this->prev_err = 0;
+}
 
-    //Wrap the angles
-    current_angle = this->angleWrap(current_angle);
-    target_angle = this->angleWrap(target_angle);
+/**
+ * @brief Resets the PID if needed.
+ * 
+ * @param cur_var - Current value
+ */
+void PID_Controller::reset(float cur_var)
+{
+    this->last_time = ros::Time::now().toSec();
+    this->last_var = cur_var;
+    this->integrator = 0;
+    this->err = 0;
+    this->prev_err = 0;
+}
+
+/**
+ * @brief Gets the output from the PID
+ * 
+ * @param setpoint - The target value
+ * @param cur_var - The current value
+ * @return float - The output (p + i + d)
+ */
+float PID_Controller::getOutput(float setpoint, float cur_var)
+{
+    this->err = setpoint - cur_var;
+    float p = KP * this->err;
+    float dt = this->last_time - ros::Time::now().toSec();
     
-    //Calculate error
-    error = abs(current_angle - target_angle);
+    this->prev_err = setpoint - this->last_var;
+    this->integrator += INT * (this->err + this->prev_err) * dt;
+    float i = KI * this->integrator;
 
-    if(!keep_going)
-    {
-        this->setPower(0);
-    }
+    float delta = (cur_var - this->last_var)/dt;
+    float d = KD * delta;
 
-    //If the current angle is close enough to the target angle, then stop turning
-    if(error < TURN_ERROR_TOLERANCE)
-    {
-        //Stop turning and relay the information that we made it to the target
-        this->setTurn(0);
-        return true;
-    }
-    //If the robot is erring to the left, turn right to get to the target
-    else if(this->turnDirection(current_angle, target_angle))
-    {
-        output = this->clamp(KP * error, MAX_OUTPUT, MIN_OUTPUT);
-        this->setTurn(output);
-    }
-    //If the robot is erring to the right, turn left to get to the target
-    else
-    {
-        output = this->clamp(-(KP * error), MAX_OUTPUT, MIN_OUTPUT);
-        this->setTurn(output);   
-    }
+    float output = coerce(p + i + d);
 
-    //Not in range of target yet
-    return false;
+    this->last_var = cur_var;
+    this->last_time = ros::Time::now().toSec();
+
+    return output;
+}
+
+/**
+ * @brief Clamps the output to max and min output if needed
+ * 
+ * @param pid_val - P + I + D
+ * @return float - The coerced output
+ */
+float PID_Controller::coerce(float pid_val)
+{
+    pid_val = pid_val > MAX_OUTPUT ? MAX_OUTPUT : pid_val;
+    pid_val = pid_val < MIN_OUTPUT ? MIN_OUTPUT : pid_val;
+
+    return pid_val;
 }
