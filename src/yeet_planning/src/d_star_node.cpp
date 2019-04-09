@@ -5,6 +5,11 @@
 
 //Libraries
 #include "eigen3/Eigen/Dense.h"
+#include <queue>
+
+//D* and Mapping classes
+#include "yeet_planning/map_node.h"
+#include "yeet_planning/world_map.h"
 
 //Constants
 #define MAX_BUFFER 10
@@ -15,10 +20,43 @@ bool replan;
 //Global map data
 WorldMap current_map;
 
-void planCourse()
-{
+//D* variables
+std::priority_queue<MapNode> open_list;
 
+//Node management
+MapNode goal_node;
+MapNode current_node;
+
+
+void calculateShortestPath()
+{
+    
 }
+
+
+void initSearch(MapNode goal_node)
+{
+    open_list.add(goal_node);
+}
+
+void planCourse(MapNode start_node, MapNode goal_node)
+{
+    //Declare local variables
+    MapNode search_node;    //node to search from
+
+    //Initialize search
+    initSearch(goal_node);
+
+    //Search until start has been found.
+    //Alternatively, no path may exist. If no path exists, fail safely
+    //TODO: if no path exists, tell the other robot that no path exists and see if it can go to the goal
+    while(open_list.size() > 0)
+    {
+        search_node = open_list.pop();
+        expandNode(search_node);
+    }
+}
+
 
 //TODO: make this message a map update message (this should contain a list of cells to update and the probabilities associated with them)
 void mapCallback(const nav_msgs::OccupancyGrid::ConstPtr & map_data)
@@ -26,6 +64,19 @@ void mapCallback(const nav_msgs::OccupancyGrid::ConstPtr & map_data)
     //TODO: update the map
     replan = true;
 }
+
+
+/**
+ * @brief Updates the current node location using SLAM pose
+ * 
+ * @param odom 
+ */
+//TODO: get odom from the map -> odom tf thing
+void updateCurrentNode(const nav_msgs::Odometry::ConstPtr &odom)
+{
+
+}
+
 
 int main(int argc, char **argv)
 {
@@ -45,10 +96,10 @@ int main(int argc, char **argv)
     
     while(ros::ok())
     {
-        if(replan)
-        {
-            planCourse();
-        }
+        //if(replan)
+        //{
+        //    planCourse();
+        //}
 
         ros::spinOnce();
     }
