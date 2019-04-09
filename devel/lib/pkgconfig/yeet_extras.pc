@@ -1,0 +1,8 @@
+prefix=/home/trey/school/intro_robotics_ws/devel
+
+Name: yeet_extras
+Description: Description of yeet_extras
+Version: 0.0.0
+Cflags: 
+Libs: -L/home/trey/school/intro_robotics_ws/devel/lib 
+Requires: 
