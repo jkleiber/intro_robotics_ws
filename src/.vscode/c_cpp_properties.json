@@ -1,0 +1,23 @@
+{
+    "configurations": [
+        {
+            "browse": {
+                "databaseFilename": "",
+                "limitSymbolsToIncludedHeaders": true
+            },
+            "includePath": [
+                "/home/trey/school/intro_robotics_ws/devel/include",
+                "/home/trey/scr/robomagellan-2019/roma_ws/devel/include",
+                "/opt/ros/kinetic/include",
+                "/home/trey/school/intro_robotics_ws/src/reactive_robot/include",
+                "/usr/include"
+            ],
+            "name": "Linux",
+            "intelliSenseMode": "gcc-x64",
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "c11",
+            "cppStandard": "c++17"
+        }
+    ],
+    "version": 4
+}
