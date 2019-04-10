@@ -12,8 +12,13 @@ class WorldMap
         WorldMap(int rows, int cols);
 
         //D* helper functions
-        std::vector<MapNode> adjacentMapNodes(int row, int col);
+        void clearParams();
+        std::vector<MapNode>& adjacentMapNodes(MapNode node);
+        
         //TODO: add more of these...
+
+        //Navigation helper functions
+        MapNode& getBestAdjNode(MapNode cur_node);
 
     private:
         //Map of nodes
