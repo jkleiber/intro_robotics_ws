@@ -6,6 +6,33 @@ MapNode::MapNode()
 }
 
 
+void MapNode::operator=(const MapNode& node)
+{
+    this->col = node.col;
+    this->g_value = node.g_value;
+    this->occupancy = occupancy;
+    this->primary_key = node.primary_key;
+    this->rhs = node.rhs;
+    this->row = node.row;
+    this->tag = node.tag;
+    this->tiebreaker_key = node.tiebreaker_key;
+}
+
+
+bool MapNode::operator==(const MapNode& node)
+{
+    //TODO: implement
+    return false;
+}
+
+
+bool MapNode::operator>(const MapNode& node)
+{
+    //TODO: sort by key and tiebreaker_key
+    return false;
+}
+
+
 int MapNode::getRow()
 {
     return this->row;
@@ -20,8 +47,8 @@ int MapNode::getCol()
 
 void MapNode::reset()
 {
-    this->g_value = INFINITY;
-    this->rhs = INFINITY;
+    this->g_value = YEET_FINITY;
+    this->rhs = YEET_FINITY;
     this->tag = NEW;
     this->goal = false;
 }
@@ -42,13 +69,13 @@ void MapNode::setG(int g)
 
 void MapNode::setGInf()
 {
-    this->g_value = INFINITY;
+    this->g_value = YEET_FINITY;
 }
 
 
-void MapNode::setRHS(int rhs)
+void MapNode::setMinRHS(int rhs)
 {
-    this->rhs = rhs;
+    this->rhs = std::min(this->rhs, rhs);
 }
 
 
@@ -82,11 +109,17 @@ int MapNode::getRHS()
     return this->rhs;
 }
 
+int MapNode::getPrimaryKey()
+{
+    return this->primary_key;
+}
+
 
 bool MapNode::isNew()
 {
     return (this->tag == NEW);
 }
+
 
 bool MapNode::isOpen()
 {
@@ -97,4 +130,10 @@ bool MapNode::isOpen()
 bool MapNode::isGoal()
 {
     return this->goal;
+}
+
+
+bool MapNode::isObstacle()
+{
+    return (occupancy >= 1);
 }

@@ -1,13 +1,15 @@
 #ifndef WORLD_MAP_NODE_H
 #define WORLD_MAP_NODE_H
 
+#include <algorithm>
+
 //Tag constants
 #define NEW     0
 #define OPEN    1
 #define CLOSED  2
 
 //Set infinity
-#define INFINITY 1000000
+#define YEET_FINITY 1000000
 
 class MapNode
 {
@@ -18,7 +20,7 @@ class MapNode
 
         //Operator overloads
         void operator=(const MapNode& node);
-        void operator==(const MapNode& node);
+        bool operator==(const MapNode& node);
         bool operator>(const MapNode& left_node, const MapNode& right_node);
 
         //Node characteristic functions
@@ -30,15 +32,17 @@ class MapNode
         void setGoal();
         void setG(int g);
         void setGInf();
-        void setRHS(int rhs);
+        void setMinRHS(int rhs);
         void setOpen();
         void setClosed();
         void setKeys(int primary, int secondary);
         int getG();
         int getRHS();
+        int getPrimaryKey();
         bool isNew();
         bool isOpen();
         bool isGoal();
+        bool isObstacle();
         //TODO: add more of these...
 
     private:

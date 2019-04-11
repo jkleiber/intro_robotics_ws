@@ -13,7 +13,7 @@ class WorldMap
 
         //D* helper functions
         void clearParams();
-        std::vector<MapNode>& adjacentMapNodes(MapNode node);
+        std::vector<MapNode>& adjacentMapNodes(MapNode& node);
         
         //TODO: add more of these...
 
