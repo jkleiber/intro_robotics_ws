@@ -1,7 +1,7 @@
 prefix=/home/trey/School/CS4023/intro_robotics_ws/devel
 
-Name: yeet_motion
-Description: Description of yeet_motion
+Name: yeet_board
+Description: Description of yeet_board
 Version: 0.0.0
 Cflags: 
 Libs: -L/home/trey/School/CS4023/intro_robotics_ws/devel/lib 

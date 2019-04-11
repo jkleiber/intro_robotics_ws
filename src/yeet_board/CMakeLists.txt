@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(yeet_mergency)
+project(yeet_board)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
@@ -9,6 +9,7 @@ project(yeet_mergency)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   roscpp
+  rospy
   std_msgs
   yeet_msgs
 )
@@ -21,6 +22,9 @@ find_package(catkin REQUIRED COMPONENTS
 ## modules and global scripts declared therein get installed
 ## See http://ros.org/doc/api/catkin/html/user_guide/setup_dot_py.html
 # catkin_python_setup()
+
+
+
 
 ################################################
 ## Declare ROS messages, services and actions ##
@@ -70,7 +74,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## Generate added messages and services with any dependencies listed here
 # generate_messages(
 #   DEPENDENCIES
-#   std_msgs#   yeet_msgs
+#   std_msgs
 # )
 
 ################################################
@@ -104,8 +108,8 @@ find_package(catkin REQUIRED COMPONENTS
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES yeet_mergency
-  CATKIN_DEPENDS roscpp std_msgs yeet_msgs
+#  LIBRARIES yeet_board
+#  CATKIN_DEPENDS roscpp rospy std_msgs
 #  DEPENDS system_lib
 )
 
@@ -122,7 +126,7 @@ include_directories(
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/yeet_mergency.cpp
+#   src/${PROJECT_NAME}/yeet_board.cpp
 # )
 
 ## Add cmake target dependencies of the library
@@ -133,7 +137,7 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-# add_executable(${PROJECT_NAME}_node src/yeet_mergency_node.cpp)
+# add_executable(${PROJECT_NAME}_node src/yeet_board_node.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -150,16 +154,10 @@ include_directories(
 #   ${catkin_LIBRARIES}
 # )
 
-# Collision
-add_executable(collision_node src/collision_node.cpp)
-target_link_libraries(collision_node ${catkin_LIBRARIES})
-#add_dependencies(collision_node)
-
-
-# Human Control
-add_executable(human_control_node src/human_control_node.cpp)
-target_link_libraries(human_control_node ${catkin_LIBRARIES})
-#add_dependencies(human_control_node)
+# Keyboard
+add_executable(keyboard_node src/keyboard_node.cpp)
+target_link_libraries(keyboard_node ${catkin_LIBRARIES})
+#add_dependencies(keyboard_node)
 
 #############
 ## Install ##
@@ -201,7 +199,7 @@ target_link_libraries(human_control_node ${catkin_LIBRARIES})
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_yeet_mergency.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_yeet_board.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()

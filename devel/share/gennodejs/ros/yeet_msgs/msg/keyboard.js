@@ -14,69 +14,56 @@ const _getByteLength = _ros_msg_utils.getByteLength;
 
 //-----------------------------------------------------------
 
-class move {
+class keyboard {
   constructor(initObj={}) {
     if (initObj === null) {
       // initObj === null is a special case for deserialization where we don't initialize fields
-      this.drive = null;
-      this.turn = null;
+      this.c = null;
     }
     else {
-      if (initObj.hasOwnProperty('drive')) {
-        this.drive = initObj.drive
+      if (initObj.hasOwnProperty('c')) {
+        this.c = initObj.c
       }
       else {
-        this.drive = 0;
-      }
-      if (initObj.hasOwnProperty('turn')) {
-        this.turn = initObj.turn
-      }
-      else {
-        this.turn = 0;
+        this.c = 0;
       }
     }
   }
 
   static serialize(obj, buffer, bufferOffset) {
-    // Serializes a message object of type move
-    // Serialize message field [drive]
-    bufferOffset = _serializer.int8(obj.drive, buffer, bufferOffset);
-    // Serialize message field [turn]
-    bufferOffset = _serializer.int8(obj.turn, buffer, bufferOffset);
+    // Serializes a message object of type keyboard
+    // Serialize message field [c]
+    bufferOffset = _serializer.char(obj.c, buffer, bufferOffset);
     return bufferOffset;
   }
 
   static deserialize(buffer, bufferOffset=[0]) {
-    //deserializes a message object of type move
+    //deserializes a message object of type keyboard
     let len;
-    let data = new move(null);
-    // Deserialize message field [drive]
-    data.drive = _deserializer.int8(buffer, bufferOffset);
-    // Deserialize message field [turn]
-    data.turn = _deserializer.int8(buffer, bufferOffset);
+    let data = new keyboard(null);
+    // Deserialize message field [c]
+    data.c = _deserializer.char(buffer, bufferOffset);
     return data;
   }
 
   static getMessageSize(object) {
-    return 2;
+    return 1;
   }
 
   static datatype() {
     // Returns string type for a message object
-    return 'yeet_msgs/move';
+    return 'yeet_msgs/keyboard';
   }
 
   static md5sum() {
     //Returns md5sum for a message object
-    return '8f1cddb8ef3caea21484489b8f1096b9';
+    return '503f37a585b485611c99195decce8bba';
   }
 
   static messageDefinition() {
     // Returns full string definition for message
     return `
-    int8 drive
-    int8 turn
-    
+    char c
     `;
   }
 
@@ -85,23 +72,16 @@ class move {
     if (typeof msg !== 'object' || msg === null) {
       msg = {};
     }
-    const resolved = new move(null);
-    if (msg.drive !== undefined) {
-      resolved.drive = msg.drive;
+    const resolved = new keyboard(null);
+    if (msg.c !== undefined) {
+      resolved.c = msg.c;
     }
     else {
-      resolved.drive = 0
-    }
-
-    if (msg.turn !== undefined) {
-      resolved.turn = msg.turn;
-    }
-    else {
-      resolved.turn = 0
+      resolved.c = 0
     }
 
     return resolved;
     }
 };
 
-module.exports = move;
+module.exports = keyboard;

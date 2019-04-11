@@ -69,10 +69,10 @@ void collision_callback(const kobuki_msgs::BumperEvent::ConstPtr& bump_event)
  * @param human_control_msg: message containing the final instructions from the nodes above 
  * collision_node in the paradigm
  */
-void human_control_callback(const yeet_msgs::move::ConstPtr& human_control_msg)
+void navigation_callback(const yeet_msgs::move::ConstPtr& navigation_msg)
 {
     //Simply copy the contents over
-    move_msg = *human_control_msg;
+    move_msg = *navigation_msg;
 }
 
 
@@ -94,11 +94,11 @@ int main(int argc, char **argv)
 
     //Subscribe to the node directly above in the paradigm
     ros::Subscriber human_control_sub = collision_node.subscribe(
-        collision_node.resolveName("/yeet_mergency/human_control"), 10, &human_control_callback);
+        collision_node.resolveName("/yeet_nav/navigation"), 10, &navigation_callback);
     
     
     //Publish state to the collision topic
-    collision_pub = collision_node.advertise<yeet_msgs::move>("/yeet_mergengy/collision", 10);
+    collision_pub = collision_node.advertise<yeet_msgs::move>("/yeet_mergency/collision", 10);
 
 
     //Set the loop rate of the decision function to 100 Hz
@@ -113,7 +113,8 @@ int main(int argc, char **argv)
         if(collision)
         {
             //TODO: Call backup-routine
-            move_msg.todo = 0;
+            move_msg.drive = 0;
+            move_msg.turn = 0;
         }
 
         //Publish the message
