@@ -24,17 +24,22 @@ struct move_
   typedef move_<ContainerAllocator> Type;
 
   move_()
-    : todo(0)  {
+    : drive(0)
+    , turn(0)  {
     }
   move_(const ContainerAllocator& _alloc)
-    : todo(0)  {
+    : drive(0)
+    , turn(0)  {
   (void)_alloc;
     }
 
 
 
-   typedef int8_t _todo_type;
-  _todo_type todo;
+   typedef int8_t _drive_type;
+  _drive_type drive;
+
+   typedef int8_t _turn_type;
+  _turn_type turn;
 
 
 
@@ -71,7 +76,7 @@ namespace message_traits
 
 
 // BOOLTRAITS {'IsFixedSize': True, 'IsMessage': True, 'HasHeader': False}
-// {'nav_msgs': ['/opt/ros/kinetic/share/nav_msgs/cmake/../msg'], 'std_msgs': ['/opt/ros/kinetic/share/std_msgs/cmake/../msg'], 'actionlib_msgs': ['/opt/ros/kinetic/share/actionlib_msgs/cmake/../msg'], 'geometry_msgs': ['/opt/ros/kinetic/share/geometry_msgs/cmake/../msg'], 'yeet_msgs': ['/home/trey/school/intro_robotics_ws/src/yeet_msgs/msg']}
+// {'nav_msgs': ['/opt/ros/kinetic/share/nav_msgs/cmake/../msg'], 'std_msgs': ['/opt/ros/kinetic/share/std_msgs/cmake/../msg'], 'actionlib_msgs': ['/opt/ros/kinetic/share/actionlib_msgs/cmake/../msg'], 'geometry_msgs': ['/opt/ros/kinetic/share/geometry_msgs/cmake/../msg'], 'yeet_msgs': ['/home/trey/School/CS4023/intro_robotics_ws/src/yeet_msgs/msg']}
 
 // !!!!!!!!!!! ['__class__', '__delattr__', '__dict__', '__doc__', '__eq__', '__format__', '__getattribute__', '__hash__', '__init__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', '_parsed_fields', 'constants', 'fields', 'full_name', 'has_header', 'header_present', 'names', 'package', 'parsed_fields', 'short_name', 'text', 'types']
 
@@ -114,12 +119,12 @@ struct MD5Sum< ::yeet_msgs::move_<ContainerAllocator> >
 {
   static const char* value()
   {
-    return "cf55fd99d4d1be34562aaf532f8ee9a7";
+    return "8f1cddb8ef3caea21484489b8f1096b9";
   }
 
   static const char* value(const ::yeet_msgs::move_<ContainerAllocator>&) { return value(); }
-  static const uint64_t static_value1 = 0xcf55fd99d4d1be34ULL;
-  static const uint64_t static_value2 = 0x562aaf532f8ee9a7ULL;
+  static const uint64_t static_value1 = 0x8f1cddb8ef3caea2ULL;
+  static const uint64_t static_value2 = 0x1484489b8f1096b9ULL;
 };
 
 template<class ContainerAllocator>
@@ -138,8 +143,8 @@ struct Definition< ::yeet_msgs::move_<ContainerAllocator> >
 {
   static const char* value()
   {
-    return "int8 todo\n\
-#test\n\
+    return "int8 drive\n\
+int8 turn\n\
 ";
   }
 
@@ -158,7 +163,8 @@ namespace serialization
   {
     template<typename Stream, typename T> inline static void allInOne(Stream& stream, T m)
     {
-      stream.next(m.todo);
+      stream.next(m.drive);
+      stream.next(m.turn);
     }
 
     ROS_DECLARE_ALLINONE_SERIALIZER
@@ -177,8 +183,10 @@ struct Printer< ::yeet_msgs::move_<ContainerAllocator> >
 {
   template<typename Stream> static void stream(Stream& s, const std::string& indent, const ::yeet_msgs::move_<ContainerAllocator>& v)
   {
-    s << indent << "todo: ";
-    Printer<int8_t>::stream(s, indent + "  ", v.todo);
+    s << indent << "drive: ";
+    Printer<int8_t>::stream(s, indent + "  ", v.drive);
+    s << indent << "turn: ";
+    Printer<int8_t>::stream(s, indent + "  ", v.turn);
   }
 };
 
