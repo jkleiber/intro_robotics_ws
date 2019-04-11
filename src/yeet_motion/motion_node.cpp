@@ -6,7 +6,10 @@
 
 Drivetrain drivetrain;
 
-void movementCallback()
+void movementCallback(const yeet_mergency::movement::ConstPtr& move_event)
+{
+    
+}
 
 /**
  * @brief Main method

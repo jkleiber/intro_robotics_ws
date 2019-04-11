@@ -29,6 +29,6 @@ class PID_Controller
     float err;
     float prev_err;
 
-}
+};
 
 #endif
