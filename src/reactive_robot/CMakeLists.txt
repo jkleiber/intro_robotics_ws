@@ -154,25 +154,25 @@ include_directories(
 # )
 
 # Add reactive robot executables
-# Auto-Drive
-add_executable(autodrive_node src/autodrive_node.cpp src/drivetrain.cpp)
-target_link_libraries(autodrive_node ${catkin_LIBRARIES})
-add_dependencies(autodrive_node reactive_robot_generate_messages_cpp)
+## Auto-Drive
+#add_executable(autodrive_node src/autodrive_node.cpp src/drivetrain.cpp)
+#target_link_libraries(autodrive_node ${catkin_LIBRARIES})
+#add_dependencies(autodrive_node reactive_robot_generate_messages_cpp)
 
-# Collision
-add_executable(collision_node src/collision_node.cpp)
-target_link_libraries(collision_node ${catkin_LIBRARIES})
-add_dependencies(collision_node reactive_robot_generate_messages_cpp)
+## Collision
+#add_executable(collision_node src/collision_node.cpp)
+#target_link_libraries(collision_node ${catkin_LIBRARIES})
+#add_dependencies(collision_node reactive_robot_generate_messages_cpp)
 
-# Decision Node
-add_executable(decision_node src/decision_node.cpp src/drivetrain.cpp)
-target_link_libraries(decision_node ${catkin_LIBRARIES})
-add_dependencies(decision_node reactive_robot_generate_messages_cpp)
+## Decision Node
+#add_executable(decision_node src/decision_node.cpp src/drivetrain.cpp)
+#target_link_libraries(decision_node ${catkin_LIBRARIES})
+#add_dependencies(decision_node reactive_robot_generate_messages_cpp)
 
-# Obstacle Node
-add_executable(obstacle_node src/obstacle_node.cpp src/drivetrain.cpp)
-target_link_libraries(obstacle_node ${catkin_LIBRARIES})
-add_dependencies(obstacle_node reactive_robot_generate_messages_cpp)
+## Obstacle Node
+#add_executable(obstacle_node src/obstacle_node.cpp src/drivetrain.cpp)
+#target_link_libraries(obstacle_node ${catkin_LIBRARIES})
+#add_dependencies(obstacle_node reactive_robot_generate_messages_cpp)
 
 
 #############

@@ -105,7 +105,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES yeet_mergency
-#  CATKIN_DEPENDS roscpp std_msgs yeet_msgs
+  CATKIN_DEPENDS roscpp std_msgs yeet_msgs
 #  DEPENDS system_lib
 )
 
@@ -149,6 +149,11 @@ include_directories(
 # target_link_libraries(${PROJECT_NAME}_node
 #   ${catkin_LIBRARIES}
 # )
+
+# Collision
+add_executable(collision_node src/collision_node.cpp)
+target_link_libraries(collision_node ${catkin_LIBRARIES})
+#add_dependencies(collision_node)
 
 #############
 ## Install ##
