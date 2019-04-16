@@ -7,8 +7,8 @@
 
 //Constants
 #define KP (float)(0.18)
-#define KI (float)(0)
-#define KD (float)(0)
+#define KI (float)(0.001)
+#define KD (float)(0.001)
 #define INT (float)(0.5)
 #define MAX_OUTPUT 0.75
 #define MIN_OUTPUT -0.75
