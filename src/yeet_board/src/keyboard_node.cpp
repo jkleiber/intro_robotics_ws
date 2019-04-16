@@ -1,28 +1,15 @@
+#include <ros/ros.h>
+#include <geometry_msgs/Twist.h>
+
 #include <stdio.h>
 #include <unistd.h>
 #include <termios.h>
+
 #include <map>
 
-//ROS libs and msgs
-#include <ros/ros.h>
-
-//User libs and msgs
-#include <yeet_msgs/move.h>
-
-
-//Publisher
-ros::Publisher keyboard_pub;
-yeet_msgs::move move_msg;   //Published message
-
-
-/*
 // Map for movement keys
 std::map<char, std::vector<float>> moveBindings
 {
-    {'w', {1, 0, 0, 0}},
-    {'s', {1, 0, 0, -1}},
-
-  
   {'i', {1, 0, 0, 0}},
   {'o', {1, 0, 0, -1}},
   {'j', {0, 0, 0, 1}},
@@ -43,7 +30,6 @@ std::map<char, std::vector<float>> moveBindings
   {'b', {0, 0, -1, 0}},
   {'k', {0, 0, 0, 0}},
   {'K', {0, 0, 0, 0}}
-  
 };
 
 // Map for speed keys
@@ -58,7 +44,7 @@ std::map<char, std::vector<float>> speedBindings
 };
 
 // Reminder message
-
+//const char* msg = "Placeholder message /r/n";
 const char* msg = R"(
 Reading from the keyboard and Publishing to Twist!
 ---------------------------
@@ -79,18 +65,14 @@ w/x : increase/decrease only linear speed by 10%
 e/c : increase/decrease only angular speed by 10%
 CTRL-C to quit
 )";
-*/
 
 // Init variables
-float drive_speed(0.5); // Linear velocity (m/s)
-float turn_speed(1.0); // Angular velocity (rad/s)
-float drive = 0;
-float turn = 0;
-
-char key = ' ';
+float speed(0.5); // Linear velocity (m/s)
+float turn(1.0); // Angular velocity (rad/s)
+float x(0), y(0), z(0), th(0); // Forward/backward/neutral direction vars
+char key(' ');
 
 // For non-blocking keyboard inputs
-//Credit: https://github.com/methylDragon/teleop_twist_keyboard_cpp/blob/master/src/teleop_twist_keyboard.cpp
 int getch(void)
 {
   int ch;
@@ -119,11 +101,10 @@ int getch(void)
   return ch;
 }
 
-/**
- * Runs the loop needed to handle keyboard functions
- */
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
+
+    /*
     //Start the node
     ros::init(argc, argv, "keyboard_node");
 
@@ -136,67 +117,96 @@ int main(int argc, char **argv)
 
     //Set the loop rate of the decision function to 100 Hz
     ros::Rate loop_rate(100);
+    */
 
 
-    //Make a decisision for what to do
-    while(ros::ok())
+  // Init ROS node
+  ros::init(argc, argv, "teleop_twist_keyboard");
+  ros::NodeHandle nh;
+
+  // Init cmd_vel publisher
+  ros::Publisher pub1 = nh.advertise<geometry_msgs::Twist>("robot1/cmd_vel", 1);
+
+  // Create Twist message
+  geometry_msgs::Twist twist1;
+
+    // Init cmd_vel publisher
+  ros::Publisher pub2 = nh.advertise<geometry_msgs::Twist>("robot2/cmd_vel", 1);
+
+  // Create Twist message
+  geometry_msgs::Twist twist2;
+
+  printf("%s", msg);
+  printf("\rCurrent: speed %f\tturn %f | Awaiting command...\r", speed, turn);
+
+  while(true){
+
+    // Get the pressed key
+    key = getch();
+
+    // If the key corresponds to a key in moveBindings
+    if (moveBindings.count(key) == 1)
     {
-        //Perform all the callbacks
-        ros::spinOnce();
-        
-        key = getch();
+      // Grab the direction data
+      x = moveBindings[key][0];
+      y = moveBindings[key][1];
+      z = moveBindings[key][2];
+      th = moveBindings[key][3];
 
-        /*
-        // If the key corresponds to a key in moveBindings
-        if (moveBindings.count(key) == 1)
-        {
-            // Grab the direction data
-            x = moveBindings[key][0];
-            y = moveBindings[key][1];
-            z = moveBindings[key][2];
-            th = moveBindings[key][3];
-
-            printf("\rCurrent: speed %f\tturn %f | Last command: %c   ", speed, turn, key);
-        }
-
-        // Otherwise if it corresponds to a key in speedBindings
-        else if (speedBindings.count(key) == 1)
-        {
-            // Grab the speed data
-            speed = speed * speedBindings[key][0];
-            turn = turn * speedBindings[key][1];
-
-            printf("\rCurrent: speed %f\tturn %f | Last command: %c   ", speed, turn, key);
-        }
-
-        // Otherwise, set the robot to stop
-        else
-        {
-            drive = 0;
-            turn = 0;
-
-
-            // If ctrl-C (^C) was pressed, terminate the program
-            if (key == '\x03')
-            {
-                printf("Exiting...\n");
-                break;
-            }
-
-            printf("\rCurrent: speed %f\tturn %f | Invalid command! %c", speed, turn, key);
-        }
-
-        */
-
-        // TODO: Update the move_msg
-
-
-        // Publish it and resolve any remaining callbacks
-        keyboard_pub.publish(move_msg);
-
-        //Finish the current loop
-        loop_rate.sleep();
+      printf("\rCurrent: speed %f\tturn %f | Last command: %c   ", speed, turn, key);
     }
 
-    return 0;
+    // Otherwise if it corresponds to a key in speedBindings
+    else if (speedBindings.count(key) == 1)
+    {
+      // Grab the speed data
+      speed = speed * speedBindings[key][0];
+      turn = turn * speedBindings[key][1];
+
+      printf("\rCurrent: speed %f\tturn %f | Last command: %c   ", speed, turn, key);
+    }
+
+    // Otherwise, set the robot to stop
+    else
+    {
+      x = 0;
+      y = 0;
+      z = 0;
+      th = 0;
+
+      // If ctrl-C (^C) was pressed, terminate the program
+      if (key == '\x03')
+      {
+        printf("\n\n                 .     .\n              .  |\\-^-/|  .    \n             /| } O.=.O { |\\\n\n                 CH3EERS\n\n");
+        break;
+      }
+
+      printf("\rCurrent: speed %f\tturn %f | Invalid command! %c", speed, turn, key);
+    }
+
+    // Update the Twist message
+    twist1.linear.x = x * speed;
+    twist1.linear.y = y * speed;
+    twist1.linear.z = z * speed;
+
+    twist1.angular.x = 0;
+    twist1.angular.y = 0;
+    twist1.angular.z = th * turn;
+
+    twist2.linear.x = x * speed;
+    twist2.linear.y = y * speed;
+    twist2.linear.z = z * speed;
+
+    twist2.angular.x = 0;
+    twist2.angular.y = 0;
+    twist2.angular.z = th * turn;
+
+    // Publish it and resolve any remaining callbacks
+    pub1.publish(twist1);
+    pub2.publish(twist2);
+
+    ros::spinOnce();
+  }
+
+  return 0;
 }

@@ -1,8 +1,8 @@
-prefix=/home/trey/School/CS4023/intro_robotics_ws/devel
+prefix=/home/trey/school/intro_robotics_ws/devel
 
 Name: yeet_mergency
 Description: Description of yeet_mergency
 Version: 0.0.0
 Cflags: 
-Libs: -L/home/trey/School/CS4023/intro_robotics_ws/devel/lib 
+Libs: -L/home/trey/school/intro_robotics_ws/devel/lib 
 Requires: roscpp std_msgs yeet_msgs
