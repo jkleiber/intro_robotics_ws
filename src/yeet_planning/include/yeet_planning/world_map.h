@@ -15,7 +15,8 @@ class WorldMap
         void clearParams();
         std::vector<MapNode>& adjacentMapNodes(MapNode& node);
         
-        //TODO: add more of these...
+        //Getters for nodes
+        MapNode& getNode(int row, int col)
 
         //Navigation helper functions
         MapNode& getBestAdjNode(MapNode cur_node);
