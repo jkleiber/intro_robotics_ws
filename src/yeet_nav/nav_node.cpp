@@ -9,37 +9,68 @@
 //Constants
 #define RAD_TO_DEG (double)(180.0 / 3.14159)    //Conversion factor from radians to degrees
 
+//PID
 PID_Controller turn;
 PID_Controller drive;
 
-double current_angle;
+//Global variables
+float current_angle;
+float goal_x;
+float goal_y;
+float cur_x;
+float cur_y;
+int goal_row;
+int goal_col;
+int cur_row;
+int cur_col;
 
-void goalCallBack(const yeet_planning::next_node::ConstPtr& goal)
+/**
+ * @brief - Updates global variables for the PID Controller to use.
+ * 
+ * @param goal - The information about the robot's goal
+ */
+void goalCallBack(const yeet_msgs::node::ConstPtr& goal)
 {
-
+    goal_x = goal->real_x;
+    goal_y = goal->real_y;
+    goal_row = goal->row;
+    goal_col = goal->col;
 }
 
-void currentCallBack(const yeet_planning::current_node::ConstPtr& current)
+/**
+ * @brief - Updates global variables for the PID Controller to use.
+ * 
+ * @param current - The information about the robot's current positions
+ */
+void currentCallBack(const yeet_msgs::node::ConstPtr& current)
 {
-
+    cur_x = current->real_x;
+    cur_y = current->real_y;
+    cur_row = current->row;
+    cur_col = current->col;
 }
 
+/**
+ * @brief - Gets the current angle of the robot in degrees
+ * 
+ * @param odom - The odometry message containing robot angle position
+ */
 void odomCallBack(const nav_msgs::Odometry::ConstPtr& odom)
 {
     //Get the robot orientation
     tf::Pose pose;
-    tf::poseMsgToTF(odometer->pose.pose, pose);
+    tf::poseMsgToTF(odom->pose.pose, pose);
 
     //Get the current angle in degrees
     current_angle = drivetrain.angleWrap(tf::getYaw(pose.getRotation()) * RAD_TO_DEG);
 }
 
 /**
- * @brief Main method
+ * @brief - Main method
  * 
- * @param argc Number of args
- * @param argv Args into the executable
- * @return int Exit code
+ * @param argc - Number of args
+ * @param argv - Args into the executable
+ * @return int - Exit code
  */
 int main(int argc, char **argv)
 {
@@ -51,9 +82,9 @@ int main(int argc, char **argv)
 
     //Subscribe to topics
     ros::Subscriber goal_sub = nav_node.subscribe(
-        nav_node.resolveName("/yeet_planning/next_node"), 10, &goalCallBack);
+        nav_node.resolveName("/yeet_msgs/node"), 10, &goalCallBack);
     ros::Subscriber current_sub = nav_node.subscribe(
-        nav_node.resolveName("/yeet_planning/current_node"), 10, &currentCallBack);
+        nav_node.resolveName("/yeet_msgs/node"), 10, &currentCallBack);
     ros::Subscriber odom_sub = nav_node.subscribe(
         nav_node.resolveName("/odom"), 10, &odomCallBack);
 
