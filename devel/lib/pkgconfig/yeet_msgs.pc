@@ -1,8 +1,8 @@
-prefix=/home/trey/school/intro_robotics_ws/devel
+prefix=/home/jkleiber/intro_robotics_ws/devel
 
 Name: yeet_msgs
 Description: Description of yeet_msgs
 Version: 0.0.0
-Cflags: -I/home/trey/school/intro_robotics_ws/devel/include
-Libs: -L/home/trey/school/intro_robotics_ws/devel/lib 
+Cflags: -I/home/jkleiber/intro_robotics_ws/devel/include
+Libs: -L/home/jkleiber/intro_robotics_ws/devel/lib 
 Requires: geometry_msgs nav_msgs roscpp std_msgs message_runtime

@@ -90,3 +90,8 @@ MapNode& WorldMap::getBestAdjNode(MapNode cur_node)
 
     return min_node;
 }
+
+MapNode& WorldMap::getNode(int row, int col)
+{
+    return this->current_map[row][col];
+}
