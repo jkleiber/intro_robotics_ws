@@ -5,5 +5,7 @@
    "KEYBOARD"
    "<MOVE>"
    "MOVE"
+   "<NODE>"
+   "NODE"
   ))
 

@@ -5,6 +5,8 @@
 
 //Messages
 #include "nav_msgs/OccupancyGrid.h"
+#include "yeet_msgs/node.h"
+#include "yeet_msgs/"
 
 //Libraries
 #include "eigen3/Eigen/Dense.h"
@@ -20,6 +22,7 @@
 #define NAVIGATING  1
 #define WAYPOINT    2
 #define REPLAN      3
+#define NEW_GOAL    4
 
 //Replanning flags
 bool replan;
@@ -36,8 +39,6 @@ MapNode start_node;
 
 //Search state management
 int search_state;
-
-//TODO: Create a service to get the next node on the path
 
 
 /**
@@ -163,7 +164,6 @@ void initSearch()
     //Clear all values in the map nodes
     current_map.clearParams();
 
-    //TODO: choose the goal node somewhere
     //Set the goal node as the goal
     goal_node.setGoal();
     
@@ -187,24 +187,39 @@ void planCourse()
 }
 
 
+void goalCallback(const yeet_msgs::node::ConstPtr& goal)
+{
+    //Read the new node
+    goal_node = current_map.getNode(goal->row, goal->col);
+
+    //Set the search state to make a new plan
+    search_state = NEW_GOAL;
+}
+
 
 //TODO: make this message a map update message (this should contain a list of cells to update and the probabilities associated with them)
 void mapCallback(const nav_msgs::OccupancyGrid::ConstPtr & map_data)
 {
     //TODO: update the map
-    replan = true;
+
+    //Set the robot to replan its route based on new environment information
+    search_state = REPLAN;
 }
 
 
 /**
- * @brief Updates the current node location using SLAM pose
+ * @brief Updates the current node location using our custom localization system
  * 
  * @param odom 
  */
-//TODO: get odom from the map -> odom tf thing
-void updateCurrentNode(const nav_msgs::Odometry::ConstPtr &odom)
+void updateCurrentNode(const yeet_msgs::node::ConstPtr &cur_node)
 {
-
+    //If the current node is different from the start node, update it and get the next node from the list
+    if(start_node.getRow() != cur_node->row || start_node.getCol() != cur_node->col)
+    {
+        //Now that we are at a new node, we should send the next node on the path
+        search_state = WAYPOINT;
+    }
 }
 
 
@@ -219,10 +234,14 @@ int main(int argc, char **argv)
     //Get data from our map when needed
     ros::Subscriber map_sub = d_star_node.subscribe(d_star_node.resolveName("/yeet_planning/map_update"), MAX_BUFFER, &mapCallback);
 
-    //TODO: subscribe to the task manager
+    //Subscribe to the task manager
+    ros::Subscriber goal_sub = d_star_node.subscribe(d_star_node.resolveName("/yeet_planning/next_goal"), MAX_BUFFER, &goalCallback);
 
-    //TODO: we should give no initial information to the robot about its environment. It can figure out how to give the tour on its first few paths. If this doesn't work, we can give it some data
-    //TODO: we definitely should give the robot information about the grid (i.e. size, number of cells, etc.) but set all occupancy probabilities to -1 (unknown) at first
+    //Subscribe to the robot's pose in the map
+    ros::Subscriber pose_sub = d_star_node.subscribe(d_star_node.resolveName("/yeet_planning/robot_grid_pose"), MAX_BUFFER, &updateCurrentNode);
+
+    //Make a publisher for sending the next node's data
+    ros::Publisher node_pub = d_star_node.advertise<yeet_msgs::node>(d_star_node.resolveName("/yeet_planning/target_node"), MAX_BUFFER);
 
     //Wait for the task manager to tell us a goal node
     search_state = IDLE;
@@ -239,7 +258,7 @@ int main(int argc, char **argv)
         //If the robot is in the process of navigating
         if(search_state == NAVIGATING)
         {
-            //TODO: drive 
+            //Don't do anything, let the robot drive.
         }
         //If we need to update to go to the next waypoint, 
         //load the next node from the gradient
@@ -247,6 +266,9 @@ int main(int argc, char **argv)
         {
             //Load the next node
             start_node = current_map.getBestAdjNode(start_node);
+
+            //Publish the new target
+
             
             //Change to the navigation system
             search_state = NAVIGATING;
@@ -260,7 +282,13 @@ int main(int argc, char **argv)
             
             //Recalculate the path
             calculateShortestPath();
-        }     
+        }
+        //If a new goal is selected, plan a new course
+        else if(search_state == NEW_GOAL)
+        {
+            //Plan a new course
+            planCourse();
+        }
 
         //Get the callbacks
         ros::spinOnce();
