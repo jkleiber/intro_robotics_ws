@@ -8,7 +8,8 @@
 
 //Constants
 #define RAD_TO_DEG (double)(180.0 / 3.14159)    //Conversion factor from radians to degrees
-#define 
+#define DISTANCE_TOL (double)(0.125)            //Tolerance for drive distance
+#define ANGLE_TOL (double)(1.0)                 //Tolerance for angle distance
 
 //PID
 PID_Controller turn;
@@ -67,6 +68,32 @@ void odomCallBack(const nav_msgs::Odometry::ConstPtr& odom)
 }
 
 /**
+ * @brief - Keep angles within the expected range
+ * 
+ * @param angle - Unwrapped angle
+ * @return double - Angle between 0-360
+ */
+double angleWrap(double angle)
+{
+    return angle < 0 ? fmod(angle, 360) + 360 : fmod(angle, 360);
+}
+
+/**
+ * @brief - 
+ * 
+ * @param target_angle - The desired turn angle
+ * @return double - Returns the error in angle. Negative if the turn
+ * should be to the right, positive if left.
+ */
+double sweep(float target_angle)
+{
+    double sweep = target_angle - current_angle;
+    sweep = (sweep >  180) ? sweep - 360 : sweep;
+    sweep = (sweep < -180) ? sweep + 360 : sweep;
+    return sweep;
+}
+
+/**
  * @brief - Main method
  * 
  * @param argc - Number of args
@@ -89,10 +116,11 @@ int main(int argc, char **argv)
     ros::Subscriber odom_sub = nav_node.subscribe(
         nav_node.resolveName("/odom"), 10, &odomCallBack);
 
-    //Publish to the turtlebot's cmd_vel_mux topic
+    //Publishers
     ros::Publisher move_pub = nav_node.advertise<yeet_msgs::move>(
         nav_node.resolveName("/yeet_nav/navigation"), 10);
-    ros::Publisher status_pub = nav_node.advertise<yeet_msgs::nav_status
+    ros::Publisher status_pub = nav_node.advertise<yeet_msgs::nav_status>(
+        nav_node.resolveName("/yeet_nav/status"), 10);
 
     //Set the loop rate of the nav function to 100 Hz
     ros::Rate loop_rate(100);
@@ -100,7 +128,6 @@ int main(int argc, char **argv)
     while(ross:ok())
     {
         ros:SpinOnce();
-
-        //TODO: Calculate setpoint and endpoint from global variables and pass them to PID in both angle and drive
+        
     }
 }

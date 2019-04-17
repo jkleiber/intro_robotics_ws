@@ -1,1 +1,1 @@
-bool finished
+bool goal
