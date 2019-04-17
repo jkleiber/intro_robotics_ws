@@ -10,6 +10,10 @@
 #define RAD_TO_DEG (double)(180.0 / 3.14159)    //Conversion factor from radians to degrees
 #define DISTANCE_TOL (double)(0.125)            //Tolerance for drive distance
 #define ANGLE_TOL (double)(1.0)                 //Tolerance for angle distance
+#define UP 0                                    //Up map angle
+#define LEFT 90                                 //Left map angle
+#define RIGHT -90                               //Right map angle
+#define DOWN 180                                //Down map angle
 
 //PID
 PID_Controller turn;
@@ -17,43 +21,24 @@ PID_Controller drive;
 
 //Global variables
 float current_angle;
-float goal_x;
-float goal_y;
-float cur_x;
-float cur_y;
 int goal_row;
 int goal_col;
 int cur_row;
 int cur_col;
 
 /**
- * @brief - Updates global variables for the PID Controller to use.
+ * @brief goalCallBack- Updates global variables for the PID Controller to use.
  * 
  * @param goal - The information about the robot's goal
  */
 void goalCallBack(const yeet_msgs::node::ConstPtr& goal)
 {
-    goal_x = goal->real_x;
-    goal_y = goal->real_y;
     goal_row = goal->row;
     goal_col = goal->col;
 }
 
 /**
- * @brief - Updates global variables for the PID Controller to use.
- * 
- * @param current - The information about the robot's current positions
- */
-void currentCallBack(const yeet_msgs::node::ConstPtr& current)
-{
-    cur_x = current->real_x;
-    cur_y = current->real_y;
-    cur_row = current->row;
-    cur_col = current->col;
-}
-
-/**
- * @brief - Gets the current angle of the robot in degrees
+ * @brief odomCallBack - Gets the current angle of the robot in degrees
  * 
  * @param odom - The odometry message containing robot angle position
  */
@@ -65,10 +50,14 @@ void odomCallBack(const nav_msgs::Odometry::ConstPtr& odom)
 
     //Get the current angle in degrees
     current_angle = drivetrain.angleWrap(tf::getYaw(pose.getRotation()) * RAD_TO_DEG);
+
+    //Get the current row and column from x and y position
+    float x_pos = odom->pose.pose.position.x;
+    float y_pos = odom->pose.pose.position.y;
 }
 
 /**
- * @brief - Keep angles within the expected range
+ * @brief angleWrap - Keep angles within the expected range
  * 
  * @param angle - Unwrapped angle
  * @return double - Angle between 0-360
@@ -79,7 +68,7 @@ double angleWrap(double angle)
 }
 
 /**
- * @brief - 
+ * @brief sweep - 
  * 
  * @param target_angle - The desired turn angle
  * @return double - Returns the error in angle. Negative if the turn
@@ -111,8 +100,6 @@ int main(int argc, char **argv)
     //Subscribe to topics
     ros::Subscriber goal_sub = nav_node.subscribe(
         nav_node.resolveName("/yeet_planning/target_node"), 10, &goalCallBack);
-    ros::Subscriber current_sub = nav_node.subscribe(
-        nav_node.resolveName("/yeet_msgs/node"), 10, &currentCallBack);
     ros::Subscriber odom_sub = nav_node.subscribe(
         nav_node.resolveName("/odom"), 10, &odomCallBack);
 
@@ -125,9 +112,35 @@ int main(int argc, char **argv)
     //Set the loop rate of the nav function to 100 Hz
     ros::Rate loop_rate(100);
 
-    while(ross:ok())
+    //Create local messages
+    yeet_msgs::move move;
+    yeet_msgs::status status;
+
+    //The callback and logic loop
+    while(ros:ok())
     {
-        ros:SpinOnce();
-        
+        ros:SpinOnce(); 
+
+        //Get the difference in rows and columns
+        int col_diff = cur_col - goal_col;
+        int row_diff = cur_row - goal_row;
+        int map_angle;
+        int bot_angle;
+        //Down a square
+        map_angle = (row_diff == 0 && col_diff == 1) ? DOWN : map_angle; 
+        //Right a sqaure
+        map_angle = (row_diff == 1 && col_diff == 0) ? RIGHT : map_angle;
+        //Up a square
+        map_angle = (row_diff == 0 && col_diff == -1) ? UP : map_angle;
+        //Left a square
+        map_angle = (row_diff == -1 && col_diff == 0) ? LEFT : map_angle;
+        if(abs(sweep(map_angle)) <= ANGLE_TOL)
+        {
+            move.turn = 0;
+        }
+        else
+        {
+            move.turn = turn.getOutput(0, sweep(map_angle));
+        }
     }
 }
