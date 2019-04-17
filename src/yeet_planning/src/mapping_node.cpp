@@ -9,7 +9,13 @@ int main(int argc, char **argv)
     ros::init(argc, argv, "mapping_node");
 
     //Set up node controller
-    ros::NodeHandle map_node;
+    ros::NodeHandle slam_node;
 
-    //Subscribe to SLAM updates from gmapping
+    //Subscribe to laser scanner and bump sensors
+    //TODO: take namespaces as params
+    ros::Subscriber laser_sub = slam_node.subscribe(slam_node.resolveName("/scan"), MAX_BUFFER, &scanCallback);
+    ros::Subscriber bump_sub = slam_node.subscribe(slam_node.resolveName("/mobile_base/events/bumper"), MAX_BUFFER, &bumperCallback);
+    
+    //Subscribe to SLAM updates from gmapping?
+    
 }

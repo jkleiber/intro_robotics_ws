@@ -6,10 +6,15 @@
                 "limitSymbolsToIncludedHeaders": true
             },
             "includePath": [
-                "/home/trey/school/intro_robotics_ws/devel/include",
-                "/home/trey/scr/robomagellan-2019/roma_ws/devel/include",
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/devel/include/**",
                 "/opt/ros/kinetic/include",
-                "/home/trey/school/intro_robotics_ws/src/reactive_robot/include",
+                "${workspaceFolder}/src/reactive_robot/include",
+                "${workspaceFolder}/src/yeet_mergency/include/**",
+                "${workspaceFolder}/src/yeet_nav/include/**",
+                "${workspaceFolder}/src/yeet_board/include/**",
+                "${workspaceFolder}/src/yeet_motion/include/**",
+                "${workspaceFolder}/src/yeet_planning/include/**",
                 "/usr/include"
             ],
             "name": "Linux",

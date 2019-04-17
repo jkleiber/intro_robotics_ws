@@ -21,21 +21,26 @@ class MapNode
         //Operator overloads
         void operator=(const MapNode& node);
         bool operator==(const MapNode& node);
-        bool operator>(const MapNode& left_node, const MapNode& right_node);
+        bool operator>(const MapNode& right_node);
+        bool operator<(const MapNode& right_node);
 
         //Node characteristic functions
         int getRow();
         int getCol();
+        void setRow(int row);
+        void setCol(int col);
 
         //D* search helper functions
         void reset();
         void setGoal();
         void setG(int g);
         void setGInf();
-        void setMinRHS(int rhs);
+        void setRHS(int rhs);
+        void setRHSInf();
         void setOpen();
         void setClosed();
         void setKeys(int primary, int secondary);
+        void setObstacle(bool obs);
         int getG();
         int getRHS();
         int getPrimaryKey();
@@ -58,6 +63,8 @@ class MapNode
         int tag;
         int primary_key;
         int tiebreaker_key;
+
+    friend bool operator>(const MapNode& lhs, const MapNode& rhs);
 };
 
 #endif

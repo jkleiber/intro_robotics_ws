@@ -1,8 +1,0 @@
-prefix=/home/preston/Robotics/intro_robotics_ws/devel
-
-Name: yeet_planning
-Description: Description of yeet_planning
-Version: 0.0.0
-Cflags: 
-Libs: -L/home/preston/Robotics/intro_robotics_ws/devel/lib 
-Requires: 

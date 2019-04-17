@@ -7,7 +7,7 @@
 //I learned how to do this here: https://stackoverflow.com/questions/19467485/how-to-remove-element-not-at-top-from-priority-queue
 
 template<typename T>
-class yeet_priority_queue : std::priority_queue<T, std::vector<T>, std::greater<T> >
+class yeet_priority_queue : public std::priority_queue<T, std::vector<T>, std::greater<T> >
 {
     public:
         /**
@@ -20,7 +20,7 @@ class yeet_priority_queue : std::priority_queue<T, std::vector<T>, std::greater<
         bool remove(const T& val)
         {
             //Find the element in the queue
-            auto it = std::find(this->c.begin(), this->c.end(), value);
+            auto it = std::find(this->c.begin(), this->c.end(), val);
             
             //If the element was found, remove it and re-sort the queue
             if (it != this->c.end()) 
@@ -45,7 +45,7 @@ class yeet_priority_queue : std::priority_queue<T, std::vector<T>, std::greater<
         bool contains(const T& val)
         {
             //Find the element in the queue
-            auto it = std::find(this->c.begin(), this->c.end(), value);
+            auto it = std::find(this->c.begin(), this->c.end(), val);
 
             //Return the status based on the iterator's location
             return (it != this->c.end());
