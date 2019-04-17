@@ -98,5 +98,7 @@ int main(int argc, char **argv)
     while(ross:ok())
     {
         ros:SpinOnce();
+
+        //TODO: Calculate setpoint and endpoint from global variables and pass them to PID in both angle and drive
     }
 }
