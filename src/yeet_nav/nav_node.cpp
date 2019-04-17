@@ -8,6 +8,7 @@
 
 //Constants
 #define RAD_TO_DEG (double)(180.0 / 3.14159)    //Conversion factor from radians to degrees
+#define 
 
 //PID
 PID_Controller turn;
@@ -82,7 +83,7 @@ int main(int argc, char **argv)
 
     //Subscribe to topics
     ros::Subscriber goal_sub = nav_node.subscribe(
-        nav_node.resolveName("/yeet_msgs/node"), 10, &goalCallBack);
+        nav_node.resolveName("/yeet_planning/target_node"), 10, &goalCallBack);
     ros::Subscriber current_sub = nav_node.subscribe(
         nav_node.resolveName("/yeet_msgs/node"), 10, &currentCallBack);
     ros::Subscriber odom_sub = nav_node.subscribe(
@@ -91,6 +92,7 @@ int main(int argc, char **argv)
     //Publish to the turtlebot's cmd_vel_mux topic
     ros::Publisher move_pub = nav_node.advertise<yeet_msgs::move>(
         nav_node.resolveName("/yeet_nav/navigation"), 10);
+    ros::Publisher status_pub = nav_node.advertise<yeet_msgs::nav_status
 
     //Set the loop rate of the nav function to 100 Hz
     ros::Rate loop_rate(100);
