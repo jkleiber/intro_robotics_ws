@@ -7,6 +7,26 @@ WorldMap::WorldMap()
 }
 
 
+WorldMap::WorldMap(int rows, int cols, double square_size) : current_map(rows, vector<MapNode>(cols))
+{
+    //Declare local variables
+    int c;
+    int r;
+
+    //Initialize values in the current map
+    for(r = 0; r < rows; ++r)
+    {
+        for(c = 0; c < cols; ++c)
+        {
+            this->current_map[r][c].setRow(r);
+            this->current_map[r][c].setCol(c);
+
+            //TODO: use square size to find centers of squares
+        }
+    }
+}
+
+
 void WorldMap::clearParams()
 {
     //Declare local variables

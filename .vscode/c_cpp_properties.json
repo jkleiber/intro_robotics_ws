@@ -10,11 +10,8 @@
                 "${workspaceFolder}/src/reactive_robot/include",
                 "/opt/ros/kinetic/include",
                 "/usr/include",
-<<<<<<< HEAD
-                "${workspaceFolder}/src/yeet_nav/include"
-=======
+                "${workspaceFolder}/src/yeet_nav/include",
                 "${workspaceFolder}/src/yeet_planning/include"
->>>>>>> cb0eb74d0f74b7d9a69a972c9054ac52febd4d2f
             ],
             "name": "Linux",
             "intelliSenseMode": "gcc-x64"

@@ -1,4 +1,4 @@
-#include "yeet_planning/map_node.h"
+#include "yeet_planning/map_cell.h"
 
 MapNode::MapNode()
 {
@@ -28,8 +28,14 @@ bool MapNode::operator==(const MapNode& node)
 
 bool MapNode::operator>(const MapNode& node)
 {
-    //TODO: sort by key and tiebreaker_key
-    return false;
+    //Sort by tiebreaker key if needed 
+    if(node.primary_key == this->primary_key)
+    {
+        return this->tiebreaker_key > node.tiebreaker_key;
+    }
+
+    //Otherwise, determine the correct ordering with the primary key
+    return this->primary_key > node.primary_key;
 }
 
 
@@ -42,6 +48,18 @@ int MapNode::getRow()
 int MapNode::getCol()
 {
     return this->col;
+}
+
+
+void MapNode::setRow(int row)
+{
+    this->row = row;
+}
+
+
+void MapNode::setCol(int col)
+{
+    this->col = col;
 }
 
 
@@ -79,6 +97,12 @@ void MapNode::setMinRHS(int rhs)
 }
 
 
+void MapNode::setRHSInf()
+{
+    this->rhs = YEET_FINITY;
+}
+
+
 void MapNode::setOpen()
 {
     this->tag = OPEN;
@@ -96,6 +120,14 @@ void MapNode::setKeys(int primary, int secondary)
     this->primary_key = primary;
     this->tiebreaker_key = secondary;
 }
+
+
+
+void MapNode::setObstacle(bool obs)
+{
+    this->occupancy = obs;
+}
+
 
 
 int MapNode::getG()
