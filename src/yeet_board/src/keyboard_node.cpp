@@ -125,13 +125,13 @@ int main(int argc, char** argv)
   ros::NodeHandle nh;
 
   // Init cmd_vel publisher
-  ros::Publisher pub1 = nh.advertise<geometry_msgs::Twist>("robot1/cmd_vel", 1);
+  ros::Publisher pub1 = nh.advertise<geometry_msgs::Twist>("robot1/cmd_vel/input/teleop", 1);
 
   // Create Twist message
   geometry_msgs::Twist twist1;
 
     // Init cmd_vel publisher
-  ros::Publisher pub2 = nh.advertise<geometry_msgs::Twist>("robot2/cmd_vel", 1);
+  ros::Publisher pub2 = nh.advertise<geometry_msgs::Twist>("robot2/cmd_vel/input/teleop", 1);
 
   // Create Twist message
   geometry_msgs::Twist twist2;
