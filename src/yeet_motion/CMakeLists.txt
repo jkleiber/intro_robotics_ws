@@ -150,6 +150,11 @@ include_directories(
 #   ${catkin_LIBRARIES}
 # )
 
+# Motion
+add_executable(motion_node src/motion_node.cpp)
+target_link_libraries(motion_node ${catkin_LIBRARIES})
+#add_dependencies(motion_node)
+
 #############
 ## Install ##
 #############

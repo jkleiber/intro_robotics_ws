@@ -1,8 +1,8 @@
-prefix=/home/jkleiber/intro_robotics_ws/devel
+prefix=/home/trey/intro_robotics_ws/devel
 
 Name: yeet_board
 Description: Description of yeet_board
 Version: 0.0.0
 Cflags: 
-Libs: -L/home/jkleiber/intro_robotics_ws/devel/lib 
+Libs: -L/home/trey/intro_robotics_ws/devel/lib 
 Requires: 

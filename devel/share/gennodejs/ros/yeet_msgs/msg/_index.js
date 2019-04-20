@@ -2,11 +2,13 @@
 "use strict";
 
 let node = require('./node.js');
-let keyboard = require('./keyboard.js');
+let nav_status = require('./nav_status.js');
 let move = require('./move.js');
+let keyboard = require('./keyboard.js');
 
 module.exports = {
   node: node,
-  keyboard: keyboard,
+  nav_status: nav_status,
   move: move,
+  keyboard: keyboard,
 };
