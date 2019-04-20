@@ -12,13 +12,13 @@
 
 //D* and Mapping classes
 #include "yeet_planning/yeet_priority_queue.h"
-#include "yeet_planning/map_node.h"
+#include "yeet_planning/map_cell.h"
 #include "yeet_planning/world_map.h"
 
 //Constants
-#define MAP_ROWS    10
-#define MAP_COLS    10
-#define SQUARE_SIZE (double)(0.5)
+#define MAP_ROWS    7
+#define MAP_COLS    7
+#define SQUARE_SIZE (double)(0.6096)    //This is the size of the carpet squares in meters
 #define MAX_BUFFER  10
 #define VIEW_UP     0
 #define VIEW_LEFT   1
@@ -27,7 +27,7 @@
 #define IDLE        0
 #define NAVIGATING  1
 #define WAYPOINT    2
-#define REPLAN      3
+#define OBS_REPLAN  3
 #define NEW_GOAL    4
 
 //Replanning flags
@@ -53,16 +53,21 @@ int search_state;
 
 
 /**
- * @brief Heuristic used to find shortest possible distance between nodes
- * This uses manhattan distance, as diagonal movement is risky in our maze environment
- * 
+ * @brief Find the cost of moving between two adjacent nodes
  * @param node_A Node A
  * @param node_B Node B
- * @return int The absolute value of the manhattan distance between two nodes
+ * @return int 
  */
-int heuristic(MapNode& node_A, MapNode& node_B)
+int transitionCost(MapNode& node_A, MapNode& node_B)
 {
-    return (abs(node_A.getRow() - node_B.getRow()) + abs(node_A.getCol() - node_B.getCol()));
+    //If either node is an obstacle, the transitionCost is infinity
+    if(node_A.isObstacle() || node_B.isObstacle())
+    {
+        return YEET_FINITY;
+    }
+
+    //Otherwise the distance is 1 (nodes are adjacent and diagonal moves are not allowed)
+    return 1;
 }
 
 
@@ -78,21 +83,43 @@ int calculateKey(MapNode& node)
 }
 
 
-void updateVertex(MapNode& node, MapNode& prev_node)
+void updateVertex(MapNode& node)
 {
     //Declare local variables
+    int i;
+    std::vector<MapNode> neighbor_nodes;
     int node_g;
     int node_rhs;
-
+    int succ_rhs;
+    
     //Initialize local variables
     node_g = node.getG();
     node_rhs = node.getRHS();
 
     //If the node is not a goal or an obstacle, update its RHS value
-    if(!node.isGoal() && !node.isObstacle())
+    if(!node.isGoal())
     {
+        //Set the RHS to infinity for comparison
+        node_rhs = YEET_FINITY;
+
+        //Get neighboring nodes
+        neighbor_nodes = current_map.adjacentMapNodes(node);
+
+        //Find the minimum RHS for this node
+        for(i = 0; i < neighbor_nodes.size(); ++i)
+        {
+            //Get the RHS computed from the neighbor node
+            succ_rhs = neighbor_nodes[i].getG() + transitionCost(node, neighbor_nodes[i]);
+
+            //If the RHS we just computed is lower, update the node's rhs
+            if(succ_rhs < node_rhs)
+            {
+                node_rhs = succ_rhs;
+            }
+        }
+
         //Calculate the new RHS for this node
-        node.setMinRHS(prev_node.getG() + heuristic(node, prev_node));
+        node.setRHS(node_rhs);
     }
 
     //If the node is on the open list, remove it from the list
@@ -163,7 +190,8 @@ void calculateShortestPath()
             //Propagate changes to predecessor nodes
             expandNode(node);
 
-            //TODO: propagate changes to this node?
+            //Update this node
+            updateVertex(node);
         }
         
     }
@@ -219,25 +247,6 @@ void mapCallback(const yeet_msgs::node::ConstPtr & map_node)
 }
 
 
-/**
- * @brief Updates the current node location using our custom localization system
- * 
- * @param odom 
- */
-void updateCurrentNode(const yeet_msgs::node::ConstPtr &cur_node)
-{
-    /* NOTE: The node update is done through the use of callbacks from nav and obstacle avoidance
-    //If the current node is different from the start node, update it and get the next node from the list
-    if(start_node.getRow() != cur_node->row || start_node.getCol() != cur_node->col)
-    {
-        //Now that we are at a new node, we should send the next node on the path
-        search_state = WAYPOINT;
-    }*/
-
-    //Update the row and column of the current node
-    cur_col = cur_node->col;
-    cur_row = cur_node->row;
-}
 
 
 void navCallback(const yeet_msgs::nav_status::ConstPtr& nav_status)
@@ -246,6 +255,26 @@ void navCallback(const yeet_msgs::nav_status::ConstPtr& nav_status)
     {
         search_state = WAYPOINT;
     }
+}
+
+
+void getNextWaypoint()
+{
+    //Load the next node
+    start_node = current_map.getBestAdjNode(start_node);
+
+    //Calculate the target message
+    target_node.row = start_node.getRow();
+    target_node.col = start_node.getCol();
+    target_node.real_x = start_node.getX();
+    target_node.real_y = start_node.getY();
+    target_node.is_obstacle = start_node.isObstacle();
+
+    //Publish the new target
+    node_pub.publish(target_node);
+    
+    //Change to the navigation system
+    search_state = NAVIGATING;
 }
 
 
@@ -271,14 +300,11 @@ int main(int argc, char **argv)
     //Subscribe to the task manager
     ros::Subscriber goal_sub = d_star_node.subscribe(d_star_node.resolveName("/yeet_planning/next_goal"), MAX_BUFFER, &goalCallback);
 
-    //Subscribe to the robot's pose in the map
-    ros::Subscriber pose_sub = d_star_node.subscribe(d_star_node.resolveName("/yeet_planning/robot_grid_pose"), MAX_BUFFER, &updateCurrentNode);
-
     //Subscribe to the navigation and obstacle avoidance to check for waypoint or Replanning
     ros::Subscriber nav_sub = d_star_node.subscribe(d_star_node.resolveName("/yeet_nav/status"), MAX_BUFFER, &navCallback);
 
-    //Make a publisher for sending the next node's data
-    ros::Publisher node_pub = d_star_node.advertise<yeet_msgs::node>(d_star_node.resolveName("/yeet_planning/target_node"), MAX_BUFFER);
+    //Initialize the start node
+    start_node = current_map.getNode(0, 0);
 
     //Wait for the task manager to tell us a goal node
     search_state = IDLE;
@@ -288,7 +314,6 @@ int main(int argc, char **argv)
         //If there is no path to goal, give up!
         if(start_node.getG() >= INFINITY)
         {
-            //TODO: notify other robot about blocked path
             search_state = IDLE;
         }
 
@@ -302,66 +327,40 @@ int main(int argc, char **argv)
         else if(search_state == WAYPOINT)
         {
             //Load the next node
-            start_node = current_map.getBestAdjNode(start_node);
-
-            //Calculate the target message
-            target_node.row = start_node.getRow();
-            target_node.col = start_node.getCol();
-            target_node.real_x = start_node.getX();
-            target_node.real_y = start_node.getY();
-            target_node.is_obstacle = start_node.isObstacle();
-
-            //Publish the new target
-            node_pub.publish(target_node);
-            
-            //Change to the navigation system
-            search_state = NAVIGATING;
+            getNextWaypoint();
         }
         //If an obstacle was found, replan
-        else if(search_state == REPLAN)
+        else if(search_state == OBS_REPLAN)
         {
             //Since the obstacle is always in front, the node in front of the robot is an obstacle
             //Given the direction of the robot, determine the node that is an obstacle
             if(direction == VIEW_UP)
             {
-                obstacle_row = cur_row - 1;
-                obstacle_col = cur_col;
+                obstacle_row = start_node.getRow() - 1;
+                obstacle_col = start_node.getCol();
             }
             else if(direction == VIEW_LEFT)
             {
-                obstacle_row = cur_row;
-                obstacle_col = cur_col - 1;
+                obstacle_row = start_node.getRow();
+                obstacle_col = start_node.getCol() - 1;
             }
             else if(direction == VIEW_DOWN)
             {
-                obstacle_row = cur_row + 1;
-                obstacle_col = cur_col;
+                obstacle_row = start_node.getRow() + 1;
+                obstacle_col =start_node.getCol();
             }
             else
             {
-                obstacle_row = cur_row;
-                obstacle_col = cur_col - 1;
+                obstacle_row = start_node.getRow();
+                obstacle_col = start_node.getCol() - 1;
             }
 
             //Check to make sure we haven't found the wall
             if(obstacle_row < 0 || obstacle_row > (MAP_ROWS - 1) || obstacle_col < 0 || obstacle_col > (MAP_COLS - 1))
             {
-                //TODO: I just ripped this code straight from the WAYPOINT case, consider making a function?
+                //TODO: Is this the right thing to do?
                 //Load the next node
-                start_node = current_map.getBestAdjNode(start_node);
-
-                //Calculate the target message
-                target_node.row = start_node.getRow();
-                target_node.col = start_node.getCol();
-                target_node.real_x = start_node.getX();
-                target_node.real_y = start_node.getY();
-                target_node.is_obstacle = start_node.isObstacle();
-
-                //Publish the new target
-                node_pub.publish(target_node);
-
-                //Change to the navigation system
-                search_state = NAVIGATING;
+                getNextWaypoint();
             }
             //Update the node that is an obstacle, assuming it is not out of bounds of the map
             else
@@ -372,27 +371,15 @@ int main(int argc, char **argv)
                 obstacle_node.setObstacle(true);
 
                 /** Update all of the directed edge costs **/
-                //TODO: update edge costs
-
-                //TODO: finish this part!
                 //Go through all adjacent nodes and update the vertices
-                //TODO: find new minimum value
                 for(MapNode node : current_map.adjacentMapNodes(obstacle_node))
                 {
-                    //Outbound (obstacle -> this node) edge costs
-                    updateVertex(node, obstacle_node);
-
-                    //Inbound (this node -> obstacle) edge costs
-                    updateVertex(obstacle_node, node);
+                    updateVertex(node);
                 }
                 
-
-                //TODO: Update the open list node keys
-
                 //Recalculate the path
                 calculateShortestPath();
             }
-            
             
         }
         //If a new goal is selected, plan a new course

@@ -38,7 +38,7 @@ class MapNode
         void setGoal();
         void setG(int g);
         void setGInf();
-        void setMinRHS(int rhs);
+        void setRHS(int rhs);
         void setRHSInf();
         void setOpen();
         void setClosed();

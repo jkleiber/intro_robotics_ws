@@ -81,6 +81,12 @@ void MapNode::setGoal()
 
 void MapNode::setG(int g)
 {
+    //YEET_FINITY is the maximum value for g
+    if(g > YEET_FINITY)
+    {
+        g = YEET_FINITY;
+    }
+
     this->g_value = g;
 }
 
@@ -91,9 +97,15 @@ void MapNode::setGInf()
 }
 
 
-void MapNode::setMinRHS(int rhs)
+void MapNode::setRHS(int rhs)
 {
-    this->rhs = std::min(this->rhs, rhs);
+    //YEET_FINITY is the maximum allowed value for RHS
+    if(rhs > YEET_FINITY)
+    {
+        rhs = YEET_FINITY;
+    }
+
+    this->rhs = rhs;
 }
 
 

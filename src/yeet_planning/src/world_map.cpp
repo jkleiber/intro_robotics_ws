@@ -18,8 +18,12 @@ WorldMap::WorldMap(int rows, int cols, double square_size) : current_map(rows, v
     {
         for(c = 0; c < cols; ++c)
         {
+            //Set rows and columns
             this->current_map[r][c].setRow(r);
             this->current_map[r][c].setCol(c);
+
+            //Initialize the D* stuff
+            this->current_map[r][c].reset();
 
             //TODO: use square size to find centers of squares
         }
