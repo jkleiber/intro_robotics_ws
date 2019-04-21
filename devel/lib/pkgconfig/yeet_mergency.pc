@@ -1,8 +1,0 @@
-prefix=/home/jkleiber/intro_robotics_ws/devel
-
-Name: yeet_mergency
-Description: Description of yeet_mergency
-Version: 0.0.0
-Cflags: -I/home/jkleiber/intro_robotics_ws/src/yeet_mergency/include
-Libs: -L/home/jkleiber/intro_robotics_ws/devel/lib 
-Requires: roscpp std_msgs yeet_msgs

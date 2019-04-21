@@ -1,8 +1,0 @@
-prefix=/home/jkleiber/intro_robotics_ws/devel
-
-Name: yeet_motion
-Description: Description of yeet_motion
-Version: 0.0.0
-Cflags: 
-Libs: -L/home/jkleiber/intro_robotics_ws/devel/lib 
-Requires: 
