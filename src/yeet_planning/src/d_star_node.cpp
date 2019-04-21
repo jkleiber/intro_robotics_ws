@@ -337,6 +337,10 @@ int main(int argc, char **argv)
 
     //Wait for the task manager to tell us a goal node
     search_state = IDLE;
+
+    //TODO: this is test code, pls remove later
+    goal_node = current_map.getNode(5, 5);  //TODO: test
+    search_state = NEW_GOAL;                //TODO: test
     
     while(ros::ok())
     {
@@ -357,6 +361,7 @@ int main(int argc, char **argv)
         {
             //Load the next node
             getNextWaypoint();
+            printf("GOING TO: [x: %d, y: %d]\n", start_node.getRow(), start_node.getCol());
         }
         //If an obstacle was found, replan
         else if(search_state == OBS_REPLAN)

@@ -137,6 +137,7 @@ int main(int argc, char **argv)
         //Get the difference in rows and columns
         int col_diff = cur_col - goal_col;
         int row_diff = cur_row - goal_row;
+
         int map_angle;
         //Down a square
         map_angle = (row_diff == 0 && col_diff == 1) ? DOWN : map_angle; 
@@ -146,6 +147,7 @@ int main(int argc, char **argv)
         map_angle = (row_diff == 0 && col_diff == -1) ? UP : map_angle;
         //Left a square
         map_angle = (row_diff == -1 && col_diff == 0) ? LEFT : map_angle;
+
         //Within tolerance, stop turning and start driving
         if(abs(sweep(map_angle)) <= ANGLE_TOL)
         {

@@ -7,7 +7,6 @@
  */
 PID_Controller::PID_Controller()
 {
-    this->last_time = ros::Time::now().toSec();
     this->last_var = 0;
     this->integrator = 0;
     this->err = 0;
@@ -21,7 +20,6 @@ PID_Controller::PID_Controller()
  */
 PID_Controller::PID_Controller(float cur_var)
 {
-    this->last_time = ros::Time::now().toSec();
     this->last_var = cur_var;
     this->integrator = 0;
     this->err = 0;
@@ -35,7 +33,7 @@ PID_Controller::PID_Controller(float cur_var)
  */
 void PID_Controller::reset(float cur_var)
 {
-    this->last_time = ros::Time::now().toSec();
+    this->last_time = ros::Time::now().toNSec() / 1000.0 / 1000.0 / 1000.0;
     this->last_var = cur_var;
     this->integrator = 0;
     this->err = 0;
@@ -51,9 +49,10 @@ void PID_Controller::reset(float cur_var)
  */
 float PID_Controller::getOutput(float setpoint, float cur_var)
 {
+    float cur_time = ros::Time::now().toNSec() / 1000.0 / 1000.0 / 1000.0;
     this->err = setpoint - cur_var;
     float p = KP * this->err;
-    float dt = this->last_time - ros::Time::now().toSec();
+    float dt = this->last_time - cur_time;
     
     this->prev_err = setpoint - this->last_var;
     this->integrator += INT * (this->err + this->prev_err) * dt;
@@ -65,7 +64,7 @@ float PID_Controller::getOutput(float setpoint, float cur_var)
     float output = coerce(p + i + d);
 
     this->last_var = cur_var;
-    this->last_time = ros::Time::now().toSec();
+    this->last_time = cur_time;
 
     return output;
 }
