@@ -2,12 +2,13 @@
 #include <ros/ros.h>
 #include <geometry_msgs/Twist.h>
 
-
 //User libs and msgs
-#include <yeet_msgs/move.h>
+#include "yeet_msgs/move.h"
 
-geometry_msgs::Twist twist;   //Published message
+//Movement message
+geometry_msgs::Twist twist;
 
+//ROS Publishers
 ros::Publisher teleop_pub;
 
 void movementCallback(const yeet_msgs::move::ConstPtr& move_event)
@@ -34,7 +35,7 @@ int main(int argc, char **argv)
 
     //Subscribe to topics
     ros::Subscriber movement_sub = motion_node.subscribe(
-        motion_node.resolveName("/yeet_mergency/collision"), 10, &movementCallback);
+        motion_node.resolveName("/yeet_mergency/human_control"), 10, &movementCallback);
 
     //Publish to the turtlebot's cmd_vel_mux topic
     teleop_pub = motion_node.advertise<geometry_msgs::Twist>(motion_node.resolveName("/cmd_vel_mux/input/teleop"), 10);

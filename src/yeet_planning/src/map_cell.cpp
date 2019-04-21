@@ -6,6 +6,13 @@ MapNode::MapNode()
 }
 
 
+MapNode::MapNode(int row, int col)
+{
+    this->col = col;
+    this->row = row;
+}
+
+
 void MapNode::operator=(const MapNode& node)
 {
     this->col = node.col;

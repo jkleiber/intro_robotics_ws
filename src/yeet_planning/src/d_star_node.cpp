@@ -132,7 +132,8 @@ void updateVertex(MapNode& node)
             succ_rhs = neighbor_node.getG() + transitionCost(node, neighbor_node);
 
             //If the RHS we just computed is lower, update the node's rhs
-            if(succ_rhs < node_rhs)
+            if(succ_rhs < node_rhs
+            && neighbor_node.getCol() != -1)
             {
                 node_rhs = succ_rhs;
             }
@@ -176,7 +177,11 @@ void expandNode(MapNode& node)
         //Get a neighboring node
         neighbor_node = current_map.getAdjacentNode(node, i);
 
-        updateVertex(neighbor_node);
+        //If the neighbor node is a valid node, update it
+        if(neighbor_node.getCol() != -1)
+        {
+            updateVertex(neighbor_node);
+        }
     }
 }
 

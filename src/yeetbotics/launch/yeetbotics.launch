@@ -1,0 +1,15 @@
+<launch>
+    <!-- Planning -->
+    <node pkg="yeet_planning" type="d_star_node" name="d_star_node" output="screen"/>
+    
+    <!-- Navigation -->
+    <node pkg="yeet_nav" type="nav_node" name="nav_node" output="screen"/>
+   
+    <!-- Obstacle avoidance and Human Intervention -->
+    <node pkg="yeet_mergency" type="collision_node" name="collision_node" output="screen"/>
+    <node pkg="yeet_mergency" type="human_control_node" name="human_control_node" output="screen"/>
+
+    <!-- Motion -->
+    <node pkg="yeet_motion" type="motion_node" name="motion_node" output="screen"/>
+    
+</launch>

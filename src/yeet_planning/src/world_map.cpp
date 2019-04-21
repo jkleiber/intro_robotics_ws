@@ -50,7 +50,6 @@ MapNode& WorldMap::getAdjacentNode(MapNode& node, int idx)
     //Declare local variables
     int col;
     int row;
-    std::vector<MapNode> adjacent_nodes;
 
     //Initialize variables
     col = node.getCol();
@@ -62,13 +61,13 @@ MapNode& WorldMap::getAdjacentNode(MapNode& node, int idx)
     switch(idx)
     {
         case 0:
-            return current_map[row + 1][col];
+            return getNode(row + 1,col);
         case 1:
-            return current_map[row - 1][col];
+            return getNode(row - 1, col);
         case 2:
-            return current_map[row][col - 1];
+            return getNode(row, col - 1);
         case 3: 
-            return current_map[row][col + 1];
+            return getNode(row, col + 1);
         default:
             return node;
     }
@@ -79,7 +78,7 @@ MapNode& WorldMap::getBestAdjNode(MapNode& cur_node)
 {
     //Declare local variables
     int min_value = YEET_FINITY;
-    MapNode& min_node = cur_node;
+    static MapNode min_node;
     MapNode neighbor;
 
     //Find the lowest valued element
@@ -88,7 +87,8 @@ MapNode& WorldMap::getBestAdjNode(MapNode& cur_node)
         //Get an adjacent node
         neighbor = this->getAdjacentNode(cur_node, i);
 
-        if(neighbor.getG() < min_value)
+        if(neighbor.getG() < min_value
+        && neighbor.getCol() != -1)
         {
             min_value = neighbor.getG();
             min_node = neighbor;
@@ -100,5 +100,13 @@ MapNode& WorldMap::getBestAdjNode(MapNode& cur_node)
 
 MapNode& WorldMap::getNode(int row, int col)
 {
+    static MapNode err_node(-1, -1);
+    
+    //If the node is out of bounds, return an error
+    if(row < 0 || row > current_map.size() || col < 0 || col > current_map[0].size())
+    {
+        return err_node;
+    }
+
     return this->current_map[row][col];
 }

@@ -1,10 +1,13 @@
 //ROS libs and msgs
 #include <ros/ros.h>
 #include <nav_msgs/Odometry.h>
+#include <tf/transform_datatypes.h>
 
 //User msgs and libs
-#include <yeet_nav/pid_controller.h>
-#include <yeet_msgs/node.h>
+#include "yeet_nav/pid_controller.h"
+#include "yeet_msgs/node.h"
+#include "yeet_msgs/move.h"
+#include "yeet_msgs/nav_status.h"
 
 //Constants
 #define RAD_TO_DEG (double)(180.0 / 3.14159)    //Conversion factor from radians to degrees
@@ -27,14 +30,23 @@ int cur_row;
 int cur_col;
 
 /**
+ * @brief - Keep angles within the expected range
+ * 
+ * @param angle - Unwrapped angle
+ * @return double - Angle between 0-360
+ */
+double angleWrap(double angle)
+{
+    return angle < 0 ? fmod(angle, 360) + 360 : fmod(angle, 360);
+}
+
+/**
  * @brief - Updates global variables for the PID Controller to use.
  * 
  * @param goal - The information about the robot's goal
  */
 void goalCallBack(const yeet_msgs::node::ConstPtr& goal)
 {
-    goal_x = goal->real_x;
-    goal_y = goal->real_y;
     goal_row = goal->row;
     goal_col = goal->col;
 }
@@ -46,8 +58,6 @@ void goalCallBack(const yeet_msgs::node::ConstPtr& goal)
  */
 void currentCallBack(const yeet_msgs::node::ConstPtr& current)
 {
-    cur_x = current->real_x;
-    cur_y = current->real_y;
     cur_row = current->row;
     cur_col = current->col;
 }
@@ -64,18 +74,7 @@ void odomCallBack(const nav_msgs::Odometry::ConstPtr& odom)
     tf::poseMsgToTF(odom->pose.pose, pose);
 
     //Get the current angle in degrees
-    current_angle = drivetrain.angleWrap(tf::getYaw(pose.getRotation()) * RAD_TO_DEG);
-}
-
-/**
- * @brief - Keep angles within the expected range
- * 
- * @param angle - Unwrapped angle
- * @return double - Angle between 0-360
- */
-double angleWrap(double angle)
-{
-    return angle < 0 ? fmod(angle, 360) + 360 : fmod(angle, 360);
+    current_angle = angleWrap(tf::getYaw(pose.getRotation()) * RAD_TO_DEG);
 }
 
 /**
@@ -111,8 +110,6 @@ int main(int argc, char **argv)
     //Subscribe to topics
     ros::Subscriber goal_sub = nav_node.subscribe(
         nav_node.resolveName("/yeet_planning/target_node"), 10, &goalCallBack);
-    ros::Subscriber current_sub = nav_node.subscribe(
-        nav_node.resolveName("/yeet_msgs/node"), 10, &currentCallBack);
     ros::Subscriber odom_sub = nav_node.subscribe(
         nav_node.resolveName("/odom"), 10, &odomCallBack);
 
@@ -122,12 +119,15 @@ int main(int argc, char **argv)
     ros::Publisher status_pub = nav_node.advertise<yeet_msgs::nav_status>(
         nav_node.resolveName("/yeet_nav/status"), 10);
 
-    //Set the loop rate of the nav function to 100 Hz
-    ros::Rate loop_rate(100);
+    //Set the loop rate of the nav function to 200 Hz
+    ros::Rate loop_rate(200);
 
-    while(ross:ok())
+    while(ros::ok())
     {
-        ros:SpinOnce();
-        
+        ros::spinOnce();
+
+        loop_rate.sleep();
     }
+
+    return 0;
 }
