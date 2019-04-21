@@ -55,6 +55,8 @@ double angleWrap(double angle)
  */
 void goalCallBack(const yeet_msgs::node::ConstPtr& goal)
 {
+    drive.reset();
+    turn.reset();
     goal_row = goal->row;
     goal_col = goal->col;
 }
@@ -152,16 +154,28 @@ int main(int argc, char **argv)
         if(abs(sweep(map_angle)) <= ANGLE_TOL)
         {
             move.turn = 0;
-            move.drive = (map_angle == DOWN || map_angle == UP) ? drive.getOutput(goal_row * constants.SQUARE_SIZE, x) : move.drive;
-            move.drive = (map_angle == LEFT || map_angle == RIGHT) ? drive.getOutput(goal_col * constants.SQUARE_SIZE, y) : move.drive;
+            if(abs(x - goal_row * constants.SQUARE_SIZE) < DISTANCE_TOL && abs(y - goal_col * constants.SQUARE_SIZE) < DISTANCE_TOL)
+            {
+                move.drive = 0
+                status.goal = true;
+            }
+            else
+            {
+                move.drive = (map_angle == DOWN || map_angle == UP) ? drive.getOutput(goal_row * constants.SQUARE_SIZE, x) : move.drive;
+                move.drive = (map_angle == LEFT || map_angle == RIGHT) ? drive.getOutput(goal_col * constants.SQUARE_SIZE, y) : move.drive;
+                status.goal = false;
+            }
+            
         }
         //Keep turning and do not drive
         else
         {
             move.turn = turn.getOutput(0, sweep(map_angle));
             move.drive = 0;
+            status.goal = false;
         }
 
+        //Publish
         move_pub.publish(move);
         status_pub.publish(status);
     }
