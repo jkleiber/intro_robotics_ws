@@ -3,12 +3,16 @@
 
 #include <ros/ros.h>
 
+//Constants
+#include "yeet_msgs/Constants.h"
+
 //Messages
 #include "nav_msgs/OccupancyGrid.h"
 #include "yeet_msgs/node.h"
+#include "yeet_msgs/nav_status.h"
 
 //Libraries
-#include "eigen3/Eigen/Dense.h"
+#include <eigen3/Eigen/Dense>
 
 //D* and Mapping classes
 #include "yeet_planning/yeet_priority_queue.h"
@@ -16,9 +20,9 @@
 #include "yeet_planning/world_map.h"
 
 //Constants
-#define MAP_ROWS    7
-#define MAP_COLS    7
-#define SQUARE_SIZE (double)(0.6096)    //This is the size of the carpet squares in meters
+#define MAP_ROWS    yeet_msgs::Constants::MAP_ROWS
+#define MAP_COLS    yeet_msgs::Constants::MAP_COLS
+#define SQUARE_SIZE yeet_msgs::Constants::SQUARE_SIZE    //This is the size of the carpet squares in meters
 #define MAX_BUFFER  10
 #define VIEW_UP     0
 #define VIEW_LEFT   1
@@ -30,8 +34,6 @@
 #define OBS_REPLAN  3
 #define NEW_GOAL    4
 
-//Replanning flags
-bool replan;
 
 //Global map data
 WorldMap current_map(MAP_ROWS, MAP_COLS, SQUARE_SIZE);
@@ -50,6 +52,10 @@ int direction;
 
 //Search state management
 int search_state;
+
+//Publishers
+ros::Publisher node_pub;
+
 
 
 /**
@@ -70,11 +76,24 @@ int transitionCost(MapNode& node_A, MapNode& node_B)
     return 1;
 }
 
+/**
+ * @brief Heuristic used to find shortest possible distance between nodes
+ * This uses manhattan distance, as diagonal movement is risky in our maze environment
+ * 
+ * @param node_A Node A
+ * @param node_B Node B
+ * @return int The absolute value of the manhattan distance between two nodes
+ */
+int heuristic(MapNode& node_A, MapNode& node_B)
+{
+    return (abs(node_A.getRow() - node_B.getRow()) + abs(node_A.getCol() - node_B.getCol()));
+}
+
 
 int calculateKey(MapNode& node)
 {
-    int key1 = min(node.getG(), node.getRHS()) + heuristic(start_node, node) + km;
-    int key2 = min(node.getG(), node.getRHS());
+    int key1 = std::min(node.getG(), node.getRHS()) + heuristic(start_node, node);
+    int key2 = std::min(node.getG(), node.getRHS());
 
     //Set the node's new keys
     node.setKeys(key1, key2);
@@ -83,11 +102,12 @@ int calculateKey(MapNode& node)
 }
 
 
+
 void updateVertex(MapNode& node)
 {
     //Declare local variables
     int i;
-    std::vector<MapNode> neighbor_nodes;
+    MapNode neighbor_node;
     int node_g;
     int node_rhs;
     int succ_rhs;
@@ -102,14 +122,14 @@ void updateVertex(MapNode& node)
         //Set the RHS to infinity for comparison
         node_rhs = YEET_FINITY;
 
-        //Get neighboring nodes
-        neighbor_nodes = current_map.adjacentMapNodes(node);
-
         //Find the minimum RHS for this node
-        for(i = 0; i < neighbor_nodes.size(); ++i)
+        for(i = 0; i < 4; ++i)
         {
+            //Get neighboring nodes
+            neighbor_node = current_map.getAdjacentNode(node, i);
+
             //Get the RHS computed from the neighbor node
-            succ_rhs = neighbor_nodes[i].getG() + transitionCost(node, neighbor_nodes[i]);
+            succ_rhs = neighbor_node.getG() + transitionCost(node, neighbor_node);
 
             //If the RHS we just computed is lower, update the node's rhs
             if(succ_rhs < node_rhs)
@@ -136,7 +156,7 @@ void updateVertex(MapNode& node)
         calculateKey(node);
 
         //Add the node to the open list
-        open_list.add(node);
+        open_list.push(node);
     }
     
 }
@@ -146,17 +166,17 @@ void expandNode(MapNode& node)
 {
     //Declare local variables
     int i;
-    std::vector<MapNode> neighbor_nodes;
-
-    //Get neighboring nodes
-    neighbor_nodes = current_map.adjacentMapNodes(node);
+    MapNode neighbor_node;
 
     //Update each neighbor node to have an rhs value of 1 more than this node
     //Note: if this were being written for 8 possible movements, 1 would be used for
     //the non-diagonal moves, while 1.4 would be used for the diagonal moves
-    for(i = 0; i < neighbor_nodes.size(); ++i)
+    for(i = 0; i < 4; ++i)
     {
-        updateVertex(neighbor_nodes[i]);
+        //Get a neighboring node
+        neighbor_node = current_map.getAdjacentNode(node, i);
+
+        updateVertex(neighbor_node);
     }
 }
 
@@ -166,12 +186,15 @@ void calculateShortestPath()
     //Declare local variables
     MapNode node;
 
+    node = open_list.top();
+
     //Make nodes consistent 
-    while(open_list.top().getPrimaryKey() < calculateKey(start_node)
+    while(node < start_node
        || start_node.getG() != start_node.getRHS())
     {
         //Take the node with minimum key off the open list
-        node = open_list.pop();
+        node = open_list.top();
+        open_list.pop();
 
         //If the g value is greater than the rhs, make the value consistent
         if(node.getG() > node.getRHS())
@@ -208,7 +231,7 @@ void initSearch()
     
     //Add the goal node to the open list
     goal_node.setOpen();
-    open_list.add(goal_node);
+    open_list.push(goal_node);
 }
 
 
@@ -243,7 +266,7 @@ void mapCallback(const yeet_msgs::node::ConstPtr & map_node)
 
 
     //Set the robot to replan its route based on new environment information
-    search_state = REPLAN;
+    search_state = OBS_REPLAN;
 }
 
 
@@ -251,7 +274,7 @@ void mapCallback(const yeet_msgs::node::ConstPtr & map_node)
 
 void navCallback(const yeet_msgs::nav_status::ConstPtr& nav_status)
 {
-    if(nav_status.goal)
+    if(nav_status->goal)
     {
         search_state = WAYPOINT;
     }
@@ -260,14 +283,15 @@ void navCallback(const yeet_msgs::nav_status::ConstPtr& nav_status)
 
 void getNextWaypoint()
 {
+    //Track the target node
+    yeet_msgs::node target_node;
+
     //Load the next node
     start_node = current_map.getBestAdjNode(start_node);
 
     //Calculate the target message
     target_node.row = start_node.getRow();
     target_node.col = start_node.getCol();
-    target_node.real_x = start_node.getX();
-    target_node.real_y = start_node.getY();
     target_node.is_obstacle = start_node.isObstacle();
 
     //Publish the new target
@@ -286,13 +310,10 @@ int main(int argc, char **argv)
     //Set up the D* node
     ros::NodeHandle d_star_node;
 
-    //Track the target node
-    yeet_msgs::node target_node;
-
     //Tracks obstacles
     MapNode obstacle_node;
     int obstacle_row;
-    int obstacle_col
+    int obstacle_col;
     
     //Get data from our map when needed
     ros::Subscriber map_sub = d_star_node.subscribe(d_star_node.resolveName("/yeet_planning/map_update"), MAX_BUFFER, &mapCallback);
@@ -302,6 +323,9 @@ int main(int argc, char **argv)
 
     //Subscribe to the navigation and obstacle avoidance to check for waypoint or Replanning
     ros::Subscriber nav_sub = d_star_node.subscribe(d_star_node.resolveName("/yeet_nav/status"), MAX_BUFFER, &navCallback);
+
+    //Make a publisher for sending the next node's data
+    node_pub = d_star_node.advertise<yeet_msgs::node>(d_star_node.resolveName("/yeet_planning/target_node"), MAX_BUFFER);
 
     //Initialize the start node
     start_node = current_map.getNode(0, 0);
@@ -372,8 +396,9 @@ int main(int argc, char **argv)
 
                 /** Update all of the directed edge costs **/
                 //Go through all adjacent nodes and update the vertices
-                for(MapNode node : current_map.adjacentMapNodes(obstacle_node))
+                for(int i = 0; i < 4; ++i)
                 {
+                    MapNode node = current_map.getAdjacentNode(obstacle_node, i);
                     updateVertex(node);
                 }
                 

@@ -21,8 +21,7 @@ void MapNode::operator=(const MapNode& node)
 
 bool MapNode::operator==(const MapNode& node)
 {
-    //TODO: implement
-    return false;
+    return (this->primary_key == node.primary_key) && (this->tiebreaker_key == node.tiebreaker_key);
 }
 
 
@@ -36,6 +35,28 @@ bool MapNode::operator>(const MapNode& node)
 
     //Otherwise, determine the correct ordering with the primary key
     return this->primary_key > node.primary_key;
+}
+
+bool MapNode::operator<(const MapNode& right_node)
+{
+    //Sort by tiebreaker key if needed 
+    if(right_node.primary_key == this->primary_key)
+    {
+        return this->tiebreaker_key < right_node.tiebreaker_key;
+    }
+
+    //Otherwise, determine the correct ordering with the primary key
+    return this->primary_key < right_node.primary_key;
+}
+
+bool operator>(const MapNode& lhs, const MapNode& rhs)
+{
+    if(lhs.primary_key == rhs.primary_key)
+    {
+        return lhs.tiebreaker_key > rhs.tiebreaker_key;
+    }
+
+    return lhs.primary_key > rhs.primary_key;
 }
 
 

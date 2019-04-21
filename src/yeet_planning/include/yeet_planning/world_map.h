@@ -2,7 +2,7 @@
 #define WORLD_MAP_H
 
 #include <vector>
-#include "yeet_planning/map_node.h"
+#include "yeet_planning/map_cell.h"
 
 class WorldMap
 {
@@ -16,13 +16,13 @@ class WorldMap
 
         //D* helper functions
         void clearParams();
-        std::vector<MapNode>& adjacentMapNodes(MapNode& node);
         
         //Getters for nodes
         MapNode& getNode(int row, int col);
+        MapNode& getAdjacentNode(MapNode& node, int idx);
 
         //Navigation helper functions
-        MapNode& getBestAdjNode(MapNode cur_node);
+        MapNode& getBestAdjNode(MapNode& cur_node);
 
     private:
         //Map of nodes

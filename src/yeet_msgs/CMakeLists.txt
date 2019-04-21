@@ -51,8 +51,11 @@ find_package(catkin REQUIRED COMPONENTS
 # Generate messages in the 'msg' folder
 add_message_files(
   FILES
+  Constants.msg
   move.msg
   keyboard.msg
+  node.msg
+  nav_status.msg
 )
 
 ## Generate services in the 'srv' folder
@@ -107,7 +110,7 @@ add_message_files(
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS include
+   INCLUDE_DIRS include
 #  LIBRARIES yeet_msgs
    CATKIN_DEPENDS geometry_msgs nav_msgs roscpp std_msgs message_runtime
 #  DEPENDS system_lib

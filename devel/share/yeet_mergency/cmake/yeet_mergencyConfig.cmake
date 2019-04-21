@@ -91,9 +91,9 @@ endif()
 # flag project as catkin-based to distinguish if a find_package()-ed project is a catkin project
 set(yeet_mergency_FOUND_CATKIN_PROJECT TRUE)
 
-if(NOT " " STREQUAL " ")
+if(NOT "/home/jkleiber/intro_robotics_ws/src/yeet_mergency/include " STREQUAL " ")
   set(yeet_mergency_INCLUDE_DIRS "")
-  set(_include_dirs "")
+  set(_include_dirs "/home/jkleiber/intro_robotics_ws/src/yeet_mergency/include")
   if(NOT " " STREQUAL " ")
     set(_report "Check the issue tracker '' and consider creating a ticket if the problem has not been reported yet.")
   elseif(NOT " " STREQUAL " ")

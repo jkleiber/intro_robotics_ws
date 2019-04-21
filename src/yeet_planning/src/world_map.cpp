@@ -7,7 +7,7 @@ WorldMap::WorldMap()
 }
 
 
-WorldMap::WorldMap(int rows, int cols, double square_size) : current_map(rows, vector<MapNode>(cols))
+WorldMap::WorldMap(int rows, int cols, double square_size) : current_map(rows, std::vector<MapNode>(cols))
 {
     //Declare local variables
     int c;
@@ -24,8 +24,6 @@ WorldMap::WorldMap(int rows, int cols, double square_size) : current_map(rows, v
 
             //Initialize the D* stuff
             this->current_map[r][c].reset();
-
-            //TODO: use square size to find centers of squares
         }
     }
 }
@@ -47,8 +45,7 @@ void WorldMap::clearParams()
     }
 }
 
-
-std::vector<MapNode>& WorldMap::adjacentMapNodes(MapNode& node)
+MapNode& WorldMap::getAdjacentNode(MapNode& node, int idx)
 {
     //Declare local variables
     int col;
@@ -62,53 +59,39 @@ std::vector<MapNode>& WorldMap::adjacentMapNodes(MapNode& node)
     /**
      * Check the 4 possible move directions 
      */
-
-    //Node below
-    if((row + 1) < this->current_map.size())
+    switch(idx)
     {
-        adjacent_nodes.push_back(this->current_map[row + 1][col]);
+        case 0:
+            return current_map[row + 1][col];
+        case 1:
+            return current_map[row - 1][col];
+        case 2:
+            return current_map[row][col - 1];
+        case 3: 
+            return current_map[row][col + 1];
+        default:
+            return node;
     }
-
-    //Node above
-    if((row - 1) >= 0)
-    {
-        adjacent_nodes.push_back(this->current_map[row - 1][col]);
-    }
-
-    //Node to the left
-    if((col - 1) >= 0)
-    {
-        adjacent_nodes.push_back(this->current_map[row][col - 1]);
-    }
-
-    //Node to the right
-    if((col + 1) < this->current_map[0].size())
-    {
-        adjacent_nodes.push_back(this->current_map[row][col + 1]);
-    }
-
-    //Return a list of the neighboring nodes
-    return adjacent_nodes;
 }
 
 
-MapNode& WorldMap::getBestAdjNode(MapNode cur_node)
+MapNode& WorldMap::getBestAdjNode(MapNode& cur_node)
 {
     //Declare local variables
-    int min_value = INFINITY;
-    MapNode min_node;
-    std::vector<MapNode> neighbors;
-
-    //Get the adjacent nodes
-    neighbors = this->adjacentMapNodes(cur_node);
+    int min_value = YEET_FINITY;
+    MapNode& min_node = cur_node;
+    MapNode neighbor;
 
     //Find the lowest valued element
-    for(int i = 0; i < neighbors.size(); ++i)
+    for(int i = 0; i < 4; ++i)
     {
-        if(neighbors[i].getG() < min_value)
+        //Get an adjacent node
+        neighbor = this->getAdjacentNode(cur_node, i);
+
+        if(neighbor.getG() < min_value)
         {
-            min_value = neighbors[i].getG();
-            min_node = neighbors[i];
+            min_value = neighbor.getG();
+            min_node = neighbor;
         }
     }
 

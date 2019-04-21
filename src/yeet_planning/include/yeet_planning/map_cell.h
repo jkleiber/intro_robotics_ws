@@ -22,16 +22,13 @@ class MapNode
         void operator=(const MapNode& node);
         bool operator==(const MapNode& node);
         bool operator>(const MapNode& right_node);
+        bool operator<(const MapNode& right_node);
 
         //Node characteristic functions
         int getRow();
         int getCol();
-        int getX();
-        int getY();
         void setRow(int row);
         void setCol(int col);
-        void setX(double x);
-        void setY(double y);
 
         //D* search helper functions
         void reset();
@@ -66,6 +63,8 @@ class MapNode
         int tag;
         int primary_key;
         int tiebreaker_key;
+
+    friend bool operator>(const MapNode& lhs, const MapNode& rhs);
 };
 
 #endif

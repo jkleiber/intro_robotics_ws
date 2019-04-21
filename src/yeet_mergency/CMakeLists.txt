@@ -103,9 +103,9 @@ find_package(catkin REQUIRED COMPONENTS
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS include
+   INCLUDE_DIRS include
 #  LIBRARIES yeet_mergency
-  CATKIN_DEPENDS roscpp std_msgs yeet_msgs
+   CATKIN_DEPENDS roscpp std_msgs yeet_msgs
 #  DEPENDS system_lib
 )
 
@@ -116,7 +116,7 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-# include
+  include
   ${catkin_INCLUDE_DIRS}
 )
 
@@ -141,9 +141,6 @@ include_directories(
 ## e.g. "rosrun someones_pkg node" instead of "rosrun someones_pkg someones_pkg_node"
 # set_target_properties(${PROJECT_NAME}_node PROPERTIES OUTPUT_NAME node PREFIX "")
 
-## Add cmake target dependencies of the executable
-## same as for the library above
-# add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
 # target_link_libraries(${PROJECT_NAME}_node
@@ -153,13 +150,13 @@ include_directories(
 # Collision
 add_executable(collision_node src/collision_node.cpp)
 target_link_libraries(collision_node ${catkin_LIBRARIES})
-#add_dependencies(collision_node)
+add_dependencies(collision_node ${catkin_EXPORTED_TARGETS})
 
 
 # Human Control
 add_executable(human_control_node src/human_control_node.cpp)
 target_link_libraries(human_control_node ${catkin_LIBRARIES})
-#add_dependencies(human_control_node)
+add_dependencies(human_control_node ${catkin_EXPORTED_TARGETS})
 
 #############
 ## Install ##
