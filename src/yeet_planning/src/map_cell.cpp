@@ -95,6 +95,8 @@ void MapNode::reset()
 {
     this->g_value = YEET_FINITY;
     this->rhs = YEET_FINITY;
+    this->primary_key = YEET_FINITY;
+    this->tiebreaker_key = YEET_FINITY;
     this->tag = NEW;
     this->goal = false;
 }

@@ -1,8 +1,12 @@
 #ifndef WORLD_MAP_H
 #define WORLD_MAP_H
 
+#include <memory>
 #include <vector>
 #include "yeet_planning/map_cell.h"
+#include "yeet_planning/yeet_priority_queue.h"
+#include "yeet_msgs/Constants.h"
+#include "yeet_msgs/node.h"
 
 class WorldMap
 {
@@ -12,24 +16,38 @@ class WorldMap
         WorldMap(int rows, int cols, double square_size);
 
         //Map functions
-        //TODO: make this more usable by people that don't just have constants at the top of their calling file
+        void printMap();
 
         //D* helper functions
         void clearParams();
+        void setGoal(int row, int col);
+        int transitionCost(std::shared_ptr<MapNode> node_A, std::shared_ptr<MapNode> node_B);
+        int heuristic(std::shared_ptr<MapNode> node_A, std::shared_ptr<MapNode> node_B);
+        int calculateKey(std::shared_ptr<MapNode> node_ptr);
+        void updateVertex(std::shared_ptr<MapNode> node);
+        void expandNode(std::shared_ptr<MapNode> node);
+        void calculateShortestPath();
+        void planCourse(std::shared_ptr<MapNode> goal);
+        yeet_msgs::node getNextWaypoint();
         
         //Getters for nodes
-        MapNode& getNode(int row, int col);
-        MapNode& getAdjacentNode(MapNode& node, int idx);
+        std::shared_ptr<MapNode> getNode(int row, int col);
+        std::shared_ptr<MapNode> getAdjacentNode(std::shared_ptr<MapNode> node, int idx);
 
         //Navigation helper functions
-        MapNode& getBestAdjNode(MapNode& cur_node);
+        std::shared_ptr<MapNode> getBestAdjNode(std::shared_ptr<MapNode> cur_node);
 
     private:
         //Map of nodes
-        std::vector<std::vector<MapNode> > current_map;
+        std::vector<std::vector<std::shared_ptr<MapNode> > > current_map;
 
         int num_rows;
         int num_cols;
+
+        //D* variables
+        yeet_priority_queue<std::shared_ptr<MapNode> > open_list;
+        std::shared_ptr<MapNode> start_node;
+        std::shared_ptr<MapNode> goal_node;
 };
 
 #endif

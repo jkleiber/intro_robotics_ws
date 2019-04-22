@@ -22,7 +22,8 @@
         "ratio": "cpp",
         "thread": "cpp",
         "cinttypes": "cpp",
-        "typeindex": "cpp"
+        "typeindex": "cpp",
+        "initializer_list": "cpp"
     },
     "ros.distro": "kinetic"
 }

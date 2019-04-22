@@ -21,7 +21,8 @@
 
 //PID
 PID_Controller turn;
-PID_Controller drive;
+PID_Controller drive_x;
+PID_Controller drive_y;
 
 //Global variables
 yeet_msgs::Constants constants;
@@ -55,8 +56,9 @@ double angleWrap(double angle)
  */
 void goalCallBack(const yeet_msgs::node::ConstPtr& goal)
 {
-    drive.reset();
-    turn.reset();
+    drive_x.reset(x);
+    drive_y.reset(y);
+    turn.reset(current_angle);
     goal_row = goal->row;
     goal_col = goal->col;
 }
@@ -140,7 +142,7 @@ int main(int argc, char **argv)
         int col_diff = cur_col - goal_col;
         int row_diff = cur_row - goal_row;
 
-        int map_angle;
+        int map_angle = current_angle;
         //Down a square
         map_angle = (row_diff == 0 && col_diff == 1) ? DOWN : map_angle; 
         //Right a sqaure
@@ -156,13 +158,13 @@ int main(int argc, char **argv)
             move.turn = 0;
             if(abs(x - goal_row * constants.SQUARE_SIZE) < DISTANCE_TOL && abs(y - goal_col * constants.SQUARE_SIZE) < DISTANCE_TOL)
             {
-                move.drive = 0
+                move.drive = 0;
                 status.goal = true;
             }
             else
             {
-                move.drive = (map_angle == DOWN || map_angle == UP) ? drive.getOutput(goal_row * constants.SQUARE_SIZE, x) : move.drive;
-                move.drive = (map_angle == LEFT || map_angle == RIGHT) ? drive.getOutput(goal_col * constants.SQUARE_SIZE, y) : move.drive;
+                move.drive = (map_angle == DOWN || map_angle == UP) ? drive_x.getOutput(goal_row * constants.SQUARE_SIZE, x) : move.drive;
+                move.drive = (map_angle == LEFT || map_angle == RIGHT) ? drive_y.getOutput(goal_col * constants.SQUARE_SIZE, y) : move.drive;
                 status.goal = false;
             }
             
