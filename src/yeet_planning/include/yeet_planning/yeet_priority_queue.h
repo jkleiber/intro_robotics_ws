@@ -50,6 +50,23 @@ class yeet_priority_queue : public std::priority_queue<T, std::vector<T>, std::g
             //Return the status based on the iterator's location
             return (it != this->c.end());
         }
+
+
+        /**
+         * @brief Removes an element from the priority queue
+         * 
+         * @param val Element to remove
+         * @return true If the element was successfully removed
+         * @return false If the element could not be removed
+         */
+        void removeAll(const T& val)
+        {
+            while(this->contains(val))
+            {
+                this->remove(val);
+            }
+        }
+
 };
 
 #endif

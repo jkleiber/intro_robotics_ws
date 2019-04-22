@@ -28,7 +28,7 @@ void MapNode::operator=(const MapNode& node)
 
 bool MapNode::operator==(const MapNode& node)
 {
-    return (this->primary_key == node.primary_key) && (this->tiebreaker_key == node.tiebreaker_key);
+    return (this->primary_key == node.primary_key) && (this->tiebreaker_key == node.tiebreaker_key) && (this->row == node.row) && (this->col == node.col);
 }
 
 

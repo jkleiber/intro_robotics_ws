@@ -31,8 +31,8 @@ int goal_row;
 int goal_col;
 int cur_row;
 int cur_col;
-int x;
-int y;
+double x;
+double y;
 
 
 
@@ -113,6 +113,15 @@ int main(int argc, char **argv)
 
     //Set up the node to handle motion
     ros::NodeHandle nav_node;
+    
+    //Initialize default location values
+    current_angle = 0.0;
+    x = 0.0;
+    y = 0.0;
+    cur_row = 0;
+    cur_col = 0;
+    goal_row = 0;
+    goal_col = 0;
 
     //Subscribe to topics
     ros::Subscriber goal_sub = nav_node.subscribe(

@@ -79,10 +79,10 @@ void mapCallback(const yeet_msgs::node::ConstPtr & map_node)
 
 
 
-
+//TODO: replace with a service instead of this status thing
 void navCallback(const yeet_msgs::nav_status::ConstPtr& nav_status)
 {
-    if(nav_status->goal)
+    if(nav_status->goal == true)
     {
         search_state = WAYPOINT;
     }
@@ -147,14 +147,19 @@ int main(int argc, char **argv)
         else if(search_state == WAYPOINT)
         {
             //Load the next node
-            target_node = current_map.getNextWaypoint();
+            start_node = current_map.getNextWaypoint();
+
+            //Calculate the target message
+            target_node.row = start_node->getRow();
+            target_node.col = start_node->getCol();
+            target_node.is_obstacle = start_node->isObstacle();
 
             //Publish the new target
             node_pub.publish(target_node);
     
             //Change to the navigation system
             search_state = NAVIGATING;
-            //printf("GOING TO: [x: %d, y: %d]\n", start_node.getRow(), start_node.getCol());
+            printf("GOING TO: [x: %d, y: %d]\n", start_node->getRow(), start_node->getCol());
         }
         //If an obstacle was found, replan
         else if(search_state == OBS_REPLAN)

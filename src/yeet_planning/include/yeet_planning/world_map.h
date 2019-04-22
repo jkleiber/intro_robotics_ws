@@ -28,7 +28,7 @@ class WorldMap
         void expandNode(std::shared_ptr<MapNode> node);
         void calculateShortestPath();
         void planCourse(std::shared_ptr<MapNode> goal);
-        yeet_msgs::node getNextWaypoint();
+        std::shared_ptr<MapNode> getNextWaypoint();
         
         //Getters for nodes
         std::shared_ptr<MapNode> getNode(int row, int col);
@@ -45,7 +45,7 @@ class WorldMap
         int num_cols;
 
         //D* variables
-        yeet_priority_queue<std::shared_ptr<MapNode> > open_list;
+        yeet_priority_queue<MapNode> open_list;
         std::shared_ptr<MapNode> start_node;
         std::shared_ptr<MapNode> goal_node;
 };
