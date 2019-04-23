@@ -10,72 +10,59 @@ from yeet_msgs.msg import move
 
 import sys, select, termios, tty
 
-msg = """
-Reading from the keyboard  and Publishing to Twist!
----------------------------
+class color:
+   PURPLE = '\033[95m'
+   CYAN = '\033[96m'
+   DARKCYAN = '\033[36m'
+   BLUE = '\033[94m'
+   GREEN = '\033[92m'
+   YELLOW = '\033[93m'
+   RED = '\033[91m'
+   BOLD = '\033[1m'
+   UNDERLINE = '\033[4m'
+   END = '\033[0m'
+
+
+instructions = """
+\n\n\n\n\n\n\n\n
 Moving around:
-   u    i    o
-   j    k    l
-   m    ,    .
+         ^
+         |
+         w     
+<-- a    s    d -->
+         |
+         v
 
-For Holonomic mode (strafing), hold down the shift key:
----------------------------
-   U    I    O
-   J    K    L
-   M    <    >
-
-t : up (+z)
-b : down (-z)
-
+q : speed up
+e : slow down 
 anything else : stop
 
-q/z : increase/decrease max speeds by 10%
-w/x : increase/decrease only linear speed by 10%
-e/c : increase/decrease only angular speed by 10%
-
-CTRL-C to quit
+CTRL-C (^C) to enter token mode
+CTRL-Z (^Z) to quit
 """
 
-'''
-moveBindings = {
-        'i':(1,0,0,0),
-        'o':(1,0,0,-1),
-        'j':(0,0,0,1),
-        'l':(0,0,0,-1),
-        'u':(1,0,0,1),
-        ',':(-1,0,0,0),
-        '.':(-1,0,0,1),
-        'm':(-1,0,0,-1),
-        'O':(1,-1,0,0),
-        'I':(1,0,0,0),
-        'J':(0,1,0,0),
-        'L':(0,-1,0,0),
-        'U':(1,1,0,0),
-        '<':(-1,0,0,0),
-        '>':(-1,-1,0,0),
-        'M':(-1,1,0,0),
-        't':(0,0,1,0),
-        'b':(0,0,-1,0),
-    }
-
-speedBindings={
-        'q':(1.1,1.1),
-        'z':(.9,.9),
-        'w':(1.1,1),
-        'x':(.9,1),
-        'e':(1,1.1),
-        'c':(1,.9),
-    }
-'''
 # 'key': (movement direction, turn direction, move speed modify)
 keyBindings = {
         'w':( 1, 0, 0),
         's':(-1, 0, 0),
         'a':( 0,-1, 0),
         'd':( 0, 1, 0),
-        'q':( 0, 0, 1),
-        'e':( 0, 0,-1)
+        'q':( 0, 0,-1),
+        'e':( 0, 0, 1),
+        ' ':( 0, 0, 0)
     }
+
+exitCommands = [
+    'exit',
+    'quit',
+    'q',
+]
+
+stdCommands = [
+    'goto',
+    'raw',
+    'help',
+]
 
 def getKey():
     tty.setraw(sys.stdin.fileno())
@@ -84,96 +71,115 @@ def getKey():
     termios.tcsetattr(sys.stdin, termios.TCSADRAIN, settings)
     return key
 
+def status_report(drive, turn, drive_speed, turn_speed, key):
+    return "drive:%s\tturn:%s\ndrive speed:%s\tturn speed:%s\tchar:%s" % (float(drive), float(turn), float(drive_speed), float(turn_speed), key)
 
-def vels(speed,turn):
-    return "currently:\tspeed %s\tturn %s " % (speed,turn)
+def help():
+    print("Current commands are",)
+    for command in stdCommands:
+        print(command, '\t')
+    print()
+
 
 if __name__=="__main__":
     settings = termios.tcgetattr(sys.stdin)
 
-    pub = rospy.Publisher('yeet_mergency/keyboard', move, queue_size = 10)
+                                                                #TODO: Message type
+    d_star_pub = rospy.Publisher('yeet_planning/planning_update', move, queue_size = 10)
+    keyboard_pub = rospy.Publisher('yeet_mergency/keyboard', move, queue_size = 10)
     rospy.init_node('keyboard_node')
-
-    #speed = rospy.get_param("~speed", 0.5)
-    #turn = rospy.get_param("~turn", 1.0)
     
-    drive = 0
-    turn = 0
-    
-    drive_speed = 0.5
-    turn_speed = 0.5
+    drive = 0   # drive command to be published in the move (-/+:backwards/forwards)
+    turn = 0    # turn speed (-/+:TODO/TODO)
+    drive_speed = 0.5   # drive speed scaler
+    turn_speed = 0.5    # turn speed scaler (const)
 
-    status = 0
+    mode = "token"
 
-    mode = 0
-
-    x_coord = 0
-    y_coord = 0
+    key = ' '
 
     try:
         while(1):
 
-            if mode == 1:
+            if mode == "token":
+                color.BOLD + 'Enter command: ' + color.END
+                print(color.BOLD + 'Enter command: ' + color.END, end='')
                 s = raw_input()
                 tokens = s.split()
                 
-                if tokens[0] == "goto":
-                    x_coord = int(tokens[1])
-                    y_coord = int(tokens[2])
-                    print("Going to coordinate x=", x_coord, ", y=", y_coord)
-                
-                elif tokens[0] == "raw":
-                    print("Switched to raw mode")
-                    mode = 0
-                    print(msg)
-                
-                elif tokens[0] == "exit":
-                    break
-                
+                if tokens and tokens[0] is not '':
+                    
+                    if tokens[0] in exitCommands:
+                        break
+                    
+                    elif tokens[0] == "goto":
+                        try:
+                            x_coord = int(tokens[1])
+                            y_coord = int(tokens[2])
+                            print("Going to coordinate x=", x_coord, ", y=", y_coord)
+                            # TODO: Publish a message to D*
+                            # TODO: Change to node message (TODO: make node message)
+                            node_msg = move()
+                            node_msg.drive = drive
+                            node_msg.turn = turn
+                            d_star_pub.publish(move_msg)
 
-            else:
-                print(msg)
-                print(vels(speed,turn))
+                        except IndexError:
+                            print(color.RED + "goto requires ", color.BOLD + "two" + color.END,  color.RED + " integer parameters:"  + color.END, "Usage \' goto 4 5 \'")
+                        except ValueError:
+                            print(color.RED + "goto requires two ", color.BOLD + "integer" + color.END,  color.RED + " parameters:"  + color.END, "Usage \' goto 4 5 \'")
+
+
+                    elif tokens[0] == "raw":
+                        print("* Switched to raw mode")
+                        mode = 'raw'
+                        print(instructions)
+
+                    elif tokens[0] == 'help':
+                        help()
+                    else:
+                        print("* Oops!", tokens[0], "is not a command.")
+                        help()
+                print()
+
+
+
+            else: # mode == "raw"
+                print(instructions)
+                print(status_report(drive, turn, drive_speed, turn_speed, key))
+
                 key = getKey()
 
                 if key in keyBindings.keys():
-                    drive = moveBindings[key][0] * drive_speed
-                    turn = moveBindings[key][1] * turn_speed
-                    drive_speed += moveBindings[key][2] * 0.1
-                
-                elif False:
-                #elif key in speedBindings.keys():
-                    speed = speed * speedBindings[key][0]
-                    turn = turn * speedBindings[key][1]
-
-                    print(vels(speed,turn))
-                    if (status == 14):
-                        print(msg)
-                    status = (status + 1) % 15
+                    drive = keyBindings[key][0] * drive_speed
+                    turn = keyBindings[key][1] * turn_speed
+                    drive_speed += keyBindings[key][2] * 0.1
                 
                 else:
                     drive = 0
-                    turn = 0
-                    drive_speed += moveBindings[key][2] * 0.1
-                    
-                    # Detect Ctrl-C combo
-                    if (key == '\x03'):
+                    turn = 0                    
+                    if (key == '\x03'):         # Ctrl-C
                         print("Switched to token mode")
-                        mode = 1
+                        mode = "token"
+                        key = ' '   # reset key to avoid ugly print
+
+                    elif (key == '\x1A'):       # Ctrl-Z
+                        break
                         
                 
             move_msg = move()
-            move_msg.linear.x = 0; move_msg.linear.y = 0; move_msg.linear.z = 0
-            move_msg.angular.x = 0; move_msg.angular.y = 0; move_msg.angular.z = 0
-            pub.publish(move_msg)
+            move_msg.drive = drive
+            move_msg.turn = turn
+            keyboard_pub.publish(move_msg)
+
 
     except Exception as e:
         print(e)
 
     finally:
         move_msg = move()
-        move_msg.linear.x = 0; move_msg.linear.y = 0; move_msg.linear.z = 0
-        move_msg.angular.x = 0; move_msg.angular.y = 0; move_msg.angular.z = 0
-        pub.publish(move_msg)
+        move_msg.drive = drive
+        move_msg.turn = turn
+        keyboard_pub.publish(move_msg)
 
         termios.tcsetattr(sys.stdin, termios.TCSADRAIN, settings)
