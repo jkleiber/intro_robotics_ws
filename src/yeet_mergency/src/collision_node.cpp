@@ -73,6 +73,9 @@ void navigation_callback(const yeet_msgs::move::ConstPtr& navigation_msg)
 {
     //Simply copy the contents over
     move_msg = *navigation_msg;
+
+    //TODO: Decide to do this or not
+    collision_pub.publish(move_msg);
 }
 
 
