@@ -21,14 +21,14 @@
 #define DOWN 180                                //Down map angle
 
 //Drive X PID
-#define X_KP (double)(0.45)
+#define X_KP (double)(0.5)
 #define X_KI (double)(0.001)
 #define X_KD (double)(0.001)
 #define X_MAX_OUTPUT 0.75
 #define X_MIN_OUTPUT -0.75
 
 //Drive Y PID
-#define Y_KP (double)(0.32)
+#define Y_KP (double)(0.5)
 #define Y_KI (double)(0.001)
 #define Y_KD (double)(0.001)
 #define Y_MAX_OUTPUT 0.75
@@ -37,7 +37,7 @@
 //Turn PID
 #define TURN_KP (double)(0.15)
 #define TURN_KI (double)(0.001)
-#define TURN_KD (double)(0.001)
+#define TURN_KD (double)(0.01)
 #define TURN_MAX_OUTPUT 0.75
 #define TURN_MIN_OUTPUT -0.75
 
@@ -52,6 +52,8 @@ double current_angle;
 int map_angle;
 int goal_row;
 int goal_col;
+int last_goal_row;
+int last_goal_col;
 int cur_row;
 int cur_col;
 int row_diff;
@@ -94,9 +96,10 @@ void goalCallBack(const yeet_msgs::node goal)
     goal_y = (double)(goal_col) * yeet_msgs::Constants::SQUARE_SIZE;
 
     //Get the difference in rows and columns
-    //TODO: reference to cur_col and cur_row results in a off by one error. use the last goal col and row instead
-    col_diff = cur_col - goal_col;
-    row_diff = cur_row - goal_row;
+    col_diff = last_goal_col - goal_col;
+    row_diff = last_goal_row - goal_row;
+
+    printf("last row: %d last col: %d\n", last_goal_row, last_goal_col);
 
     map_angle = 0;//current_angle;
     //Down a square
@@ -109,6 +112,10 @@ void goalCallBack(const yeet_msgs::node goal)
     map_angle = (row_diff == -1 && col_diff == 0) ? UP : map_angle;
 
     printf("NAV_NODE: Received command to move to row: %d col: %d angle:%d\n", goal_row, goal_col, map_angle);
+
+    //Set the last goal row and column
+    last_goal_col = goal_col;
+    last_goal_row = goal_row;
 }
 
 /**
@@ -124,6 +131,8 @@ void odomCallBack(const nav_msgs::Odometry::ConstPtr& odom)
 
     //Get the current angle in degrees
     current_angle = angleWrap(tf::getYaw(pose.getRotation()) * RAD_TO_DEG);
+
+    //printf("current_angle: %f\n", current_angle);
 
     //Get the current row and column from x and y position
     x = odom->pose.pose.position.x;
@@ -170,6 +179,8 @@ int main(int argc, char **argv)
     cur_col = 0;
     goal_row = 0;
     goal_col = 0;
+    last_goal_row = 0;
+    last_goal_col = 0;
 
     //Initialize PID
     drive_x.init(X_KP, X_KI, X_KD, X_MAX_OUTPUT, X_MIN_OUTPUT);
@@ -232,8 +243,8 @@ int main(int argc, char **argv)
         //Keep turning and do not drive
         else
         {
-            //printf("TArget %f\n", (d))
-            move.turn = turn.getOutput(0, sweep((double)(map_angle)));
+            printf("ERR: %f\n", sweep((double)(map_angle)));
+            move.turn = -turn.getOutput(0, sweep((double)(map_angle)));
             move.drive = 0;
         }
 
