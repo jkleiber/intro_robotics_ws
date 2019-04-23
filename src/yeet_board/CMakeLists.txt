@@ -155,8 +155,8 @@ include_directories(
 # )
 
 # Keyboard
-add_executable(keyboard_node src/keyboard_node.cpp)
-target_link_libraries(keyboard_node ${catkin_LIBRARIES})
+#add_executable(keyboard_node src/keyboard_node.cpp)
+#target_link_libraries(keyboard_node ${catkin_LIBRARIES})
 #add_dependencies(keyboard_node)
 
 #############
