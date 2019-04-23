@@ -9,6 +9,7 @@
 #include "yeet_msgs/nav_status.h"
 #include "yeet_msgs/move.h"
 #include "yeet_msgs/node.h"
+#include "yeet_msgs/TargetNode.h"
 
 //Constants
 #define RAD_TO_DEG (double)(180.0 / 3.14159)    //Conversion factor from radians to degrees
@@ -34,6 +35,8 @@ int cur_col;
 double x;
 double y;
 
+//ROS service
+ros::ServiceClient target_srv;
 
 
 /**
@@ -54,13 +57,13 @@ double angleWrap(double angle)
  * 
  * @param goal - The information about the robot's goal
  */
-void goalCallBack(const yeet_msgs::node::ConstPtr& goal)
+void goalCallBack(const yeet_msgs::node goal)
 {
     drive_x.reset(x);
     drive_y.reset(y);
     turn.reset(current_angle);
-    goal_row = goal->row;
-    goal_col = goal->col;
+    goal_row = goal.row;
+    goal_col = goal.col;
 }
 
 /**
@@ -132,15 +135,16 @@ int main(int argc, char **argv)
     //Publishers
     ros::Publisher move_pub = nav_node.advertise<yeet_msgs::move>(
         nav_node.resolveName("/yeet_nav/navigation"), 10);
-    ros::Publisher status_pub = nav_node.advertise<yeet_msgs::nav_status>(
-        nav_node.resolveName("/yeet_nav/status"), 10);
+
+    //Service for requesting new target_node
+    target_srv = nav_node.serviceClient<yeet_msgs::TargetNode>(nav_node.resolveName("/yeet_planning/target_node"));
 
     //Set the loop rate of the nav function to 100 Hz
     ros::Rate loop_rate(100);
 
     //Create local messages
     yeet_msgs::move move;
-    yeet_msgs::nav_status status;
+    yeet_msgs::TargetNode target_node;
 
     //The callback and logic loop
     while(ros::ok())
@@ -168,13 +172,22 @@ int main(int argc, char **argv)
             if(abs(x - goal_row * constants.SQUARE_SIZE) < DISTANCE_TOL && abs(y - goal_col * constants.SQUARE_SIZE) < DISTANCE_TOL)
             {
                 move.drive = 0;
-                status.goal = true;
+
+                //We have reached the goal, so get a new node from the D*
+                if(target_srv.call(target_node))
+                {
+                    goalCallBack(target_node.response.target);
+                }
+                //Otherwise notify there was an error
+                else
+                {
+                    printf("NAV_NODE ERROR: Service call to D* Lite failed!\n");
+                }
             }
             else
             {
                 move.drive = (map_angle == DOWN || map_angle == UP) ? drive_x.getOutput(goal_row * constants.SQUARE_SIZE, x) : move.drive;
                 move.drive = (map_angle == LEFT || map_angle == RIGHT) ? drive_y.getOutput(goal_col * constants.SQUARE_SIZE, y) : move.drive;
-                status.goal = false;
             }
             
         }
@@ -183,11 +196,9 @@ int main(int argc, char **argv)
         {
             move.turn = turn.getOutput(0, sweep(map_angle));
             move.drive = 0;
-            status.goal = false;
         }
 
         //Publish
         move_pub.publish(move);
-        status_pub.publish(status);
     }
 }
