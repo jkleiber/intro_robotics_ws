@@ -1,2 +1,2 @@
-int8 drive
-int8 turn
+float64 drive
+float64 turn

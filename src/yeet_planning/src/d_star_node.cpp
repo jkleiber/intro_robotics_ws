@@ -11,6 +11,7 @@
 #include "nav_msgs/OccupancyGrid.h"
 #include "yeet_msgs/node.h"
 #include "yeet_msgs/nav_status.h"
+#include "yeet_msgs/TargetNode.h"
 
 //Libraries
 #include <eigen3/Eigen/Dense>
@@ -88,6 +89,24 @@ void navCallback(const yeet_msgs::nav_status::ConstPtr& nav_status)
     }
 }
 
+bool nextTargetCallback(yeet_msgs::TargetNode::Request &req, yeet_msgs::TargetNode::Response &resp)
+{
+    //Load the next node
+    start_node = current_map.getNextWaypoint();
+
+    //Calculate the target message
+    resp.target.row = start_node->getRow();
+    resp.target.col = start_node->getCol();
+    resp.target.is_obstacle = start_node->isObstacle();
+
+    //Change to the navigation system
+    search_state = NAVIGATING;
+    printf("GOING TO: [x: %d, y: %d]\n", start_node->getRow(), start_node->getCol());
+
+    //Service succeeded
+    return true;
+}
+
 
 
 int main(int argc, char **argv)
@@ -104,7 +123,6 @@ int main(int argc, char **argv)
     int obstacle_col;
 
     //Calculate the next target
-    yeet_msgs::node target_node;
     std::shared_ptr<MapNode> next_node;
     
     //Get data from our map when needed
@@ -113,11 +131,8 @@ int main(int argc, char **argv)
     //Subscribe to the task manager
     ros::Subscriber goal_sub = d_star_node.subscribe(d_star_node.resolveName("/yeet_planning/next_goal"), MAX_BUFFER, &goalCallback);
 
-    //Subscribe to the navigation and obstacle avoidance to check for waypoint or Replanning
-    ros::Subscriber nav_sub = d_star_node.subscribe(d_star_node.resolveName("/yeet_nav/status"), MAX_BUFFER, &navCallback);
-
-    //Make a publisher for sending the next node's data
-    node_pub = d_star_node.advertise<yeet_msgs::node>(d_star_node.resolveName("/yeet_planning/target_node"), MAX_BUFFER);
+    //Manage state and publish nodes only when requested
+    ros::ServiceServer target_srv = d_star_node.advertiseService(d_star_node.resolveName("/yeet_planning/target_node"), &nextTargetCallback);
 
     //Initialize the start node
     start_node = current_map.getNode(0, 0);
@@ -126,7 +141,7 @@ int main(int argc, char **argv)
     search_state = IDLE;
 
     //TODO: this is test code, pls remove later
-    goal_node = current_map.getNode(5, 5);  //TODO: test
+    goal_node = current_map.getNode(2, 3);  //TODO: test
     search_state = NEW_GOAL;                //TODO: test
     
     while(ros::ok())
@@ -135,31 +150,13 @@ int main(int argc, char **argv)
         if(start_node->getG() >= INFINITY)
         {
             search_state = IDLE;
+            printf("D* LITE WARNING: Goal node unreachable\n");
         }
 
         //If the robot is in the process of navigating
         if(search_state == NAVIGATING)
         {
             //Don't do anything, let the robot drive.
-        }
-        //If we need to update to go to the next waypoint, 
-        //load the next node from the gradient
-        else if(search_state == WAYPOINT)
-        {
-            //Load the next node
-            start_node = current_map.getNextWaypoint();
-
-            //Calculate the target message
-            target_node.row = start_node->getRow();
-            target_node.col = start_node->getCol();
-            target_node.is_obstacle = start_node->isObstacle();
-
-            //Publish the new target
-            node_pub.publish(target_node);
-    
-            //Change to the navigation system
-            search_state = NAVIGATING;
-            printf("GOING TO: [x: %d, y: %d]\n", start_node->getRow(), start_node->getCol());
         }
         //If an obstacle was found, replan
         else if(search_state == OBS_REPLAN)
