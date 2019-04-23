@@ -61,7 +61,7 @@ int main(int argc, char **argv)
     //TODO: Create topic between human_control_node and keyboard_node
     //Subscribe to the node directly above in the paradigm
     ros::Subscriber human_control_sub = human_control_node.subscribe(
-        human_control_node.resolveName("/yeet_board/TODO"), 10, &keyboard_callback);
+        human_control_node.resolveName("/yeet_board/keyboard"), 10, &keyboard_callback);
     
     
     //Publish state to the collision topic

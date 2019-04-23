@@ -103,9 +103,15 @@ find_package(catkin REQUIRED COMPONENTS
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
+<<<<<<< HEAD
+  INCLUDE_DIRS include
+#  LIBRARIES yeet_motion
+  CATKIN_DEPENDS roscpp std_msgs yeet_msgs
+=======
    INCLUDE_DIRS include
 #  LIBRARIES yeet_motion
    CATKIN_DEPENDS roscpp std_msgs yeet_msgs
+>>>>>>> 80ee305fc6628f6499785931448bbd8304481a15
 #  DEPENDS system_lib
 )
 
@@ -116,7 +122,11 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
+<<<<<<< HEAD
+ include
+=======
   include
+>>>>>>> 80ee305fc6628f6499785931448bbd8304481a15
   ${catkin_INCLUDE_DIRS}
 )
 
