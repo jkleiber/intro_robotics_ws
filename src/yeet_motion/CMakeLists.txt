@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(reactive_robot)
+project(yeet_motion)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
@@ -10,11 +10,8 @@ project(reactive_robot)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
-  geometry_msgs
-  nav_msgs
-  message_generation
+  yeet_msgs
 )
-
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -50,16 +47,18 @@ find_package(catkin REQUIRED COMPONENTS
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
-add_message_files(
-  FILES
-  collision.msg
-  obstacle.msg
-)
+# add_message_files(
+#   FILES
+#   Message1.msg
+#   Message2.msg
+# )
 
 ## Generate services in the 'srv' folder
-#add_service_files(
-#  FILES
-#)
+# add_service_files(
+#   FILES
+#   Service1.srv
+#   Service2.srv
+# )
 
 ## Generate actions in the 'action' folder
 # add_action_files(
@@ -69,12 +68,10 @@ add_message_files(
 # )
 
 ## Generate added messages and services with any dependencies listed here
-generate_messages(
-  DEPENDENCIES
-  std_msgs  # Or other packages containing msgs
-  geometry_msgs
-  nav_msgs
-)
+# generate_messages(
+#   DEPENDENCIES
+#   std_msgs#   yeet_msgs
+# )
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -106,9 +103,9 @@ generate_messages(
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES reactive_robot
-   CATKIN_DEPENDS roscpp std_msgs message_runtime
+   INCLUDE_DIRS include
+#  LIBRARIES yeet_motion
+   CATKIN_DEPENDS roscpp std_msgs yeet_msgs
 #  DEPENDS system_lib
 )
 
@@ -125,7 +122,7 @@ include_directories(
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/reactive_robot.cpp
+#   src/${PROJECT_NAME}/yeet_motion.cpp
 # )
 
 ## Add cmake target dependencies of the library
@@ -136,7 +133,7 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-# add_executable(${PROJECT_NAME}_node src/reactive_robot_node.cpp)
+# add_executable(${PROJECT_NAME}_node src/yeet_motion_node.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -153,27 +150,10 @@ include_directories(
 #   ${catkin_LIBRARIES}
 # )
 
-# Add reactive robot executables
-## Auto-Drive
-#add_executable(autodrive_node src/autodrive_node.cpp src/drivetrain.cpp)
-#target_link_libraries(autodrive_node ${catkin_LIBRARIES})
-#add_dependencies(autodrive_node reactive_robot_generate_messages_cpp)
-
-## Collision
-#add_executable(collision_node src/collision_node.cpp)
-#target_link_libraries(collision_node ${catkin_LIBRARIES})
-#add_dependencies(collision_node reactive_robot_generate_messages_cpp)
-
-## Decision Node
-#add_executable(decision_node src/decision_node.cpp src/drivetrain.cpp)
-#target_link_libraries(decision_node ${catkin_LIBRARIES})
-#add_dependencies(decision_node reactive_robot_generate_messages_cpp)
-
-## Obstacle Node
-#add_executable(obstacle_node src/obstacle_node.cpp src/drivetrain.cpp)
-#target_link_libraries(obstacle_node ${catkin_LIBRARIES})
-#add_dependencies(obstacle_node reactive_robot_generate_messages_cpp)
-
+# Motion
+add_executable(motion_node src/motion_node.cpp)
+target_link_libraries(motion_node ${catkin_LIBRARIES})
+add_dependencies(motion_node ${catkin_EXPORTED_TARGETS})
 
 #############
 ## Install ##
@@ -215,11 +195,10 @@ include_directories(
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_reactive_robot.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_yeet_motion.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
-

@@ -3,10 +3,7 @@
 #include <kobuki_msgs/BumperEvent.h>
 
 //User libs and msgs
-#include <reactive_robot/collision.h>
-
 #include <yeet_msgs/move.h>
-
 
 
 /* Typedefs */
@@ -21,9 +18,12 @@ typedef struct bumper_state_t
 
 //Publisher
 ros::Publisher collision_pub;
+yeet_msgs::move move_msg;   //Published message
+
 
 /* Global variables */
 bumper_state bump_states;   //Keep track of the bumper states
+bool collision;             //Whether or not collision is detected
 
 
 /**
@@ -34,9 +34,6 @@ bumper_state bump_states;   //Keep track of the bumper states
  */
 void collision_callback(const kobuki_msgs::BumperEvent::ConstPtr& bump_event)
 {
-    //Declare the collision message as a local variable
-    reactive_robot::collision collide_msg;
-
     //If a bumper was pressed, make sure to note that in the bumper tracking struct
     if(bump_event->state == bump_event->PRESSED)
     {
@@ -56,16 +53,29 @@ void collision_callback(const kobuki_msgs::BumperEvent::ConstPtr& bump_event)
     //If any of the flags are set to 1, we need to set the collision message flag to true
     if(bump_states.left_bumper || bump_states.center_bumper || bump_states.right_bumper)
     {
-        collide_msg.collision = true;
+        collision = true;
     }
     //Otherwise, since no bumpers are pressed, there are no collisions
     else
     {
-        collide_msg.collision = false;
+        collision = false;
     }
+}
 
-    //Publish the state of the collision detection module
-    collision_pub.publish(collide_msg);
+/**
+ * human_control_callback - when updated instructions are recieved from the human_control_node,
+ * updat the message that will be sent to contain its contents.
+ * 
+ * @param human_control_msg: message containing the final instructions from the nodes above 
+ * collision_node in the paradigm
+ */
+void navigation_callback(const yeet_msgs::move::ConstPtr& navigation_msg)
+{
+    //Simply copy the contents over
+    move_msg = *navigation_msg;
+
+    //TODO: Decide to do this or not
+    collision_pub.publish(move_msg);
 }
 
 
@@ -74,6 +84,7 @@ void collision_callback(const kobuki_msgs::BumperEvent::ConstPtr& bump_event)
  */
 int main(int argc, char **argv)
 {
+
     //Start the node
     ros::init(argc, argv, "collision_node");
 
@@ -84,9 +95,36 @@ int main(int argc, char **argv)
     ros::Subscriber bump_sub = collision_node.subscribe(
         collision_node.resolveName("/mobile_base/events/bumper"), 10, &collision_callback);
 
+    //Subscribe to the node directly above in the paradigm
+    ros::Subscriber human_control_sub = collision_node.subscribe(
+        collision_node.resolveName("/yeet_nav/navigation"), 10, &navigation_callback);
+    
+    
     //Publish state to the collision topic
-    collision_pub = collision_node.advertise<reactive_robot::collision>("/reactive_robot/collision", 10);
+    collision_pub = collision_node.advertise<yeet_msgs::move>("/yeet_mergency/collision", 10);
 
-    //Handle the callbacks
-    ros::spin();
+
+    //Set the loop rate of the decision function to 100 Hz
+    ros::Rate loop_rate(100);
+
+    //Make a decisision for what to do
+    while(ros::ok())
+    {
+        //Perform all the callbacks
+        ros::spinOnce();
+
+        if(collision)
+        {
+            //TODO: Call backup-routine
+            move_msg.drive = 0;
+            move_msg.turn = 0;
+        }
+
+        //Publish the message
+        collision_pub.publish(move_msg);
+        
+        //Finish the current loop
+        loop_rate.sleep();
+    }
+
 }
