@@ -33,6 +33,7 @@ class WorldMap
         //Getters for nodes
         std::shared_ptr<MapNode> getNode(int row, int col);
         std::shared_ptr<MapNode> getAdjacentNode(std::shared_ptr<MapNode> node, int idx);
+        std::shared_ptr<MapNode> resetStartNode();
 
         //Navigation helper functions
         std::shared_ptr<MapNode> getBestAdjNode(std::shared_ptr<MapNode> cur_node);
@@ -46,6 +47,7 @@ class WorldMap
 
         //D* variables
         yeet_priority_queue<MapNode> open_list;
+        std::shared_ptr<MapNode> last_node; //TODO: use unique ptr here?
         std::shared_ptr<MapNode> start_node;
         std::shared_ptr<MapNode> goal_node;
 };

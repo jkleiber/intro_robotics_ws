@@ -4,6 +4,7 @@
     
     <!-- Navigation -->
     <node pkg="yeet_nav" type="nav_node" name="nav_node" output="screen"/>
+    <node pkg="yeet_nav" type="obstacle_node" name="obstacle_node" output="screen"/>
    
     <!-- Obstacle avoidance and Human Intervention -->
     <node pkg="yeet_mergency" type="collision_node" name="collision_node" output="screen"/>

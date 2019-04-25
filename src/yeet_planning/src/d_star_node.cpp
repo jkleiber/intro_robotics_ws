@@ -56,6 +56,27 @@ int search_state;
 ros::Publisher node_pub;
 
 
+//TODO: testing
+void updateView(int cur_col, int cur_row, int goal_col, int goal_row)
+{
+    int col_diff;
+    int row_diff;
+
+    //Get the difference in rows and columns
+    col_diff = goal_col - goal_col;
+    row_diff = goal_row - goal_row;
+
+    direction = VIEW_UP;//current_angle;
+    //Down a square
+    direction = (row_diff == 0 && col_diff == 1) ? VIEW_RIGHT : direction; 
+    //Right a sqaure
+    direction = (row_diff == 1 && col_diff == 0) ? VIEW_DOWN : direction;
+    //Up a square
+    direction = (row_diff == 0 && col_diff == -1) ? VIEW_LEFT : direction;
+    //Left a square
+    direction = (row_diff == -1 && col_diff == 0) ? VIEW_UP : direction;   
+}
+
 
 
 void goalCallback(const yeet_msgs::node::ConstPtr& goal)
@@ -68,14 +89,19 @@ void goalCallback(const yeet_msgs::node::ConstPtr& goal)
 }
 
 
-//TODO: make this message a map update message (this should contain a list of cells to update and the probabilities associated with them)
+
 void mapCallback(const yeet_msgs::node::ConstPtr & map_node)
 {
     //Update the map
+    if(map_node->is_obstacle)
+    {
+        //The node in this message is an obstacle, so we need to replan.
+        //Reset the start node to where we actually are, and then replan
+        start_node = current_map.resetStartNode();
 
-
-    //Set the robot to replan its route based on new environment information
-    search_state = OBS_REPLAN;
+        //Set the robot to replan its route based on new environment information
+        search_state = OBS_REPLAN;
+    }
 }
 
 
@@ -89,10 +115,27 @@ void navCallback(const yeet_msgs::nav_status::ConstPtr& nav_status)
     }
 }
 
+
+
 bool nextTargetCallback(yeet_msgs::TargetNode::Request &req, yeet_msgs::TargetNode::Response &resp)
 {
+    int cur_col;
+    int cur_row;
+    int goal_col;
+    int goal_row;
+
+    //Get the current coords
+    cur_col = start_node->getCol();
+    cur_row = start_node->getRow();
+
     //Load the next node
     start_node = current_map.getNextWaypoint();
+
+    //Get the goal coords
+    goal_col = start_node->getCol();
+    goal_row = start_node->getRow();
+
+    updateView(cur_col, cur_row, goal_col, goal_row);
 
     //Calculate the target message
     resp.target.row = start_node->getRow();
@@ -136,12 +179,13 @@ int main(int argc, char **argv)
 
     //Initialize the start node
     start_node = current_map.getNode(0, 0);
+    direction = VIEW_UP;
 
     //Wait for the task manager to tell us a goal node
     search_state = IDLE;
 
-    //TODO: this is test code, pls remove later
-    goal_node = current_map.getNode(2, 3);  //TODO: test
+    //TODO: this is test code, pls remove once keyboard sends goal data
+    goal_node = current_map.getNode(3, 3);  //TODO: test
     search_state = NEW_GOAL;                //TODO: test
     
     while(ros::ok())
@@ -188,6 +232,7 @@ int main(int argc, char **argv)
             if(obstacle_row < 0 || obstacle_row > (MAP_ROWS - 1) || obstacle_col < 0 || obstacle_col > (MAP_COLS - 1))
             {
                 //TODO: Ignore out of bounds
+                printf("This shouldn't happen\n");
                 //FIXME: This is an error if this state is ever reached. We only care about obstacles that are in bounds
             }
             //Update the node that is an obstacle, assuming it is not out of bounds of the map

@@ -381,7 +381,16 @@ void WorldMap::planCourse(std::shared_ptr<MapNode> goal)
 std::shared_ptr<MapNode> WorldMap::getNextWaypoint()
 {
     //Load the next node
+    last_node = start_node;
     start_node = this->getBestAdjNode(start_node);
+
+    return start_node;
+}
+
+
+std::shared_ptr<MapNode> WorldMap::resetStartNode()
+{
+    start_node = last_node;
 
     return start_node;
 }

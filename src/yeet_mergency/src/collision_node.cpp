@@ -73,9 +73,6 @@ void navigation_callback(const yeet_msgs::move::ConstPtr& navigation_msg)
 {
     //Simply copy the contents over
     move_msg = *navigation_msg;
-
-    //TODO: Decide to do this or not
-    collision_pub.publish(move_msg);
 }
 
 
@@ -97,7 +94,7 @@ int main(int argc, char **argv)
 
     //Subscribe to the node directly above in the paradigm
     ros::Subscriber human_control_sub = collision_node.subscribe(
-        collision_node.resolveName("/yeet_nav/navigation"), 10, &navigation_callback);
+        collision_node.resolveName("/yeet_nav/nav_cmd"), 10, &navigation_callback);
     
     
     //Publish state to the collision topic

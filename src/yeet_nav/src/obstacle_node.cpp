@@ -4,8 +4,9 @@
 
 
 //User libs and msgs
-#include <yeet_msgs/obstacle.h>
-
+#include "yeet_msgs/obstacle.h"
+#include "yeet_msgs/move.h"
+#include "yeet_msgs/Constants.h"
 
 //Other libs
 #include <cmath>
@@ -22,8 +23,13 @@
 
 yeet_msgs::Constants constants;
 
-//Publisher
+//Publishers
+ros::Publisher move_pub;
 ros::Publisher obstacle_pub;
+ros::Publisher replan_pub;
+
+//Track state of obstacles
+yeet_msgs::obstacle obstacle_msg;
 
 /**
  * @brief - Detects obstacles in front of the robot
@@ -32,11 +38,6 @@ ros::Publisher obstacle_pub;
  */
 void scanCallback(const sensor_msgs::LaserScan::ConstPtr& obstacle_event)
 {
-    //Declare the obstacle message as a local variable
-    reactive_robot::obstacle obstacle_msg;
-    //Set the obstacle detection to false
-    obstacle_msg.obstacle = false;
-
     //Loop through all the samples and update bool if any index has an object
     for(int i = RIGHT_SAMPLES_IDX; i < LEFT_SAMPLES_IDX; ++i)
     {
@@ -44,13 +45,50 @@ void scanCallback(const sensor_msgs::LaserScan::ConstPtr& obstacle_event)
         if(!std::isnan(obstacle_event->ranges[i]) && obstacle_event->ranges[i] <= constants.SQUARE_SIZE + DETECT_CONST)
         {
             //Update obstacle boolean to true
-            obstacle_msgs.obstacle = true;
+            obstacle_msg.obstacle = true;
             break;
-        }        
+        }
+        else
+        {
+            //Set the obstacle detection to false
+            obstacle_msg.obstacle = false;
+        }
+        
     }
+
+    //TODO: is this publish needed?
     //Publish
     obstacle_pub.publish(obstacle_msg);
 }
+
+
+void navCallback(const yeet_msgs::move::ConstPtr& move_msg)
+{
+    yeet_msgs::move cmd;
+
+    //If there is an obstacle, inhibit driving forward
+    if(obstacle_msg.obstacle)
+    {
+        cmd.drive = 0;
+        cmd.drive = move_msg->turn;
+
+        //If the robot was supposed to drive forward, but the path is blocked, send a replan command
+        if(move_msg->drive != 0)
+        {
+            replan_pub.publish(obstacle_msg);
+        }
+    }
+    //Otherwise, send the command through
+    else
+    {
+        cmd = *move_msg;
+    }
+
+    //Publish the move down the chain
+    move_pub.publish(cmd);
+
+}
+
 
 /**
  * @brief Main method
@@ -71,9 +109,18 @@ int main(int argc, char **argv)
     ros::Subscriber obstacle_sub = obstacle_avoid_node.subscribe(
         obstacle_avoid_node.resolveName("/scan"), 10, &scanCallback);
 
+    //Subscribe to the navigation node for passthrough
+    ros::Subscriber nav_sub = obstacle_avoid_node.subscribe(obstacle_avoid_node.resolveName("/yeet_nav/navigation"), 10, &navCallback);
+
     //Publish state to the obstacle topic
-    obstacle_pub = obstacle_avoid_node.advertise<reactive_robot::obstacle>(
+    obstacle_pub = obstacle_avoid_node.advertise<yeet_msgs::obstacle>(
         obstacle_avoid_node.resolveName("/yeet_msgs/obstacle"), 10);
+
+    //Publish movement to the lower nodes
+    move_pub = obstacle_avoid_node.advertise<yeet_msgs::move>(obstacle_avoid_node.resolveName("/yeet_nav/nav_cmd"), 10);
+
+    //Replan when needed
+    replan_pub = obstacle_avoid_node.advertise<yeet_msgs::obstacle>(obstacle_avoid_node.resolveName("/yeet_nav/replan"), 10);
 
     //Handle the callbacks
     ros::spin();

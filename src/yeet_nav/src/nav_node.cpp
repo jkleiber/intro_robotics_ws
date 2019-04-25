@@ -9,6 +9,7 @@
 #include "yeet_msgs/nav_status.h"
 #include "yeet_msgs/move.h"
 #include "yeet_msgs/node.h"
+#include "yeet_msgs/obstacle.h"
 #include "yeet_msgs/TargetNode.h"
 
 //Constants
@@ -62,9 +63,13 @@ double x;
 double y;
 double goal_x;
 double goal_y;
+bool drive_enabled;
 
 //ROS service
 ros::ServiceClient target_srv;
+
+//ROS Publishers
+ros::Publisher obstacle_pub;
 
 
 /**
@@ -116,6 +121,9 @@ void goalCallBack(const yeet_msgs::node goal)
     //Set the last goal row and column
     last_goal_col = goal_col;
     last_goal_row = goal_row;
+
+    //Enable driving
+    drive_enabled = true;
 }
 
 /**
@@ -140,6 +148,28 @@ void odomCallBack(const nav_msgs::Odometry::ConstPtr& odom)
     cur_col = (int) round(x / constants.SQUARE_SIZE);
     cur_row = (int) round(y / constants.SQUARE_SIZE);
 }
+
+
+void replanCallback(const yeet_msgs::obstacle::ConstPtr& obstacle_msg)
+{
+    //Declare local variables
+    yeet_msgs::node obstacle_node;
+
+    if(obstacle_msg->obstacle && drive_enabled)
+    {
+        drive_enabled = false;
+        last_goal_col = cur_col;
+        last_goal_row = cur_row;
+
+        //Publish to D* to alert need to replan, given the goal node is an obstacle
+        obstacle_node.col = goal_col;
+        obstacle_node.row = goal_row;
+        obstacle_node.is_obstacle = true;
+
+        obstacle_pub.publish(obstacle_node);
+    }
+}
+
 
 /**
  * @brief sweep - 
@@ -190,10 +220,14 @@ int main(int argc, char **argv)
     //Subscribe to topics
     ros::Subscriber odom_sub = nav_node.subscribe(
         nav_node.resolveName("/odom"), 10, &odomCallBack);
+    
+    ros::Subscriber replan_sub = nav_node.subscribe(nav_node.resolveName("/yeet_nav/replan"), 10, &replanCallback);
 
     //Publishers
     ros::Publisher move_pub = nav_node.advertise<yeet_msgs::move>(
         nav_node.resolveName("/yeet_nav/navigation"), 10);
+    
+    ros::Publisher obstacle_pub = nav_node.advertise<yeet_msgs::node>(nav_node.resolveName("/yeet_planning/map_update"), 10);
 
     //Service for requesting new target_node
     target_srv = nav_node.serviceClient<yeet_msgs::TargetNode>(nav_node.resolveName("/yeet_planning/target_node"));
@@ -210,45 +244,47 @@ int main(int argc, char **argv)
     {
         ros::spinOnce();      
 
-        //printf("Sweep: %f\n", sweep(map_angle));
-
-        //Within tolerance, stop turning and start driving
-        if(abs(sweep((double)(map_angle))) <= ANGLE_TOL)
+        //Only drive if driving is encabled
+        if(drive_enabled)
         {
-            move.turn = 0;
-            //printf("ERR: %f, %f\n", fabs(x - goal_x), fabs(y - goal_y));
-            if(fabs(x - goal_x) < DISTANCE_TOL && fabs(y - goal_y) < DISTANCE_TOL)
+            //Within tolerance, stop turning and start driving
+            if(abs(sweep((double)(map_angle))) <= ANGLE_TOL)
             {
-                move.drive = 0;
-
-                //We have reached the goal, so get a new node from the D*
-                if(target_srv.call(target_node))
+                move.turn = 0;
+                //printf("ERR: %f, %f\n", fabs(x - goal_x), fabs(y - goal_y));
+                if(fabs(x - goal_x) < DISTANCE_TOL && fabs(y - goal_y) < DISTANCE_TOL)
                 {
-                    goalCallBack(target_node.response.target);
+                    move.drive = 0;
+
+                    //We have reached the goal, so get a new node from the D*
+                    if(target_srv.call(target_node))
+                    {
+                        goalCallBack(target_node.response.target);
+                    }
+                    //Otherwise notify there was an error
+                    else
+                    {
+                        printf("NAV_NODE ERROR: Service call to D* Lite failed!\n");
+                    }
                 }
-                //Otherwise notify there was an error
                 else
                 {
-                    printf("NAV_NODE ERROR: Service call to D* Lite failed!\n");
+                    //printf("YEET 2 %f vs %f @ %d \n", x, goal_x, map_angle);
+                    move.drive = (map_angle == DOWN || map_angle == UP) ? drive_x.getOutput(goal_x, x) : move.drive;
+                    move.drive = (map_angle == LEFT || map_angle == RIGHT) ? drive_y.getOutput(goal_y, y) : move.drive;
                 }
+
             }
+            //Keep turning and do not drive
             else
             {
-                //printf("YEET 2 %f vs %f @ %d \n", x, goal_x, map_angle);
-                move.drive = (map_angle == DOWN || map_angle == UP) ? drive_x.getOutput(goal_x, x) : move.drive;
-                move.drive = (map_angle == LEFT || map_angle == RIGHT) ? drive_y.getOutput(goal_y, y) : move.drive;
+                //printf("ERR: %f\n", sweep((double)(map_angle)));
+                move.turn = -turn.getOutput(0, sweep((double)(map_angle)));
+                move.drive = 0;
             }
-            
-        }
-        //Keep turning and do not drive
-        else
-        {
-            printf("ERR: %f\n", sweep((double)(map_angle)));
-            move.turn = -turn.getOutput(0, sweep((double)(map_angle)));
-            move.drive = 0;
-        }
 
-        //Publish
-        move_pub.publish(move);
+            //Publish
+            move_pub.publish(move);
+        }
     }
 }

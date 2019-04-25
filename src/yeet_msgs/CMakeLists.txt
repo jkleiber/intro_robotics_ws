@@ -56,6 +56,7 @@ add_message_files(
   keyboard.msg
   node.msg
   nav_status.msg
+  obstacle.msg
 )
 
 ## Generate services in the 'srv' folder
