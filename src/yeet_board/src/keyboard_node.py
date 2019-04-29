@@ -103,9 +103,9 @@ def printGrid():
 if __name__=="__main__":
     settings = termios.tcgetattr(sys.stdin)
 
-    update_pub = rospy.Publisher('yeet_planning/grid_update', node, queue_size = 10)
-    goto_pub = rospy.Publisher('yeet_planning/next_goal', node, queue_size = 10)
-    keyboard_pub = rospy.Publisher('yeet_mergency/keyboard', move, queue_size = 10)
+    update_pub = rospy.Publisher('/yeet_planning/grid_update', node, queue_size = 10)
+    goto_pub = rospy.Publisher('/yeet_planning/next_goal', node, queue_size = 10)
+    keyboard_pub = rospy.Publisher('/yeet_mergency/keyboard', move, queue_size = 10)
     rospy.init_node('keyboard_node')
     
     drive = 0   # drive command to be published in the move (-/+:backwards/forwards)

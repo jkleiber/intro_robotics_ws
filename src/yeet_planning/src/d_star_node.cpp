@@ -76,7 +76,7 @@ void updateView(int cur_col, int cur_row, int goal_col, int goal_row)
     //Left a square
     direction = (row_diff == -1 && col_diff == 0) ? VIEW_UP : direction;   
 
-    printf("CR: %d, CC: %d, GR: %d GC: %d\n", cur_row, cur_col, goal_row, goal_col);
+    //printf("CR: %d, CC: %d, GR: %d GC: %d\n", cur_row, cur_col, goal_row, goal_col);
 }
 
 
@@ -85,6 +85,8 @@ void goalCallback(const yeet_msgs::node::ConstPtr& goal)
 {
     //Read the new node
     goal_node = current_map.getNode(goal->row, goal->col);
+
+    printf("NEW GOAL! row: %d, col: %d\n", goal->row, goal->col);
 
     //Set the search state to make a new plan
     search_state = NEW_GOAL;
@@ -110,6 +112,12 @@ bool nextTargetCallback(yeet_msgs::TargetNode::Request &req, yeet_msgs::TargetNo
     int cur_col;
     int goal_col;
     int goal_row;
+
+    //In IDLE mode, no targets exist
+    if(search_state == IDLE)
+    {
+        return false;
+    }
 
     //Get the current coords
     cur_col = start_node->getCol();
@@ -154,6 +162,9 @@ int main(int argc, char **argv)
 
     //Calculate the next target
     std::shared_ptr<MapNode> next_node;
+
+    //Loop rate
+    ros::Rate loop_rate(20);
     
     //Get data from our map when needed
     ros::Subscriber map_sub = d_star_node.subscribe(d_star_node.resolveName("/yeet_planning/map_update"), MAX_BUFFER, &mapCallback);
@@ -176,8 +187,8 @@ int main(int argc, char **argv)
     search_state = IDLE;
 
     //TODO: this is test code, pls remove once keyboard sends goal data
-    goal_node = current_map.getNode(3, 0);  //TODO: test
-    search_state = NEW_GOAL;                //TODO: test
+    //goal_node = current_map.getNode(3, 0);  //TODO: test
+    //search_state = NEW_GOAL;                //TODO: test
     
     while(ros::ok())
     {
@@ -277,6 +288,7 @@ int main(int argc, char **argv)
 
         //Get the callbacks
         ros::spinOnce();
+        loop_rate.sleep();
     }
 
     return 0;

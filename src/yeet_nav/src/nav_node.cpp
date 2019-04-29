@@ -272,7 +272,7 @@ int main(int argc, char **argv)
             //Within tolerance, stop turning and start driving
             if(abs(sweep((double)(map_angle))) <= ANGLE_TOL)
             {
-                printf("X ERR: %f, Y ERR: %f, ANG: %d\n", fabs(x - goal_x), fabs(y - goal_y), map_angle);
+                //printf("X ERR: %f, Y ERR: %f, ANG: %d\n", fabs(x - goal_x), fabs(y - goal_y), map_angle);
                 
                 if((fabs(x - goal_x) < DISTANCE_TOL && (map_angle == DOWN || map_angle == UP)) 
                 || (fabs(y - goal_y) < DISTANCE_TOL && (map_angle == LEFT || map_angle == RIGHT)))
@@ -285,7 +285,7 @@ int main(int argc, char **argv)
                     //Otherwise notify there was an error
                     else
                     {
-                        printf("NAV_NODE ERROR: Service call to D* Lite failed!\n");
+                        //printf("NAV_NODE ERROR: Service call to D* Lite failed!\n");
                     }
                 }
                 else
