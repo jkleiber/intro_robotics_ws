@@ -234,8 +234,10 @@ void WorldMap::updateVertex(std::shared_ptr<MapNode> node)
     node_g = node->getG();
     node_rhs = node->getRHS();
 
-    printf("\tUpdating node(%d, %d)\n", node->getRow(), node->getCol());
-
+    if(DEBUG)
+    {
+        printf("\tUpdating node(%d, %d)\n", node->getRow(), node->getCol());
+    }
     //If the node is not a goal, update its RHS value
     if(!node->isGoal())
     {
@@ -251,15 +253,23 @@ void WorldMap::updateVertex(std::shared_ptr<MapNode> node)
             //Make sure the adjacent node is valid
             if(neighbor_node->getCol() != -1)
             {
-                printf("\t\tNeighbor Node(%d, %d) - G: %d, OBS: %d\n", neighbor_node->getRow(), neighbor_node->getCol(), neighbor_node->getG(), neighbor_node->isObstacle());
                 //Get the RHS computed from the neighbor node
                 succ_rhs = neighbor_node->getG() + transitionCost(node, neighbor_node);
-                printf("\t\tSuccesssor RHS: %d\n", succ_rhs);
+                
+                if(DEBUG)
+                {
+                    printf("\t\tNeighbor Node(%d, %d) - G: %d, OBS: %d\n", neighbor_node->getRow(), neighbor_node->getCol(), neighbor_node->getG(), neighbor_node->isObstacle());
+                    printf("\t\tSuccesssor RHS: %d\n", succ_rhs);
+                }
 
                 //If the RHS we just computed is lower, update the node's rhs
                 if(succ_rhs < node_rhs)
                 {
-                    printf("\t\tNew RHS: %d, Old Low: %d\n", succ_rhs, node_rhs);
+                    if(DEBUG)
+                    {
+                        printf("\t\tNew RHS: %d, Old Low: %d\n", succ_rhs, node_rhs);
+                    }
+
                     node_rhs = succ_rhs;
                 }
             }
@@ -267,7 +277,11 @@ void WorldMap::updateVertex(std::shared_ptr<MapNode> node)
 
         //Calculate the new RHS for this node
         node->setRHS(node_rhs);
-        printf("\tNew RHS: %d, Current G: %d\n", node->getRHS(), node->getG());
+
+        if(DEBUG)
+        {
+            printf("\tNew RHS: %d, Current G: %d\n", node->getRHS(), node->getG());
+        }
     }
 
     
@@ -285,7 +299,10 @@ void WorldMap::updateVertex(std::shared_ptr<MapNode> node)
         //Calculate the node's key
         calculateKey(node);
 
-        printf("\tNew Key: %d\n", node->getPrimaryKey());
+        if(DEBUG)
+        {
+            printf("\tNew Key: %d\n", node->getPrimaryKey());
+        }
 
         //Add the node to the open list
         open_list.push(*node);
@@ -337,8 +354,12 @@ void WorldMap::calculateShortestPath()
 
         //Find the pointer for this node
         node_ptr = this->current_map[top_node.getRow()][top_node.getCol()];
-        printf("queue size: %d\n", open_list.size());
-        printf("Exploring node(%d, %d) g: %d, rhs: %d, key: %d\n", node_ptr->getRow(), node_ptr->getCol(), node_ptr->getG(), node_ptr->getRHS(), node_ptr->getPrimaryKey());
+        
+        if(DEBUG)
+        {
+            printf("queue size: %d\n", open_list.size());
+            printf("Exploring node(%d, %d) g: %d, rhs: %d, key: %d\n", node_ptr->getRow(), node_ptr->getCol(), node_ptr->getG(), node_ptr->getRHS(), node_ptr->getPrimaryKey());
+        }
 
         //If the g value is greater than the rhs, make the value consistent
         if(node_ptr->getG() > node_ptr->getRHS())

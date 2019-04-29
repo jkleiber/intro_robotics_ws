@@ -46,8 +46,6 @@ std::shared_ptr<MapNode> goal_node;
 std::shared_ptr<MapNode> start_node;
 
 //Current node check for replanning
-int cur_row;
-int cur_col;
 int direction;
 
 //Search state management
@@ -65,8 +63,8 @@ void updateView(int cur_col, int cur_row, int goal_col, int goal_row)
     int row_diff;
 
     //Get the difference in rows and columns
-    col_diff = goal_col - goal_col;
-    row_diff = goal_row - goal_row;
+    col_diff = cur_col - goal_col;
+    row_diff = cur_row - goal_row;
 
     direction = VIEW_UP;//current_angle;
     //Down a square
@@ -77,6 +75,8 @@ void updateView(int cur_col, int cur_row, int goal_col, int goal_row)
     direction = (row_diff == 0 && col_diff == -1) ? VIEW_LEFT : direction;
     //Left a square
     direction = (row_diff == -1 && col_diff == 0) ? VIEW_UP : direction;   
+
+    printf("CR: %d, CC: %d, GR: %d GC: %d\n", cur_row, cur_col, goal_row, goal_col);
 }
 
 
@@ -106,8 +106,8 @@ void mapCallback(const yeet_msgs::node::ConstPtr & map_node)
 
 bool nextTargetCallback(yeet_msgs::TargetNode::Request &req, yeet_msgs::TargetNode::Response &resp)
 {
-    int cur_col;
     int cur_row;
+    int cur_col;
     int goal_col;
     int goal_row;
 
@@ -224,11 +224,13 @@ int main(int argc, char **argv)
             {
                 //TODO: Ignore out of bounds
                 printf("This shouldn't happen\n");
+                search_state = WAYPOINT;
                 //FIXME: This is an error if this state is ever reached. We only care about obstacles that are in bounds
             }
             //Update the node that is an obstacle, assuming it is not out of bounds of the map
             else
             {
+                printf("Obstacle located at Row: %d, Col %d!\n", obstacle_row, obstacle_col);
                 //Update the RHS to be infinity
                 obstacle_node = current_map.getNode(obstacle_row, obstacle_col);
                 obstacle_node->reset();
@@ -255,12 +257,11 @@ int main(int argc, char **argv)
                 current_map.calculateShortestPath();
 
                 current_map.printMap();
-
-                //Resume navigation
-                search_state = WAYPOINT;
-                enable_drive_pub.publish(empty_msg);
             }
-            
+
+            //Resume navigation
+            search_state = WAYPOINT;
+            enable_drive_pub.publish(empty_msg);
         }
         //If a new goal is selected, plan a new course
         else if(search_state == NEW_GOAL)

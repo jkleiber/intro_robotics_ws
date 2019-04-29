@@ -19,7 +19,7 @@
 #define N_SIDE_SAMPLES ((TOTAL_SAMPLES - N_CENTER_SAMPLES) / 2) //Allocate the number of samples for the side views
 #define LEFT_SAMPLES_IDX TOTAL_SAMPLES - N_SIDE_SAMPLES         //Where the left samples start
 #define RIGHT_SAMPLES_IDX N_SIDE_SAMPLES                        //Where the right samples end
-#define DETECT_CONST (double)(0.18)
+#define DETECT_CONST (double)(0.0)
 
 yeet_msgs::Constants constants;
 
@@ -66,14 +66,19 @@ void navCallback(const yeet_msgs::move::ConstPtr& move_msg)
 {
     yeet_msgs::move cmd;
 
+    //Initialize the command to zeros
+    cmd.drive = 0;
+    cmd.turn = 0;
+
     //If there is an obstacle, inhibit driving forward
     if(obstacle_msg.obstacle)
     {
+        printf("Obstacle detected! Inhibiting drive output\n");
         cmd.drive = 0;
-        cmd.drive = move_msg->turn;
+        cmd.turn = move_msg->turn;
 
         //If the robot was supposed to drive forward, but the path is blocked, send a replan command
-        if(move_msg->drive != 0)
+        if(fabs(move_msg->turn - 0.0) < 0.01)
         {
             replan_pub.publish(obstacle_msg);
         }

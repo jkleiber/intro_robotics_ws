@@ -1,3 +1,3 @@
-int8 MAP_ROWS = 5
+int8 MAP_ROWS = 6
 int8 MAP_COLS = 5
 float64 SQUARE_SIZE = 0.6096 

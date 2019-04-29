@@ -21,27 +21,32 @@
 #define LEFT 90                                 //Left map angle
 #define RIGHT -90                               //Right map angle
 #define DOWN 180                                //Down map angle
+#define NAV_BUFFER (double)(0.125)               //Tiny buffer added to get to a square center
 
 //Drive X PID
-#define X_KP (double)(0.7)
+#define X_KP (double)(0.6)
 #define X_KI (double)(0.002)
 #define X_KD (double)(0.001)
-#define X_MAX_OUTPUT 0.5
-#define X_MIN_OUTPUT -0.5
+#define X_MAX_OUTPUT 0.3
+#define X_MIN_OUTPUT -0.3
 
 //Drive Y PID
-#define Y_KP (double)(0.7)
-#define Y_KI (double)(0.0)
-#define Y_KD (double)(0.001)
-#define Y_MAX_OUTPUT 0.5
-#define Y_MIN_OUTPUT -0.5
+#define Y_KP (double)(0.6)
+#define Y_KI (double)(0.002)
+#define Y_KD (double)(0.01)
+#define Y_MAX_OUTPUT 0.3
+#define Y_MIN_OUTPUT -0.3
 
 //Turn PID
-#define TURN_KP (double)(0.18)
-#define TURN_KI (double)(0.001)
-#define TURN_KD (double)(0.005)
-#define TURN_MAX_OUTPUT 0.75
-#define TURN_MIN_OUTPUT -0.75
+#define TURN_KP (double)(0.2)
+#define TURN_KI (double)(0.000)
+#define TURN_KD (double)(0.001)
+#define TURN_MAX_OUTPUT 0.5
+#define TURN_MIN_OUTPUT -0.5
+
+//Ramping 
+double sec_last_out;
+double last_output;
 
 //PID
 PID_Controller turn;
@@ -99,8 +104,8 @@ void goalCallBack(const yeet_msgs::node goal)
     turn.reset(current_angle);
     goal_row = goal.row;
     goal_col = goal.col;
-    goal_x = (double)(goal_row) * yeet_msgs::Constants::SQUARE_SIZE;
-    goal_y = (double)(goal_col) * yeet_msgs::Constants::SQUARE_SIZE;
+    goal_x = ((double)(goal_row) * yeet_msgs::Constants::SQUARE_SIZE) + NAV_BUFFER;
+    goal_y = ((double)(goal_col) * yeet_msgs::Constants::SQUARE_SIZE) + NAV_BUFFER;
 
     //Get the difference in rows and columns
     col_diff = last_goal_col - goal_col;
@@ -223,6 +228,8 @@ int main(int argc, char **argv)
     goal_col = 0;
     last_goal_row = 0;
     last_goal_col = 0;
+    last_output = 0;
+    sec_last_out = 0;
     drive_enabled = true;
 
     //Initialize PID
@@ -255,7 +262,9 @@ int main(int argc, char **argv)
     //The callback and logic loop
     while(ros::ok())
     {
-        ros::spinOnce();      
+        //Initialize to zero
+        move.drive = 0;
+        move.turn = 0;
 
         //Only drive if driving is encabled
         if(drive_enabled)
@@ -263,15 +272,11 @@ int main(int argc, char **argv)
             //Within tolerance, stop turning and start driving
             if(abs(sweep((double)(map_angle))) <= ANGLE_TOL)
             {
-                move.turn = 0;
-
                 printf("X ERR: %f, Y ERR: %f, ANG: %d\n", fabs(x - goal_x), fabs(y - goal_y), map_angle);
                 
                 if((fabs(x - goal_x) < DISTANCE_TOL && (map_angle == DOWN || map_angle == UP)) 
                 || (fabs(y - goal_y) < DISTANCE_TOL && (map_angle == LEFT || map_angle == RIGHT)))
                 {
-                    move.drive = 0;
-
                     //We have reached the goal, so get a new node from the D*
                     if(target_srv.call(target_node))
                     {
@@ -286,7 +291,6 @@ int main(int argc, char **argv)
                 else
                 {
                     //printf("YEET 2 %f vs %f @ %d \n", x, goal_x, map_angle);
-                    move.drive = 0;
                     move.drive = (map_angle == DOWN || map_angle == UP) ? fabs(drive_x.getOutput(goal_x, x)) : move.drive;
                     move.drive = (map_angle == LEFT || map_angle == RIGHT) ? fabs(drive_y.getOutput(goal_y, y)) : move.drive;
                 }
@@ -297,13 +301,18 @@ int main(int argc, char **argv)
             {
                 printf("ERR: %f\n", sweep((double)(map_angle)));
                 move.turn = -turn.getOutput(0, sweep((double)(map_angle)));
-                move.drive = 0;
             }
+
+            //Ramp up and down
+            move.drive = (move.drive + last_output + sec_last_out) / 3.0;
+            sec_last_out = last_output;
+            last_output = move.drive;
 
             //Publish
             move_pub.publish(move);
         }
 
+        ros::spinOnce();
         loop_rate.sleep();
     }
 }

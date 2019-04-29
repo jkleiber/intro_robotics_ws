@@ -8,6 +8,8 @@
 #include "yeet_msgs/Constants.h"
 #include "yeet_msgs/node.h"
 
+#define DEBUG false
+
 class WorldMap
 {
     public:
