@@ -7,6 +7,8 @@ import rospy
 
 from geometry_msgs.msg import Twist
 from yeet_msgs.msg import move
+from yeet_msgs.msg import node
+from yeet_msgs.msg import Constants
 
 import sys, select, termios, tty
 
@@ -60,6 +62,7 @@ exitCommands = [
 
 stdCommands = [
     'goto',
+    'node',
     'raw',
     'help',
 ]
@@ -80,17 +83,33 @@ def help():
         print(command, '\t')
     print()
 
+def updateGrid(row, col, is_obstacle):
+    update_msg = node()
+    update_msg.row = int(row)
+    update_msg.col = int(col)
+    update_msg.is_obstacle = bool(is_obstacle)
+    update_pub.publish(update_msg)
+
+
+grid = [bool(i % 2) for i in range(Constants.MAP_COLS*Constants.MAP_ROWS)]
+def printGrid():
+    #TODO: request data struct
+    for i, node in enumerate(grid, start = 1):
+        print('X' if node else 'O', end=' ')
+        if i % Constants.MAP_COLS == 0:
+            print()
+
 
 if __name__=="__main__":
     settings = termios.tcgetattr(sys.stdin)
 
-                                                                #TODO: Message type
-    d_star_pub = rospy.Publisher('yeet_planning/planning_update', move, queue_size = 10)
+    update_pub = rospy.Publisher('yeet_planning/grid_update', node, queue_size = 10)
+    goto_pub = rospy.Publisher('yeet_planning/next_goal', node, queue_size = 10)
     keyboard_pub = rospy.Publisher('yeet_mergency/keyboard', move, queue_size = 10)
     rospy.init_node('keyboard_node')
     
     drive = 0   # drive command to be published in the move (-/+:backwards/forwards)
-    turn = 0    # turn speed (-/+:TODO/TODO)
+    turn = 0    # turn speed (-/+:R/L)
     drive_speed = 0.5   # drive speed scaler
     turn_speed = 0.5    # turn speed scaler (const)
 
@@ -100,15 +119,12 @@ if __name__=="__main__":
 
     try:
         while(1):
-
             if mode == "token":
-                color.BOLD + 'Enter command: ' + color.END
                 print(color.BOLD + 'Enter command: ' + color.END, end='')
                 s = raw_input()
                 tokens = s.split()
                 
                 if tokens and tokens[0] is not '':
-                    
                     if tokens[0] in exitCommands:
                         break
                     
@@ -116,19 +132,53 @@ if __name__=="__main__":
                         try:
                             x_coord = int(tokens[1])
                             y_coord = int(tokens[2])
+                            goto_msg = node()
+                            goto_msg.row = x_coord
+                            goto_msg.col = y_coord
+                            goto_msg.is_obstacle = False
+                            goto_pub.publish(goto_msg)
                             print("Going to coordinate x=", x_coord, ", y=", y_coord)
-                            # TODO: Publish a message to D*
-                            # TODO: Change to node message (TODO: make node message)
-                            node_msg = move()
-                            node_msg.drive = drive
-                            node_msg.turn = turn
-                            d_star_pub.publish(move_msg)
-
                         except IndexError:
                             print(color.RED + "goto requires ", color.BOLD + "two" + color.END,  color.RED + " integer parameters:"  + color.END, "Usage \' goto 4 5 \'")
                         except ValueError:
                             print(color.RED + "goto requires two ", color.BOLD + "integer" + color.END,  color.RED + " parameters:"  + color.END, "Usage \' goto 4 5 \'")
 
+                    elif tokens[0] == "node":
+                        try:
+                            flag = tokens[3]
+                        except IndexError:
+                            print(color.RED + "node requires two integer parameters ", color.BOLD + "and" + color.END,  color.RED + "a flag:"  + color.END, "Usage \' goto -c 4 5\'")
+                            print("Current flags are: -c, -p, -g")
+                        try:
+                            x_coord = int(tokens[1])
+                            y_coord = int(tokens[2])
+                        except IndexError:
+                            print(color.RED + "node requires ", color.BOLD + "two" + color.END,  color.RED + " integer parameters and a flag:"  + color.END, "Usage \' goto -c 4 5\'")
+                        except ValueError:
+                            print(color.RED + "node requires two ", color.BOLD + "integer" + color.END,  color.RED + " parameters and a flag:"  + color.END, "Usage \' goto -c 4 5\'")
+                        
+                        if flag == "-g" or flag =="goto":
+                            goto_msg = node()
+                            goto_msg.row = x_coord
+                            goto_msg.col = y_coord
+                            goto_msg.is_obstacle = False
+                            goto_pub.publish(goto_msg)
+                            print("Going to coordinate x=", x_coord, ", y=", y_coord)
+                        
+                        elif flag == "-c" or flag == "clear":
+                            updateGrid(x_coord, y_coord, False)
+                            print("Clearing grid coordinate x=", x_coord, ", y=", y_coord)
+                        
+                        elif flag == "-p"  or flag == "populate" or flag == "fill":
+                            updateGrid(x_coord, y_coord, True)
+                            print("Populating grid coordinate x=", x_coord, ", y=", y_coord)
+                        
+                        else:
+                            print("Unrecognized flag, please try again.")
+
+                    elif tokens[0] == "grid":
+                        printGrid()
+                        
 
                     elif tokens[0] == "raw":
                         print("* Switched to raw mode")
@@ -164,22 +214,16 @@ if __name__=="__main__":
                         key = ' '   # reset key to avoid ugly print
 
                     elif (key == '\x1A'):       # Ctrl-Z
-                        break
-                        
+                        break 
                 
-            move_msg = move()
-            move_msg.drive = drive
-            move_msg.turn = turn
-            keyboard_pub.publish(move_msg)
+                move_msg = move()
+                move_msg.drive = drive
+                move_msg.turn = turn
+                keyboard_pub.publish(move_msg)
 
 
     except Exception as e:
         print(e)
 
     finally:
-        move_msg = move()
-        move_msg.drive = drive
-        move_msg.turn = turn
-        keyboard_pub.publish(move_msg)
-
         termios.tcsetattr(sys.stdin, termios.TCSADRAIN, settings)
