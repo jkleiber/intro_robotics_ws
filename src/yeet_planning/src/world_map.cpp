@@ -388,9 +388,9 @@ std::shared_ptr<MapNode> WorldMap::getNextWaypoint()
 }
 
 
-std::shared_ptr<MapNode> WorldMap::resetStartNode()
+std::shared_ptr<MapNode> WorldMap::resetStartNode(int row, int col)
 {
-    start_node = last_node;
+    start_node = this->getNode(row, col);
 
     return start_node;
 }

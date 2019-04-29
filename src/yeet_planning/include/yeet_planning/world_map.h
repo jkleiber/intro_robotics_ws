@@ -33,7 +33,7 @@ class WorldMap
         //Getters for nodes
         std::shared_ptr<MapNode> getNode(int row, int col);
         std::shared_ptr<MapNode> getAdjacentNode(std::shared_ptr<MapNode> node, int idx);
-        std::shared_ptr<MapNode> resetStartNode();
+        std::shared_ptr<MapNode> resetStartNode(int row, int col);
 
         //Navigation helper functions
         std::shared_ptr<MapNode> getBestAdjNode(std::shared_ptr<MapNode> cur_node);

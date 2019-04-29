@@ -9,6 +9,7 @@
 
 //Messages
 #include "nav_msgs/OccupancyGrid.h"
+#include "std_msgs/Empty.h"
 #include "yeet_msgs/node.h"
 #include "yeet_msgs/nav_status.h"
 #include "yeet_msgs/TargetNode.h"
@@ -54,6 +55,7 @@ int search_state;
 
 //Publishers
 ros::Publisher node_pub;
+ros::Publisher enable_drive_pub;
 
 
 //TODO: testing
@@ -93,15 +95,12 @@ void goalCallback(const yeet_msgs::node::ConstPtr& goal)
 void mapCallback(const yeet_msgs::node::ConstPtr & map_node)
 {
     //Update the map
-    if(map_node->is_obstacle)
-    {
-        //The node in this message is an obstacle, so we need to replan.
-        //Reset the start node to where we actually are, and then replan
-        start_node = current_map.resetStartNode();
+    //The node in this message is an obstacle, so we need to replan.
+    //Reset the start node to where we actually are, and then replan
+    start_node = current_map.getNode(map_node->row, map_node->col);
 
-        //Set the robot to replan its route based on new environment information
-        search_state = OBS_REPLAN;
-    }
+    //Set the robot to replan its route based on new environment information
+    search_state = OBS_REPLAN;
 }
 
 
@@ -177,6 +176,10 @@ int main(int argc, char **argv)
     //Manage state and publish nodes only when requested
     ros::ServiceServer target_srv = d_star_node.advertiseService(d_star_node.resolveName("/yeet_planning/target_node"), &nextTargetCallback);
 
+    //Publish drive enable commands whenever replanning is done
+    std_msgs::Empty empty_msg;
+    enable_drive_pub = d_star_node.advertise<std_msgs::Empty>(d_star_node.resolveName("/yeet_nav/enable_drive"), 10);
+
     //Initialize the start node
     start_node = current_map.getNode(0, 0);
     direction = VIEW_UP;
@@ -185,7 +188,7 @@ int main(int argc, char **argv)
     search_state = IDLE;
 
     //TODO: this is test code, pls remove once keyboard sends goal data
-    goal_node = current_map.getNode(3, 3);  //TODO: test
+    goal_node = current_map.getNode(3, 0);  //TODO: test
     search_state = NEW_GOAL;                //TODO: test
     
     while(ros::ok())
@@ -209,17 +212,17 @@ int main(int argc, char **argv)
             //Given the direction of the robot, determine the node that is an obstacle
             if(direction == VIEW_UP)
             {
-                obstacle_row = start_node->getRow() - 1;
+                obstacle_row = start_node->getRow() + 1;
                 obstacle_col = start_node->getCol();
             }
             else if(direction == VIEW_LEFT)
             {
                 obstacle_row = start_node->getRow();
-                obstacle_col = start_node->getCol() - 1;
+                obstacle_col = start_node->getCol() + 1;
             }
             else if(direction == VIEW_DOWN)
             {
-                obstacle_row = start_node->getRow() + 1;
+                obstacle_row = start_node->getRow() - 1;
                 obstacle_col = start_node->getCol();
             }
             else
@@ -239,7 +242,8 @@ int main(int argc, char **argv)
             else
             {
                 //Update the RHS to be infinity
-                obstacle_node.reset(current_map.getNode(obstacle_row, obstacle_col).get());
+                obstacle_node = current_map.getNode(obstacle_row, obstacle_col);
+                obstacle_node->reset();
                 obstacle_node->setRHSInf();
                 obstacle_node->setObstacle(true);
 
@@ -248,11 +252,25 @@ int main(int argc, char **argv)
                 for(int i = 0; i < 4; ++i)
                 {
                     next_node = current_map.getAdjacentNode(obstacle_node, i);
-                    current_map.updateVertex(next_node);
+                    
+                    //Update the vertex of any valid node
+                    if(next_node->getCol() != -1)
+                    {
+                        current_map.updateVertex(next_node);
+                    }
                 }
                 
+                //Reset the start node
+                current_map.resetStartNode(start_node->getRow(), start_node->getCol());
+
                 //Recalculate the path
                 current_map.calculateShortestPath();
+
+                current_map.printMap();
+
+                //Resume navigation
+                search_state = WAYPOINT;
+                enable_drive_pub.publish(empty_msg);
             }
             
         }

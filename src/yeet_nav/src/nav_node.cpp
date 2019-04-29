@@ -2,6 +2,7 @@
 #include <ros/ros.h>
 #include <nav_msgs/Odometry.h>
 #include <tf/transform_datatypes.h>
+#include <std_msgs/Empty.h>
 
 //User msgs and libs
 #include <yeet_nav/pid_controller.h>
@@ -22,21 +23,21 @@
 #define DOWN 180                                //Down map angle
 
 //Drive X PID
-#define X_KP (double)(0.5)
-#define X_KI (double)(0.001)
+#define X_KP (double)(0.6)
+#define X_KI (double)(0.02)
 #define X_KD (double)(0.001)
-#define X_MAX_OUTPUT 0.75
-#define X_MIN_OUTPUT -0.75
+#define X_MAX_OUTPUT 0.8
+#define X_MIN_OUTPUT -0.8
 
 //Drive Y PID
-#define Y_KP (double)(0.5)
-#define Y_KI (double)(0.001)
+#define Y_KP (double)(0.6)
+#define Y_KI (double)(0.02)
 #define Y_KD (double)(0.001)
-#define Y_MAX_OUTPUT 0.75
-#define Y_MIN_OUTPUT -0.75
+#define Y_MAX_OUTPUT 0.8
+#define Y_MIN_OUTPUT -0.8
 
 //Turn PID
-#define TURN_KP (double)(0.15)
+#define TURN_KP (double)(0.18)
 #define TURN_KI (double)(0.001)
 #define TURN_KD (double)(0.01)
 #define TURN_MAX_OUTPUT 0.75
@@ -67,6 +68,7 @@ bool drive_enabled;
 
 //ROS service
 ros::ServiceClient target_srv;
+yeet_msgs::TargetNode target_node;
 
 //ROS Publishers
 ros::Publisher obstacle_pub;
@@ -145,8 +147,8 @@ void odomCallBack(const nav_msgs::Odometry::ConstPtr& odom)
     //Get the current row and column from x and y position
     x = odom->pose.pose.position.x;
     y = odom->pose.pose.position.y;
-    cur_col = (int) round(x / constants.SQUARE_SIZE);
-    cur_row = (int) round(y / constants.SQUARE_SIZE);
+    cur_col = (int) round(y / constants.SQUARE_SIZE);
+    cur_row = (int) round(x / constants.SQUARE_SIZE);
 }
 
 
@@ -162,11 +164,24 @@ void replanCallback(const yeet_msgs::obstacle::ConstPtr& obstacle_msg)
         last_goal_row = cur_row;
 
         //Publish to D* to alert need to replan, given the goal node is an obstacle
-        obstacle_node.col = goal_col;
-        obstacle_node.row = goal_row;
+        obstacle_node.col = cur_col;
+        obstacle_node.row = cur_row;
         obstacle_node.is_obstacle = true;
 
+        printf("REPLAN: Current node is: %d, %d\n", cur_row, cur_col);
+
         obstacle_pub.publish(obstacle_node);
+    }
+}
+
+
+void enableDriveCallback(const std_msgs::Empty::ConstPtr& empty)
+{
+    drive_enabled = true;
+    
+    if(target_srv.call(target_node))
+    {
+        goalCallBack(target_node.response.target);
     }
 }
 
@@ -211,6 +226,7 @@ int main(int argc, char **argv)
     goal_col = 0;
     last_goal_row = 0;
     last_goal_col = 0;
+    drive_enabled = true;
 
     //Initialize PID
     drive_x.init(X_KP, X_KI, X_KD, X_MAX_OUTPUT, X_MIN_OUTPUT);
@@ -222,12 +238,13 @@ int main(int argc, char **argv)
         nav_node.resolveName("/odom"), 10, &odomCallBack);
     
     ros::Subscriber replan_sub = nav_node.subscribe(nav_node.resolveName("/yeet_nav/replan"), 10, &replanCallback);
+    ros::Subscriber enable_drive_sub = nav_node.subscribe(nav_node.resolveName("/yeet_nav/enable_drive"), 10, &enableDriveCallback);
 
     //Publishers
     ros::Publisher move_pub = nav_node.advertise<yeet_msgs::move>(
         nav_node.resolveName("/yeet_nav/navigation"), 10);
     
-    ros::Publisher obstacle_pub = nav_node.advertise<yeet_msgs::node>(nav_node.resolveName("/yeet_planning/map_update"), 10);
+    obstacle_pub = nav_node.advertise<yeet_msgs::node>(nav_node.resolveName("/yeet_planning/map_update"), 10);
 
     //Service for requesting new target_node
     target_srv = nav_node.serviceClient<yeet_msgs::TargetNode>(nav_node.resolveName("/yeet_planning/target_node"));
@@ -237,7 +254,6 @@ int main(int argc, char **argv)
 
     //Create local messages
     yeet_msgs::move move;
-    yeet_msgs::TargetNode target_node;
 
     //The callback and logic loop
     while(ros::ok())
@@ -251,8 +267,11 @@ int main(int argc, char **argv)
             if(abs(sweep((double)(map_angle))) <= ANGLE_TOL)
             {
                 move.turn = 0;
-                //printf("ERR: %f, %f\n", fabs(x - goal_x), fabs(y - goal_y));
-                if(fabs(x - goal_x) < DISTANCE_TOL && fabs(y - goal_y) < DISTANCE_TOL)
+
+                printf("X ERR: %f, Y ERR: %f\n", fabs(x - goal_x), fabs(y - goal_y));
+                
+                if((fabs(x - goal_x) < DISTANCE_TOL && (map_angle == DOWN || map_angle == UP)) 
+                || (fabs(y - goal_y) < DISTANCE_TOL && (map_angle == LEFT || map_angle == RIGHT)))
                 {
                     move.drive = 0;
 
