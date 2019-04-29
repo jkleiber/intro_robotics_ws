@@ -19,7 +19,7 @@
 #define N_SIDE_SAMPLES ((TOTAL_SAMPLES - N_CENTER_SAMPLES) / 2) //Allocate the number of samples for the side views
 #define LEFT_SAMPLES_IDX TOTAL_SAMPLES - N_SIDE_SAMPLES         //Where the left samples start
 #define RIGHT_SAMPLES_IDX N_SIDE_SAMPLES                        //Where the right samples end
-#define DETECT_CONST (double)(0.125)
+#define DETECT_CONST (double)(0.18)
 
 yeet_msgs::Constants constants;
 
@@ -81,12 +81,12 @@ void navCallback(const yeet_msgs::move::ConstPtr& move_msg)
     //Otherwise, send the command through
     else
     {
-        cmd = *move_msg;
+        cmd.drive = move_msg->drive;
+        cmd.turn = move_msg->turn;
     }
 
     //Publish the move down the chain
     move_pub.publish(cmd);
-
 }
 
 

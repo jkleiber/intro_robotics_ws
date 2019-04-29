@@ -234,6 +234,8 @@ void WorldMap::updateVertex(std::shared_ptr<MapNode> node)
     node_g = node->getG();
     node_rhs = node->getRHS();
 
+    printf("\tUpdating node(%d, %d)\n", node->getRow(), node->getCol());
+
     //If the node is not a goal, update its RHS value
     if(!node->isGoal())
     {
@@ -249,12 +251,15 @@ void WorldMap::updateVertex(std::shared_ptr<MapNode> node)
             //Make sure the adjacent node is valid
             if(neighbor_node->getCol() != -1)
             {
+                printf("\t\tNeighbor Node(%d, %d) - G: %d, OBS: %d\n", neighbor_node->getRow(), neighbor_node->getCol(), neighbor_node->getG(), neighbor_node->isObstacle());
                 //Get the RHS computed from the neighbor node
                 succ_rhs = neighbor_node->getG() + transitionCost(node, neighbor_node);
+                printf("\t\tSuccesssor RHS: %d\n", succ_rhs);
 
                 //If the RHS we just computed is lower, update the node's rhs
                 if(succ_rhs < node_rhs)
                 {
+                    printf("\t\tNew RHS: %d, Old Low: %d\n", succ_rhs, node_rhs);
                     node_rhs = succ_rhs;
                 }
             }
@@ -262,7 +267,10 @@ void WorldMap::updateVertex(std::shared_ptr<MapNode> node)
 
         //Calculate the new RHS for this node
         node->setRHS(node_rhs);
+        printf("\tNew RHS: %d, Current G: %d\n", node->getRHS(), node->getG());
     }
+
+    
 
     //If the node is on the open list, remove it from the list
     if(open_list.contains(*node))
@@ -276,6 +284,8 @@ void WorldMap::updateVertex(std::shared_ptr<MapNode> node)
     {
         //Calculate the node's key
         calculateKey(node);
+
+        printf("\tNew Key: %d\n", node->getPrimaryKey());
 
         //Add the node to the open list
         open_list.push(*node);
@@ -310,24 +320,24 @@ void WorldMap::expandNode(std::shared_ptr<MapNode> node)
 void WorldMap::calculateShortestPath()
 {
     //Declare local variables
-    MapNode pop_node;
+    MapNode top_node;
     std::shared_ptr<MapNode> node_ptr;
 
     //Find top value on the open list and its pointer
-    pop_node = open_list.top();
-    node_ptr = this->current_map[pop_node.getRow()][pop_node.getCol()];
+    top_node = open_list.top();
+    node_ptr = this->current_map[top_node.getRow()][top_node.getCol()];
+    calculateKey(start_node);
 
     //Make nodes consistent 
-    while((*node_ptr < *start_node || start_node->getG() != start_node->getRHS())
+    while((top_node < *start_node || start_node->getG() != start_node->getRHS())
         && !open_list.empty())
     {
-        printf("queue size: %d\n", open_list.size());
-        //Take the node with minimum key off the open list
-        pop_node = open_list.top();
+        //Pop the top node off the queue
         open_list.pop();
 
         //Find the pointer for this node
-        node_ptr = this->current_map[pop_node.getRow()][pop_node.getCol()];
+        node_ptr = this->current_map[top_node.getRow()][top_node.getCol()];
+        printf("queue size: %d\n", open_list.size());
         printf("Exploring node(%d, %d) g: %d, rhs: %d, key: %d\n", node_ptr->getRow(), node_ptr->getCol(), node_ptr->getG(), node_ptr->getRHS(), node_ptr->getPrimaryKey());
 
         //If the g value is greater than the rhs, make the value consistent
@@ -351,6 +361,9 @@ void WorldMap::calculateShortestPath()
             updateVertex(node_ptr);
         }
         
+        //Store the next top node and calculate the start node's key
+        top_node = open_list.top();
+        calculateKey(start_node);
     }
 }
 

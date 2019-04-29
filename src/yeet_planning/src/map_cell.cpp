@@ -2,7 +2,7 @@
 
 MapNode::MapNode()
 {
-
+    this->occupancy = 0;
 }
 
 
@@ -10,6 +10,7 @@ MapNode::MapNode(int row, int col)
 {
     this->col = col;
     this->row = row;
+    this->occupancy = 0;
 }
 
 

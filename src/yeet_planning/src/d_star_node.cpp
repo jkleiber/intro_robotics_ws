@@ -104,18 +104,6 @@ void mapCallback(const yeet_msgs::node::ConstPtr & map_node)
 }
 
 
-
-//TODO: replace with a service instead of this status thing
-void navCallback(const yeet_msgs::nav_status::ConstPtr& nav_status)
-{
-    if(nav_status->goal == true)
-    {
-        search_state = WAYPOINT;
-    }
-}
-
-
-
 bool nextTargetCallback(yeet_msgs::TargetNode::Request &req, yeet_msgs::TargetNode::Response &resp)
 {
     int cur_col;
