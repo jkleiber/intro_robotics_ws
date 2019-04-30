@@ -93,6 +93,12 @@ void goalCallback(const yeet_msgs::node::ConstPtr& goal)
 }
 
 
+void populateCallback(const yeet_msgs::node::ConstPtr& obstacle)
+{
+    current_map.getNode(obstacle->row, obstacle->col)->setObstacle(true);
+    printf("NEW OBSTACLE! row: %d, col: %d\n", obstacle->row, obstacle->col);
+
+}
 
 void mapCallback(const yeet_msgs::node::ConstPtr & map_node)
 {
@@ -171,6 +177,9 @@ int main(int argc, char **argv)
 
     //Subscribe to the task manager
     ros::Subscriber goal_sub = d_star_node.subscribe(d_star_node.resolveName("/yeet_planning/next_goal"), MAX_BUFFER, &goalCallback);
+
+    ros::Subscriber populate_sub = d_star_node.subscribe(d_star_node.resolveName("/yeet_planning/grid_update"), MAX_BUFFER, &populateCallback);
+
 
     //Manage state and publish nodes only when requested
     ros::ServiceServer target_srv = d_star_node.advertiseService(d_star_node.resolveName("/yeet_planning/target_node"), &nextTargetCallback);

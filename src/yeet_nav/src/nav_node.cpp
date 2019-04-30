@@ -15,7 +15,7 @@
 
 //Constants
 #define RAD_TO_DEG (double)(180.0 / 3.14159)    //Conversion factor from radians to degrees
-#define DISTANCE_TOL (double)(0.075)            //Tolerance for drive distance
+#define DISTANCE_TOL (double)(0.05)            //Tolerance for drive distance
 #define ANGLE_TOL (double)(1.0)                 //Tolerance for angle distance
 #define UP 0                                    //Up map angle
 #define LEFT 90                                 //Left map angle

@@ -1,6 +1,5 @@
 #include "yeet_planning/world_map.h"
 
-
 WorldMap::WorldMap() //: current_map(yeet_msgs::Constants::MAP_ROWS, std::vector<std::shared_ptr<MapNode> >(yeet_msgs::Constants::MAP_COLS))
 {
     //Declare local variables
