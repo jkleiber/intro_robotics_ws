@@ -1,0 +1,28 @@
+{
+    "configurations": [
+        {
+            "browse": {
+                "databaseFilename": "",
+                "limitSymbolsToIncludedHeaders": true
+            },
+            "includePath": [
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/devel/include/**",
+                "/opt/ros/kinetic/include",
+                "${workspaceFolder}/src/reactive_robot/include",
+                "${workspaceFolder}/src/yeet_mergency/include/**",
+                "${workspaceFolder}/src/yeet_nav/include/**",
+                "${workspaceFolder}/src/yeet_board/include/**",
+                "${workspaceFolder}/src/yeet_motion/include/**",
+                "${workspaceFolder}/src/yeet_planning/include/**",
+                "/usr/include"
+            ],
+            "name": "Linux",
+            "intelliSenseMode": "gcc-x64",
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "c11",
+            "cppStandard": "c++17"
+        }
+    ],
+    "version": 4
+}
