@@ -2,6 +2,7 @@
 #include <ros/ros.h>
 #include <nav_msgs/Odometry.h>
 #include <tf/transform_datatypes.h>
+#include <tf/transform_listener.h>
 #include <std_msgs/Empty.h>
 
 //User msgs and libs
@@ -14,14 +15,14 @@
 #include "yeet_msgs/TargetNode.h"
 
 //Constants
-#define RAD_TO_DEG (double)(180.0 / 3.14159)    //Conversion factor from radians to degrees
-#define DISTANCE_TOL (double)(0.05)            //Tolerance for drive distance
-#define ANGLE_TOL (double)(1.0)                 //Tolerance for angle distance
-#define UP 0                                    //Up map angle
-#define LEFT 90                                 //Left map angle
-#define RIGHT -90                               //Right map angle
-#define DOWN 180                                //Down map angle
-#define NAV_BUFFER (double)(0.125)               //Tiny buffer added to get to a square center
+#define RAD_TO_DEG (double)(180.0 / 3.14159) //Conversion factor from radians to degrees
+#define DISTANCE_TOL (double)(0.05)          //Tolerance for drive distance
+#define ANGLE_TOL (double)(1.0)              //Tolerance for angle distance
+#define UP 0                                 //Up map angle
+#define LEFT 90                              //Left map angle
+#define RIGHT -90                            //Right map angle
+#define DOWN 180                             //Down map angle
+#define NAV_BUFFER (double)(0.125)           //Tiny buffer added to get to a square center
 
 //Drive X PID
 #define X_KP (double)(0.6)
@@ -44,7 +45,7 @@
 #define TURN_MAX_OUTPUT 0.5
 #define TURN_MIN_OUTPUT -0.5
 
-//Ramping 
+//Ramping
 double sec_last_out;
 double last_output;
 
@@ -78,7 +79,6 @@ yeet_msgs::TargetNode target_node;
 //ROS Publishers
 ros::Publisher obstacle_pub;
 
-
 /**
  * @brief angleWrap - Keep angles within the expected range
  * 
@@ -89,8 +89,6 @@ double angleWrap(double angle)
 {
     return angle < 0 ? fmod(angle, 360) + 360 : fmod(angle, 360);
 }
-
-
 
 /**
  * @brief goalCallBack- Updates global variables for the PID Controller to use.
@@ -104,8 +102,8 @@ void goalCallBack(const yeet_msgs::node goal)
     turn.reset(current_angle);
     goal_row = goal.row;
     goal_col = goal.col;
-    goal_x = ((double)(goal_row) * yeet_msgs::Constants::SQUARE_SIZE) + NAV_BUFFER;
-    goal_y = ((double)(goal_col) * yeet_msgs::Constants::SQUARE_SIZE) + NAV_BUFFER;
+    goal_x = ((double)(goal_row)*yeet_msgs::Constants::SQUARE_SIZE) + NAV_BUFFER;
+    goal_y = ((double)(goal_col)*yeet_msgs::Constants::SQUARE_SIZE) + NAV_BUFFER;
 
     //Get the difference in rows and columns
     col_diff = last_goal_col - goal_col;
@@ -113,9 +111,9 @@ void goalCallBack(const yeet_msgs::node goal)
 
     printf("last row: %d last col: %d\n", last_goal_row, last_goal_col);
 
-    map_angle = 0;//current_angle;
+    map_angle = 0; //current_angle;
     //Down a square
-    map_angle = (row_diff == 0 && col_diff == 1) ? RIGHT : map_angle; 
+    map_angle = (row_diff == 0 && col_diff == 1) ? RIGHT : map_angle;
     //Right a sqaure
     map_angle = (row_diff == 1 && col_diff == 0) ? DOWN : map_angle;
     //Up a square
@@ -130,11 +128,17 @@ void goalCallBack(const yeet_msgs::node goal)
     last_goal_row = goal_row;
 }
 
+void odomCallBack(const nav_msgs::Odometry::ConstPtr &odom)
+{
+    //TODO
+}
+
 /**
  * @brief odomCallBack - Gets the current angle of the robot in degrees
  * 
  * @param odom - The odometry message containing robot angle position
  */
+/*
 void odomCallBack(const nav_msgs::Odometry::ConstPtr& odom)
 {
     //Get the robot orientation
@@ -152,14 +156,14 @@ void odomCallBack(const nav_msgs::Odometry::ConstPtr& odom)
     cur_col = (int) round(y / constants.SQUARE_SIZE);
     cur_row = (int) round(x / constants.SQUARE_SIZE);
 }
+*/
 
-
-void replanCallback(const yeet_msgs::obstacle::ConstPtr& obstacle_msg)
+void replanCallback(const yeet_msgs::obstacle::ConstPtr &obstacle_msg)
 {
     //Declare local variables
     yeet_msgs::node obstacle_node;
 
-    if(obstacle_msg->obstacle && drive_enabled)
+    if (obstacle_msg->obstacle && drive_enabled)
     {
         drive_enabled = false;
         last_goal_col = cur_col;
@@ -176,17 +180,15 @@ void replanCallback(const yeet_msgs::obstacle::ConstPtr& obstacle_msg)
     }
 }
 
-
-void enableDriveCallback(const std_msgs::Empty::ConstPtr& empty)
+void enableDriveCallback(const std_msgs::Empty::ConstPtr &empty)
 {
     drive_enabled = true;
-    
-    if(target_srv.call(target_node))
+
+    if (target_srv.call(target_node))
     {
         goalCallBack(target_node.response.target);
     }
 }
-
 
 /**
  * @brief sweep - 
@@ -198,7 +200,7 @@ void enableDriveCallback(const std_msgs::Empty::ConstPtr& empty)
 double sweep(double target_angle)
 {
     double sweep = target_angle - current_angle;
-    sweep = (sweep >  180) ? sweep - 360 : sweep;
+    sweep = (sweep > 180) ? sweep - 360 : sweep;
     sweep = (sweep < -180) ? sweep + 360 : sweep;
     return sweep;
 }
@@ -217,7 +219,7 @@ int main(int argc, char **argv)
 
     //Set up the node to handle motion
     ros::NodeHandle nav_node;
-    
+
     //Initialize default location values
     current_angle = 0.0;
     x = 0.0;
@@ -238,16 +240,15 @@ int main(int argc, char **argv)
     turn.init(TURN_KP, TURN_KI, TURN_KD, TURN_MAX_OUTPUT, TURN_MIN_OUTPUT);
 
     //Subscribe to topics
-    ros::Subscriber odom_sub = nav_node.subscribe(
-        nav_node.resolveName("/odom"), 10, &odomCallBack);
-    
+    ros::Subscriber odom_sub = nav_node.subscribe(nav_node.resolveName("/nav_msgs/OccupancyGrid"), 10, &odomCallBack);
+
     ros::Subscriber replan_sub = nav_node.subscribe(nav_node.resolveName("/yeet_nav/replan"), 10, &replanCallback);
     ros::Subscriber enable_drive_sub = nav_node.subscribe(nav_node.resolveName("/yeet_nav/enable_drive"), 10, &enableDriveCallback);
 
     //Publishers
     ros::Publisher move_pub = nav_node.advertise<yeet_msgs::move>(
         nav_node.resolveName("/yeet_nav/navigation"), 10);
-    
+
     obstacle_pub = nav_node.advertise<yeet_msgs::node>(nav_node.resolveName("/yeet_planning/map_update"), 10);
 
     //Service for requesting new target_node
@@ -260,25 +261,24 @@ int main(int argc, char **argv)
     yeet_msgs::move move;
 
     //The callback and logic loop
-    while(ros::ok())
+    while (ros::ok())
     {
         //Initialize to zero
         move.drive = 0;
         move.turn = 0;
 
         //Only drive if driving is encabled
-        if(drive_enabled)
+        if (drive_enabled)
         {
             //Within tolerance, stop turning and start driving
-            if(abs(sweep((double)(map_angle))) <= ANGLE_TOL)
+            if (abs(sweep((double)(map_angle))) <= ANGLE_TOL)
             {
                 //printf("X ERR: %f, Y ERR: %f, ANG: %d\n", fabs(x - goal_x), fabs(y - goal_y), map_angle);
-                
-                if((fabs(x - goal_x) < DISTANCE_TOL && (map_angle == DOWN || map_angle == UP)) 
-                || (fabs(y - goal_y) < DISTANCE_TOL && (map_angle == LEFT || map_angle == RIGHT)))
+
+                if ((fabs(x - goal_x) < DISTANCE_TOL && (map_angle == DOWN || map_angle == UP)) || (fabs(y - goal_y) < DISTANCE_TOL && (map_angle == LEFT || map_angle == RIGHT)))
                 {
                     //We have reached the goal, so get a new node from the D*
-                    if(target_srv.call(target_node))
+                    if (target_srv.call(target_node))
                     {
                         goalCallBack(target_node.response.target);
                     }
@@ -294,7 +294,6 @@ int main(int argc, char **argv)
                     move.drive = (map_angle == DOWN || map_angle == UP) ? fabs(drive_x.getOutput(goal_x, x)) : move.drive;
                     move.drive = (map_angle == LEFT || map_angle == RIGHT) ? fabs(drive_y.getOutput(goal_y, y)) : move.drive;
                 }
-
             }
             //Keep turning and do not drive
             else
@@ -311,6 +310,22 @@ int main(int argc, char **argv)
             //Publish
             move_pub.publish(move);
         }
+        
+        tf::TransformListener listener;
+        tf::StampedTransform transform;
+
+        listener.lookupTransform("/map", "/base_link", ros::Time(0), transform);
+
+        //Get the current angle in degrees
+        current_angle = angleWrap(tf::getYaw(transform.getRotation()) * RAD_TO_DEG);
+
+        //printf("current_angle: %f\n", current_angle);
+
+        //Get the current row and column from x and y position
+        x = transform.getOrigin().x();
+        y = transform.getOrigin().y();
+        cur_col = (int)round(y / constants.SQUARE_SIZE);
+        cur_row = (int)round(x / constants.SQUARE_SIZE);
 
         ros::spinOnce();
         loop_rate.sleep();

@@ -12,5 +12,8 @@
 
     <!-- Motion -->
     <node pkg="yeet_motion" type="motion_node" name="motion_node" output="screen"/>
+
+    <!-- SLAM mapping -->
+    <include file="$(find turtlebot_navigation)/launch/includes/gmapping/$(arg 3d_sensor)_gmapping.launch.xml"/>
     
 </launch>
