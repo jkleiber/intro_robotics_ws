@@ -13,8 +13,8 @@ yeet_msgs::move move_msg;   //Published message
 
 /* Global variables */
 bool keyboard_override = false;
-int keyboard_drive;
-int keyboard_turn;
+double keyboard_drive;
+double keyboard_turn;
 
 /**
  * @brief collision_callback - recieves instructions from collision_node and places them into a message. This data may

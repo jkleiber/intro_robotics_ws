@@ -22,26 +22,26 @@
 #define LEFT 90                              //Left map angle
 #define RIGHT -90                            //Right map angle
 #define DOWN 180                             //Down map angle
-#define NAV_BUFFER (double)(0.125)           //Tiny buffer added to get to a square center
+#define NAV_BUFFER (double)(0.125)          //Tiny buffer added to get to a square center
 
 //Drive X PID
 #define X_KP (double)(0.6)
 #define X_KI (double)(0.002)
 #define X_KD (double)(0.001)
-#define X_MAX_OUTPUT 0.3
-#define X_MIN_OUTPUT -0.3
+#define X_MAX_OUTPUT 0.20
+#define X_MIN_OUTPUT -0.20
 
 //Drive Y PID
 #define Y_KP (double)(0.6)
 #define Y_KI (double)(0.002)
 #define Y_KD (double)(0.01)
-#define Y_MAX_OUTPUT 0.3
-#define Y_MIN_OUTPUT -0.3
+#define Y_MAX_OUTPUT 0.20
+#define Y_MIN_OUTPUT -0.20
 
 //Turn PID
-#define TURN_KP (double)(0.2)
+#define TURN_KP (double)(0.23)
 #define TURN_KI (double)(0.000)
-#define TURN_KD (double)(0.001)
+#define TURN_KD (double)(0.003)
 #define TURN_MAX_OUTPUT 0.5
 #define TURN_MIN_OUTPUT -0.5
 
@@ -128,17 +128,18 @@ void goalCallBack(const yeet_msgs::node goal)
     last_goal_row = goal_row;
 }
 
+/*
 void odomCallBack(const nav_msgs::Odometry::ConstPtr &odom)
 {
     //TODO
 }
+*/
 
 /**
  * @brief odomCallBack - Gets the current angle of the robot in degrees
  * 
  * @param odom - The odometry message containing robot angle position
  */
-/*
 void odomCallBack(const nav_msgs::Odometry::ConstPtr& odom)
 {
     //Get the robot orientation
@@ -156,7 +157,7 @@ void odomCallBack(const nav_msgs::Odometry::ConstPtr& odom)
     cur_col = (int) round(y / constants.SQUARE_SIZE);
     cur_row = (int) round(x / constants.SQUARE_SIZE);
 }
-*/
+
 
 void replanCallback(const yeet_msgs::obstacle::ConstPtr &obstacle_msg)
 {
@@ -220,6 +221,8 @@ int main(int argc, char **argv)
     //Set up the node to handle motion
     ros::NodeHandle nav_node;
 
+    //tf::TransformListener listener;
+
     //Initialize default location values
     current_angle = 0.0;
     x = 0.0;
@@ -240,7 +243,7 @@ int main(int argc, char **argv)
     turn.init(TURN_KP, TURN_KI, TURN_KD, TURN_MAX_OUTPUT, TURN_MIN_OUTPUT);
 
     //Subscribe to topics
-    ros::Subscriber odom_sub = nav_node.subscribe(nav_node.resolveName("/nav_msgs/OccupancyGrid"), 10, &odomCallBack);
+    ros::Subscriber odom_sub = nav_node.subscribe(nav_node.resolveName("/odom"), 10, &odomCallBack);
 
     ros::Subscriber replan_sub = nav_node.subscribe(nav_node.resolveName("/yeet_nav/replan"), 10, &replanCallback);
     ros::Subscriber enable_drive_sub = nav_node.subscribe(nav_node.resolveName("/yeet_nav/enable_drive"), 10, &enableDriveCallback);
@@ -266,8 +269,33 @@ int main(int argc, char **argv)
         //Initialize to zero
         move.drive = 0;
         move.turn = 0;
+        
+        /*
+        tf::StampedTransform transform;
 
-        //Only drive if driving is encabled
+        try
+        {
+            listener.lookupTransform("/map", "/base_link", ros::Time(0), transform);
+        }
+        catch(tf::TransformException e)
+        {
+            //Do nothing, lol
+            printf("LOL get rekt\n");
+        }
+
+        //Get the current angle in degrees
+        //current_angle = angleWrap(tf::getYaw(transform.getRotation()) * RAD_TO_DEG);
+        
+        //printf("current_angle: %f\n", current_angle);
+
+        //Get the current row and column from x and y position
+        x = transform.getOrigin().x();
+        y = transform.getOrigin().y();
+        cur_col = (int)round(y / constants.SQUARE_SIZE);
+        cur_row = (int)round(x / constants.SQUARE_SIZE);
+        */
+
+        //Only drive if driving is enabled
         if (drive_enabled)
         {
             //Within tolerance, stop turning and start driving
@@ -303,29 +331,13 @@ int main(int argc, char **argv)
             }
 
             //Ramp up and down
-            move.drive = (move.drive + last_output + sec_last_out) / 3.0;
-            sec_last_out = last_output;
-            last_output = move.drive;
+            //move.drive = (move.drive + last_output + sec_last_out) / 3.0;
+            //sec_last_out = last_output;
+            //last_output = move.drive;
 
             //Publish
             move_pub.publish(move);
         }
-        
-        tf::TransformListener listener;
-        tf::StampedTransform transform;
-
-        listener.lookupTransform("/map", "/base_link", ros::Time(0), transform);
-
-        //Get the current angle in degrees
-        current_angle = angleWrap(tf::getYaw(transform.getRotation()) * RAD_TO_DEG);
-
-        //printf("current_angle: %f\n", current_angle);
-
-        //Get the current row and column from x and y position
-        x = transform.getOrigin().x();
-        y = transform.getOrigin().y();
-        cur_col = (int)round(y / constants.SQUARE_SIZE);
-        cur_row = (int)round(x / constants.SQUARE_SIZE);
 
         ros::spinOnce();
         loop_rate.sleep();
